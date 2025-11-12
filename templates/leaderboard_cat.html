@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Leaderboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: titleBounce 1s ease-out;
+        }
+
+        @keyframes titleBounce {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        thead tr th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        thead tr th:first-child {
+            border-radius: 15px 0 0 15px;
+            width: 80px;
+            text-align: center;
+        }
+
+        thead tr th:last-child {
+            border-radius: 0 15px 15px 0;
+            text-align: right;
+        }
+
+        tbody tr {
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:nth-child(1) { animation-delay: 0.2s; }
+        tbody tr:nth-child(2) { animation-delay: 0.4s; }
+        tbody tr:nth-child(3) { animation-delay: 0.6s; }
+        tbody tr:nth-child(4) { animation-delay: 0.8s; }
+        tbody tr:nth-child(5) { animation-delay: 1s; }
+        tbody tr:nth-child(n+6) { animation-delay: 1.2s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        tbody tr:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        tbody tr td {
+            padding: 25px 20px;
+            background: white;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover td {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        tbody tr td:first-child {
+            border-radius: 15px 0 0 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        tbody tr td:last-child {
+            border-radius: 0 15px 15px 0;
+            text-align: right;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.4em;
+        }
+
+        /* Rank medals */
+        tbody tr:nth-child(1) td:first-child {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            font-size: 1.8em;
+        }
+
+        tbody tr:nth-child(2) td:first-child {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            color: white;
+            font-size: 1.6em;
+        }
+
+        tbody tr:nth-child(3) td:first-child {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+            color: white;
+            font-size: 1.4em;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti-fall linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Trophy icon animation */
+        .trophy {
+            display: inline-block;
+            animation: trophy-spin 2s ease-in-out infinite;
+        }
+
+        @keyframes trophy-spin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        /* Face button styles */
+        .face-button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: buttonEntrance 0.8s ease-out;
+        }
+
+        @keyframes buttonEntrance {
+            0% { transform: translateY(-100px) scale(0); opacity: 0; }
+            60% { transform: translateY(10px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .face-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .face-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .button-icon {
+            display: inline-block;
+            margin-right: 10px;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(10deg); }
+        }
+
+        .button-shine {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -200%; }
+            100% { left: 200%; }
+        }
+
+
+        /* Points animation */
+        @keyframes pointsPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        tbody tr:nth-child(1) td:last-child,
+        tbody tr:nth-child(2) td:last-child,
+        tbody tr:nth-child(3) td:last-child {
+            animation: pointsPulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>
+            <span class="trophy">🏆</span>
+            {% if selected_category %}
+                {{ selected_category.name }} Team Leaderboard
+            {% else %}
+                Overall Team Leaderboard
+            {% endif %}
+            <span class="trophy">🏆</span>
+        </h3>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <form method="get">
+                <label for="category" style="color: white; font-size: 1.2em; margin-right: 10px;">
+                    Filter by Category:
+                </label>
+                <select name="category" id="category"
+                        onchange="this.form.submit()"
+                        style="padding: 10px 15px; border-radius: 10px; font-size: 1em;">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category and cat.id == selected_category.id %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="{% url 'face_page' %}" class="face-button">
+                <span class="button-icon">🏠</span>
+                Home Page
+                <span class="button-shine"></span>
+            </a>
+            {% if user.is_authenticated %}
+                    {% if user.role == 'admin' %}
+                        <a href="{% url 'dashboard_admin' %}" class="face-button">Go to Dashboard</a>
+                    {% elif user.role == 'team' %}
+                        <a href="{% url 'dashboard_team' %}" class="face-button">Go to Dashboard</a>
+                    {% endif %}
+                {% endif %}
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    {% for team in teams %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ team.team.name }}</td>
+                            <td>{{ team.points }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Create confetti explosion on page load
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8', '#fdcb6e', '#e17055'];
+            const confettiCount = 100;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                document.body.appendChild(confetti);
+
+                // Remove confetti after animation
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        // Trigger confetti on page load
+        window.addEventListener('load', () => {
+            createConfetti();
+            
+            // Create another burst after 1 second
+            setTimeout(createConfetti, 1000);
+        });
+
+        // Add sparkle effect on hover
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 10px 30px rgba(102, 126, 234, 0.5)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

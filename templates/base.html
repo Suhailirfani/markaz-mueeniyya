@@ -166,6 +166,10 @@
             background: linear-gradient(135deg, var(--success-green), #1e7e34);
             color: white;
         }
+        .nav-btn.leaderboard2 {
+            background: linear-gradient(135deg, var(--success-green), #4e0242);
+            color: white;
+        }
 
         .nav-btn.leaderboard:hover {
             color: white;
@@ -424,7 +428,10 @@
                 Results
             </a>
             <a href="{% url 'leaderboard' %}" class="nav-btn leaderboard">
-                Leaderboard
+                Leaderboard (Admin)
+            </a>
+            <a href="{% url 'public_results_home' %}" class="nav-btn leaderboard2">
+                Leaderboard (Public)
             </a>
         </div>
     </div>

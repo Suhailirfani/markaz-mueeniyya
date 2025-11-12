@@ -17,39 +17,150 @@
         </div>
     </div>
 
-
     {% for pr in program_results %}
-        <h4 class="mt-4">{{ pr.program.name }}</h4>
-        <table class="table table-bordered table-hover mt-2">
+        <h4 class="mt-4">
+            {{ pr.program.result_number }}️ - {{ pr.program.name }}
+            {% if pr.is_group %}
+                <span class="badge bg-primary">Group ({{ pr.members_count }} members)</span>
+            {% else %}
+                <span class="badge bg-secondary">Individual</span>
+            {% endif %}
+        </h4>
+
+        <table class="table table-bordered table-hover mt-2 results-table" data-category="{{ pr.program.category.name }}">
             <thead class="table-dark">
                 <tr>
                     <th>Rank</th>
                     <th>Chest No</th>
+                    <th>Code Letter</th> <!-- ✅ New column -->
                     <th>Contestant</th>
                     <th>Category</th>
                     <th>Grade</th>
-                    <th>Point</th>
+                    <th>Rank Points</th>
+                    <th>Grade Points</th>
+                    <th>Total Points</th>
                 </tr>
             </thead>
             <tbody>
                 {% for result in pr.results %}
                 <tr {% if result.rank == 1 %} class="table-success" {% elif result.rank == 2 %} class="table-info" {% elif result.rank == 3 %} class="table-warning" {% endif %}>
                     <td>
-                        {% if result.rank == 1 %}🥇{% elif result.rank == 2 %}🥈{% elif result.rank == 3 %}🥉{% else %}{{ result.rank }}{% endif %}
+                        {% if result.rank == 1 %}🥇{% elif result.rank == 2 %}🥈{% elif result.rank == 3 %}🥉{% else %}{{ result.rank|default:"-" }}{% endif %}
                     </td>
                     <td>{{ result.contestant.chest_no }}</td>
+
+                    <!-- ✅ Code Letter cell -->
+                    <td class="text-center">
+                        {% if result.code_letter %}
+                            <strong>{{ result.code_letter|upper }}</strong>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
                     <td>{{ result.contestant.name }}</td>
                     <td>{{ result.contestant.category.name }}</td>
-                    <td>{{ result.grade }}</td>
+
+                    <td>
+                        {% if result.grade %}
+                            <span class="badge 
+                                {% if result.grade == 'A+' %}bg-success
+                                {% elif result.grade == 'A' %}bg-primary
+                                {% elif result.grade == 'B' %}bg-info
+                                {% elif result.grade == 'C' %}bg-warning
+                                {% endif %}">
+                                {{ result.grade }}
+                            </span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if result.rank_points > 0 %}
+                            <strong>{{ result.rank_points }}</strong>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if result.grade_points > 0 %}
+                            {{ result.grade_points }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if result.total_points > 0 %}
+                            <strong class="text-primary">{{ result.total_points }}</strong>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
-                    <tr><td colspan="5" class="text-center">No results found</td></tr>
+                    <tr><td colspan="9" class="text-center">No results found</td></tr>
                 {% endfor %}
             </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <td colspan="8" class="text-end"><strong>Program Total:</strong></td>
+                    <td class="text-center"><strong class="text-success">{{ pr.program_total_points }}</strong></td>
+                </tr>
+            </tfoot>
         </table>
+
+        <div class="text-end mt-2">
+            <a href="{% url 'program_result_pdf' pr.program.id %}" 
+            class="btn btn-sm btn-outline-danger">
+            📄 Download {{ pr.program.name }} PDF
+            </a>
+        </div>
     {% endfor %}
 
-    <!-- PDF button -->
     <a href="{% url 'results_pdf' %}" class="btn btn-danger mt-3">📄 Download PDF</a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const tables = document.querySelectorAll('.results-table');
+
+    function filterResults() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = categoryFilter.value;
+
+        tables.forEach(table => {
+            const tableCategory = table.dataset.category;
+            const rows = table.querySelectorAll('tbody tr');
+            let hasVisibleRows = false;
+
+            if (selectedCategory && tableCategory !== selectedCategory) {
+                table.closest('div').previousElementSibling.style.display = 'none';
+                table.closest('table').style.display = 'none';
+                return;
+            }
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const matches = text.includes(searchTerm);
+                row.style.display = matches ? '' : 'none';
+                if (matches) hasVisibleRows = true;
+            });
+
+            const heading = table.closest('div').previousElementSibling;
+            if (hasVisibleRows) {
+                heading.style.display = '';
+                table.style.display = '';
+            } else {
+                heading.style.display = 'none';
+                table.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('keyup', filterResults);
+    categoryFilter.addEventListener('change', filterResults);
+});
+</script>
 {% endblock %}

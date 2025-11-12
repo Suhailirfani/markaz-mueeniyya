@@ -1,0 +1,79 @@
+<!-- ==================== 1. ADMIN: manage_announcements.html ==================== -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>📢 Manage Result Announcements</h3>
+        <a href="{% url 'public_results_home' %}" class="btn btn-success">Public View</a>
+        <span class="badge bg-info fs-6">{{ announced_count }}/{{ total_programs }} Announced</span>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>ℹ️ Info:</strong> Only announced programs will be visible to the public on the results page and leaderboard.
+    </div>
+
+    <form method="post" action="{% url 'bulk_announce_programs' %}">
+        {% csrf_token %}
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <button type="submit" name="action" value="announce" class="btn btn-success">
+                    ✅ Announce Selected
+                </button>
+                <button type="submit" name="action" value="unannounce" class="btn btn-warning">
+                    ❌ Hide Selected
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th><input type="checkbox" id="select-all"></th>
+                        <th>Program</th>
+                        <th>Category</th>
+                        <th>Participants</th>
+                        <th>Marked</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in programs %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="program_ids" value="{{ program.id }}" class="program-checkbox">
+                        </td>
+                        <td><strong>{{ program.name }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ program.category.name }}</span></td>
+                        <td>{{ program.total_participants }}</td>
+                        <td>{{ program.marked_participants }}</td>
+                        <td>
+                            {% if program.is_announced %}
+                                <span class="badge bg-success">📢 Public</span>
+                                <br><small class="text-muted">{{ program.announced_at|date:"M d, Y H:i" }}</small>
+                            {% else %}
+                                <span class="badge bg-secondary">🔒 Hidden</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'toggle_announcement' program.id %}" 
+                               class="btn btn-sm {% if program.is_announced %}btn-warning{% else %}btn-success{% endif %}"
+                               onclick="return confirm('Toggle announcement for {{ program.name }}?')">
+                                {% if program.is_announced %}Hide{% else %}Announce{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('select-all').addEventListener('change', function() {
+    document.querySelectorAll('.program-checkbox').forEach(cb => cb.checked = this.checked);
+});
+</script>
+{% endblock %}

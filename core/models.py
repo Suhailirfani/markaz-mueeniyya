@@ -1,4 +1,5 @@
 from datetime import timezone
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -45,8 +46,16 @@ class Team(models.Model):
 
 # ----------------- Category -----------------
 class Category(models.Model):
+    COMPETITION_TYPES = [
+        ('MAIN', 'Main Campus'),
+        ('OFF', 'Off Campus'),
+    ]
     name = models.CharField(max_length=100)
-    def __str__(self): return self.name
+    competition_type = models.CharField(max_length=10, choices=COMPETITION_TYPES, default='MAIN')
+
+    def __str__(self):
+        return f"{self.name} ({self.get_competition_type_display()})"
+
 
 # ----------------- Program -----------------
 class Program(models.Model):
@@ -54,7 +63,10 @@ class Program(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_group = models.BooleanField(default=False, null=True)
-    members_count = models.PositiveIntegerField(null=True, blank=True)
+    members_count = models.PositiveIntegerField(null=True, blank=True, default=1)
+    is_announced = models.BooleanField(default=False, help_text="Make results public")
+    announced_at = models.DateTimeField(null=True, blank=True)
+    result_number = models.PositiveIntegerField(null=True, blank=True)  # 🆕 new field
 
     def __str__(self): return f"{self.name} - {self.category.name}"
 
@@ -80,9 +92,11 @@ class Participation(models.Model):
     contestant = models.ForeignKey(Contestant, on_delete=models.CASCADE)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     marks = models.IntegerField(null=True, blank=True)
+    code_letter = models.CharField(max_length=2, null=True, blank=True)
     rank = models.PositiveIntegerField(null=True, blank=True)
     grade = models.CharField(max_length=1, null=True, blank=True)
     points_awarded = models.BooleanField(default=False)
+    marks_added_at = models.DateTimeField(default=timezone.now, null=True, blank=True)  # 👈 here
    
     def __str__(self):
         return f"{self.contestant.name} ({self.program.name})"    

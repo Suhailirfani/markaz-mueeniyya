@@ -1,46 +1,190 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h3 class="mb-4">🎭 Contestant Programs</h3>
-    <a href="{% url 'contestant_programs_pdf' %}" class="btn btn-warning">Download</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>🎭 Contestant Programs</h3>
+        <a href="{% url 'contestant_programs_pdf' %}?team={{ team_id }}&category={{ category_id }}" class="btn btn-warning">
+            📥 Download PDF
+        </a>
+    </div>
 
     {% if is_team_user %}
-        <p><strong>Team:</strong> {{ team_name }}</p>
+        <div class="alert alert-info">
+            <strong>Team:</strong> {{ team_name }}
+        </div>
     {% endif %}
 
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" id="filterForm">
+                <div class="row g-3">
+                    {% if not is_team_user %}
+                    <div class="col-md-5">
+                        <label for="team" class="form-label">🏫 Filter by Team</label>
+                        <select name="team" id="team" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">All Teams</option>
+                            {% for team in teams %}
+                                <option value="{{ team.id }}" {% if team.id|stringformat:"s" == team_id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-5">
+                        <label for="category" class="form-label">🎯 Filter by Category</label>
+                        <select name="category" id="category" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == category_id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="{% url 'contestant_programs' %}" class="btn btn-secondary w-100">
+                            🔄 Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    {% if selected_team or selected_category %}
+    <div class="mb-3">
+        <strong>Active Filters:</strong>
+        {% if selected_team %}
+            <span class="badge bg-primary">Team: {{ selected_team.name }}</span>
+        {% endif %}
+        {% if selected_category %}
+            <span class="badge bg-success">Category: {{ selected_category.name }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Results Count -->
+    <div class="mb-3">
+        <span class="badge bg-info">{{ contestants.count }} Contestant{{ contestants.count|pluralize }} found</span>
+    </div>
+
+    <!-- Search Box -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search by name or chest number...">
+        </div>
+    </div>
+
+    <!-- Contestants Cards -->
     <div class="row">
         {% for cont in contestants %}
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 mb-4 contestant-card" data-search="{{ cont.name|lower }} {{ cont.chest_no }}">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">{{ forloop.counter }}. {{ cont.name|upper }}</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ forloop.counter }}. {{ cont.name|upper }}</h5>
+                            <span class="badge bg-light text-dark">{{ cont.chest_no }}</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <p><strong>Chest No:</strong> {{ cont.chest_no }}</p>
-                        {% if not is_team_user %}
-                            <p><strong>Team:</strong> {{ cont.team.name }}</p>
-                        {% endif %}
-                        <p><strong>Category:</strong> {{ cont.category.name }}</p>
-
-                        <h6 class="mt-3">📌 Assigned Programs</h6>
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Chest No:</strong> <span class="badge bg-secondary">{{ cont.chest_no }}</span></p>
+                            {% if not is_team_user %}
+                                <p class="mb-1"><strong>Team:</strong> {{ cont.team.name }}</p>
+                            {% endif %}
+                            <p class="mb-1"><strong>Category:</strong> <span class="badge bg-info">{{ cont.category.name }}</span></p>
+                        </div>
+                        
+                        <h6 class="mt-3 mb-2">📌 Assigned Programs 
+                            <span class="badge bg-success">{{ cont.participation_set.count }}</span>
+                        </h6>
+                        
                         {% if cont.participation_set.all %}
                             <ul class="list-group list-group-flush">
                                 {% for participation in cont.participation_set.all %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ participation.program.name }}
-                                        <span class="badge bg-secondary">{{ participation.program.category.name }}</span>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold">{{ participation.program.name }}</div>
+                                            <small class="text-muted">{{ participation.program.category.name }}</small>
+                                        </div>
+                                        <span class="badge {% if participation.program.is_group %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">
+                                            {% if participation.program.is_group %}
+                                                Group
+                                            {% else %}
+                                                Individual
+                                            {% endif %}
+                                        </span>
                                     </li>
                                 {% endfor %}
                             </ul>
                         {% else %}
-                            <p class="text-muted">No programs assigned.</p>
+                            <div class="alert alert-warning mb-0">
+                                <small>No programs assigned yet.</small>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
         {% empty %}
-            <p class="text-center">No contestants found.</p>
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h5>No contestants found</h5>
+                    <p class="mb-0">Try adjusting your filters or clear them to see all contestants.</p>
+                </div>
+            </div>
         {% endfor %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.contestant-card');
+
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        cards.forEach(card => {
+            const text = card.dataset.search;
+            if (text.includes(searchTerm)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.list-group-item {
+    border-left: 3px solid #007bff;
+    transition: all 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    border-left-color: #0056b3;
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+@media print {
+    .btn, form, input, .alert-info {
+        display: none !important;
+    }
+}
+</style>
 {% endblock %}

@@ -1,40 +1,149 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h3>🏅 Contestant Points List</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>🏅 Individual Contestant Points</h3>
+        <span class="badge bg-info">{{ total_contestants }} Contestants</span>
+    </div>
 
-    {% for cr in contestant_results %}
-        <h4 class="mt-4">{{ forloop.counter }}. {{ cr.contestant.name }} (Chest: {{ cr.contestant.chest_no }}) - {{ cr.contestant.category.name }}</h4>
-        <table class="table table-bordered table-hover mt-2">
-            <thead class="table-dark">
-                <tr>
-                    <th>Program</th>
-                    <th>Category</th>
-                    <th>Rank</th>
-                    <th>Grade</th>
-                    <th>Rank Points</th>
-                    <th>Grade Points</th>
-                    <th>Total Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in cr.programs %}
-                <tr>
-                    <td>{{ p.program_name }}</td>
-                    <td>{{ p.program_category }}</td>
-                    <td>{{ p.rank }}</td>
-                    <td>{{ p.grade }}</td>
-                    <td>{{ p.rank_points }}</td>
-                    <td>{{ p.grade_points }}</td>
-                    <td>{{ p.total_points }}</td>
-                </tr>
-                {% endfor %}
-                <tr class="table-info">
-                    <td colspan="6" class="text-end"><strong>Total Points</strong></td>
-                    <td><strong>{{ cr.total_points }}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    {% endfor %}
+    <div class="alert alert-info">
+        <strong>Note:</strong> This list shows individual program points only for JUNIOR and SENIOR categories. 
+        Group programs and GENERAL category programs are excluded.
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search by name or chest number...">
+        </div>
+    </div>
+
+    {% if contestant_results %}
+        {% for cr in contestant_results %}
+            <div class="contestant-card mb-4" data-contestant="{{ cr.contestant.name|lower }} {{ cr.contestant.chest_no }}">
+                <div class="card">
+                    <div class="card-header {% if cr.position == 1 %}bg-success text-white{% elif cr.position == 2 %}bg-info text-white{% elif cr.position == 3 %}bg-warning{% else %}bg-light{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {% if cr.position == 1 %}🥇{% elif cr.position == 2 %}🥈{% elif cr.position == 3 %}🥉{% else %}{{ cr.position }}.{% endif %}
+                                {{ cr.contestant.name }} 
+                                <small>(Chest: {{ cr.contestant.chest_no }})</small>
+                            </h5>
+                            <div>
+                                <span class="badge bg-dark">{{ cr.contestant.category.name }}</span>
+                                <span class="badge bg-primary">{{ cr.program_count }} Program{{ cr.program_count|pluralize }}</span>
+                                <span class="badge bg-success fs-6">Total: {{ cr.total_points }} Points</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover table-sm mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Program</th>
+                                    <th>Category</th>
+                                    <th>Marks</th>
+                                    <th>Rank</th>
+                                    <th>Grade</th>
+                                    <th class="text-center">Rank Points</th>
+                                    <th class="text-center">Grade Points</th>
+                                    <th class="text-center">Total Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in cr.programs %}
+                                <tr>
+                                    <td>{{ p.program_name }}</td>
+                                    <td><span class="badge bg-secondary">{{ p.program_category }}</span></td>
+                                    <td class="text-center"><strong>{{ p.marks }}</strong></td>
+                                    <td class="text-center">
+                                        {% if p.rank == 1 %}🥇
+                                        {% elif p.rank == 2 %}🥈
+                                        {% elif p.rank == 3 %}🥉
+                                        {% elif p.rank %}{{ p.rank }}
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if p.grade %}
+                                            <span class="badge 
+                                                {% if p.grade == 'A+' %}bg-success
+                                                {% elif p.grade == 'A' %}bg-primary
+                                                {% elif p.grade == 'B' %}bg-info
+                                                {% elif p.grade == 'C' %}bg-warning text-dark
+                                                {% endif %}">
+                                                {{ p.grade }}
+                                            </span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if p.rank_points > 0 %}
+                                            <strong class="text-primary">{{ p.rank_points }}</strong>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if p.grade_points > 0 %}
+                                            <strong class="text-success">{{ p.grade_points }}</strong>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if p.total_points > 0 %}
+                                            <strong class="text-danger">{{ p.total_points }}</strong>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="7" class="text-end"><strong>Contestant Total:</strong></td>
+                                    <td class="text-center"><strong class="text-success fs-5">{{ cr.total_points }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning">
+            <strong>No results found.</strong> No individual program participations available for JUNIOR/SENIOR contestants.
+        </div>
+    {% endif %}
+
+    <!-- Print/Export button -->
+    <div class="mt-4 mb-4">
+        <button onclick="window.print()" class="btn btn-primary">🖨️ Print</button>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.contestant-card');
+
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        cards.forEach(card => {
+            const text = card.dataset.contestant;
+            if (text.includes(searchTerm)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+@media print {
+    .btn, input, .alert-info {
+        display: none !important;
+    }
+    .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+</style>
 {% endblock %}

@@ -1,30 +1,30 @@
 {% extends 'base.html' %}
-{% load static %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Add New Category</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="name" class="form-label">Category Name</label>
+        <input type="text" name="name" id="name" class="form-control" placeholder="e.g., Senior">
+    </div>
 
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
+    <div class="mb-3">
+        <label for="type" class="form-label">Category Type</label>
+        <select name="competition_type" id="competition_type" class="form-select">
+            <option value="MAIN">Main Campus</option>
+            <option value="OFF">Off Campus</option>
+        </select>
+    </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="name" class="form-label">Category Name</label>
-            <input type="text" name="name" id="name" class="form-control" placeholder="e.g., Senior">
-        </div>
-        <button type="submit" class="btn btn-primary">Add Category</button>
-    </form>
+    <button type="submit" class="btn btn-primary">Add Category</button>
+</form>
 
-    <hr class="my-4">
+<hr class="my-4">
 
-    <h4>Existing Categories</h4>
+<h4>Existing Categories</h4>
 <ul class="list-group">
     {% for category in categories %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ category.name }}
+            {{ category.name }} <span class="badge bg-secondary">{{category.get_competition_type_display}}</span>
             <span>
                 <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-warning">Edit</a>
                 <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-danger"
@@ -35,6 +35,4 @@
         <li class="list-group-item text-muted">No categories yet.</li>
     {% endfor %}
 </ul>
-
-</div>
 {% endblock %}

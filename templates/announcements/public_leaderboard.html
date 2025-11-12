@@ -1,0 +1,82 @@
+<!-- ==================== 4. PUBLIC: public_leaderboard.html ==================== -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">📊 Team Leaderboard</h1>
+        <p class="lead text-muted">Based on {{ announced_programs_count }} announced programs</p>
+        <a href="{% url 'public_results_home' %}" class="btn btn-outline-primary mt-2">
+            View Program Results
+        </a>
+    </div>
+
+    <!-- Top 3 Teams -->
+    {% if top_three %}
+    <div class="row mb-5">
+        {% for team in top_three %}
+        <div class="col-md-4 mb-3">
+            <div class="card text-center {% if team.position == 1 %}border-warning{% elif team.position == 2 %}border-secondary{% else %}border-info{% endif %}" 
+                 style="border-width: 3px;">
+                <div class="card-body">
+                    <div class="fs-1 mb-2">
+                        {% if team.position == 1 %}🥇
+                        {% elif team.position == 2 %}🥈
+                        {% else %}🥉{% endif %}
+                    </div>
+                    <h3>{{ team.team.name }}</h3>
+                    <h2 class="text-primary">{{ team.points }} pts</h2>
+                    <p class="mb-0">
+                        <span class="badge bg-success">{{ team.winners_count }} Winners</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Full Leaderboard -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Complete Standings</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Total Points</th>
+                            <th>1st Place</th>
+                            <th>2nd Place</th>
+                            <th>3rd Place</th>
+                            <th>Participations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                        <tr {% if team.position <= 3 %}class="table-warning"{% endif %}>
+                            <td>
+                                <strong class="fs-5">
+                                    {% if team.position == 1 %}🥇
+                                    {% elif team.position == 2 %}🥈
+                                    {% elif team.position == 3 %}🥉
+                                    {% else %}{{ team.position }}{% endif %}
+                                </strong>
+                            </td>
+                            <td><strong>{{ team.team.name }}</strong></td>
+                            <td><h5 class="mb-0 text-primary">{{ team.points }}</h5></td>
+                            <td><span class="badge bg-warning">{{ team.first_place }}</span></td>
+                            <td><span class="badge bg-info">{{ team.second_place }}</span></td>
+                            <td><span class="badge bg-secondary">{{ team.third_place }}</span></td>
+                            <td>{{ team.total_participations }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if winners %}
+<style>
+.winners-box {
+    background: linear-gradient(135deg, #f9f9f9, #fffaf5);
+    border: 3px solid #f0d78c;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+.winners-box::before {
+    content: "🎨";
+    font-size: 100px;
+    opacity: 0.08;
+    position: absolute;
+    right: 30px;
+    bottom: 10px;
+    transform: rotate(-15deg);
+}
+.winner-card {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.winner-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+.winner-rank {
+    font-size: 2.5rem;
+}
+.winner-name {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.winner-points {
+    font-size: 1.2rem;
+    color: #28a745;
+}
+.art-sign {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-family: 'Brush Script MT', cursive;
+    font-size: 28px;
+    color: #e3b64c;
+    letter-spacing: 1px;
+}
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+}
+.podium .col {
+    flex: 1;
+    max-width: 300px;
+}
+.podium .first {
+    transform: translateY(-20px);
+}
+</style>
+
+<div class="winners-box">
+    <div class="art-sign">FELIZ DIA '25 ✨</div>
+    <h3 class="text-center mb-4">🏆 Top 3 Winners</h3>
+    <div class="podium">
+        {% for winner in winners %}
+        <div class="col text-center {% if winner.rank == 1 %}first{% endif %}">
+            <div class="winner-card">
+                <div class="winner-rank">
+                    {% if winner.rank == 1 %}🥇{% elif winner.rank == 2 %}🥈{% else %}🥉{% endif %}
+                </div>
+                <h5 class="winner-name">{{ winner.contestant.name }}</h5>
+                <p class="mb-1"><strong>{{ winner.contestant.team.name }}</strong></p>
+                <span class="badge bg-info fs-6">Grade {{ winner.grade|default:"-" }}</span>
+                <div class="winner-points mt-2">
+                    {{ winner.total_points|default:0 }} pts
+                </div>
+                <small class="text-muted">(Rank: {{ winner.rank_points }} + Grade: {{ winner.grade_points }})</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

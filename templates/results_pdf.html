@@ -22,6 +22,7 @@
                     <th>Contestant</th>
                     <th>Category</th>
                     <th>Grade</th>
+                    <th>Points</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,6 +33,7 @@
                         <td>{{ result.contestant.name }}</td>
                         <td>{{ result.contestant.category.name }}</td>
                         <td>{{ result.grade }}</td>
+                        <td>{{ result.total_points }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

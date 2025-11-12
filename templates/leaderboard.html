@@ -262,6 +262,13 @@
                 Home Page
                 <span class="button-shine"></span>
             </a>
+            {% if user.is_authenticated %}
+                    {% if user.role == 'admin' %}
+                        <a href="{% url 'dashboard_admin' %}" class="face-button">Go to Dashboard</a>
+                    {% elif user.role == 'team' %}
+                        <a href="{% url 'dashboard_team' %}" class="face-button">Go to Dashboard</a>
+                    {% endif %}
+                {% endif %}
         </div>
         <div class="table-container">
             <table>

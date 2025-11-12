@@ -41,7 +41,9 @@
                         <th>Chest No</th>
                         <th>Name</th>
                         <th>Team</th>
+                        <th>Code Letter</th> <!-- ✅ New -->
                         <th>Marks</th>
+                        <th>Status</th> <!-- for undo button -->
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +53,16 @@
                             <td>{{ form.instance.contestant.chest_no }}</td>
                             <td>{{ form.instance.contestant.name }}</td>
                             <td>{{ form.instance.contestant.team.name }}</td>
+
+                            <!-- ✅ Code Letter Field -->
+                            <td>
+                                {{ form.code_letter }}
+                                {% if form.code_letter.errors %}
+                                    <div class="text-danger">{{ form.code_letter.errors }}</div>
+                                {% endif %}
+                            </td>
+
+                            <!-- ✅ Marks Field -->
                             <td>
                                 {% for hidden_field in form.hidden_fields %}
                                     {{ hidden_field }}
@@ -60,22 +72,25 @@
                                     <div class="text-danger">{{ form.marks.errors }}</div>
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if participation.points_awarded %}
-                                    <a href="{% url 'undo_points' participation.id %}" 
-                                    class="btn btn-warning btn-sm"
-                                    onclick="return confirm('Are you sure you want to undo points for this participant?');">
-                                    Undo
-                                    </a>
-                                {% else %}
-                                    <span class="text-muted">Not Awarded</span>
-                                {% endif %}
-                            </td>
 
+                            <td>
+                                {% with part=form.instance %}
+                                    {% if part.points_awarded %}
+                                        <a href="{% url 'undo_points' part.id %}"
+                                        class="btn btn-warning btn-sm"
+                                        onclick="return confirm('Are you sure you want to undo points for this participant?');">
+                                        Undo
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Not Awarded</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
             </div>
             <button type="submit" class="btn btn-success">💾 Save Marks</button>
         </form>
@@ -83,4 +98,10 @@
         <div class="alert alert-warning mt-4">No participants found for this program in the selected category.</div>
     {% endif %}
 </div>
+<style>
+input[name$="code_letter"] {
+    width: 80px;
+    text-align: center;
+}
+</style>
 {% endblock %}

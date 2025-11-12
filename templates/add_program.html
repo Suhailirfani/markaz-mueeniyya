@@ -24,6 +24,11 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="mb-3">
+            <label for="members_count">Number of Members (if Group)</label>
+            <input type="number" name="members_count" id="members_count" class="form-control" placeholder="Eg: 2 or 4">
+        </div>
+
 
         <button type="submit" class="btn btn-success">Add Program</button>
     </form>
@@ -95,7 +100,7 @@
         <ul class="list-group">
             {% for program in group.list %}
                 <li class="list-group-item d-flex justify-content-between align-items-center" id="program-{{ program.id }}">
-                    {{ program.name }}
+                    {{ program.name }} {% if is_group is true %} - {{ program.members_count }} {% endif %}
                     <span>
                         <span class="badge {% if program.is_group %}bg-info text-dark{% else %}bg-secondary{% endif %}" 
                             id="badge-{{ program.id }}">

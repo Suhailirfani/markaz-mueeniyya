@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core',
     'users',
     'girls',
+    'announcement',
 ]
 
 MIDDLEWARE = [

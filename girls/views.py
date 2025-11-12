@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 import pandas as pd
 from .models import *
 from django.contrib import messages
@@ -86,7 +86,7 @@ def add_program_off(request):
             except Exception as e:
                 messages.error(request, f"Error processing Excel file: {e}")
 
-            return redirect('add_program')
+            return redirect('add_program_off')
 
         else:
             # Single entry form
@@ -97,9 +97,93 @@ def add_program_off(request):
                 category = CategoryOff.objects.get(id=category_id)
                 ProgramOff.objects.create(name=name, category=category)
                 messages.success(request, f"Program '{name}' added successfully under {category.name}.")
-                return redirect('add_program')
+                return redirect('add_program_off')
             else:
                 messages.error(request, "All fields are required.")
 
-    return render(request, 'add_program.html', {'categories': categories, 'programs': programs})
+    return render(request, 'girls/add_program.html', {'categories': categories, 'programs': programs})
 
+from django.http import JsonResponse
+
+@login_required
+def toggle_is_group(request, program_id):
+    if not (request.user.is_superuser or request.user.role == 'admin'):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+
+    program = get_object_or_404(ProgramOff, id=program_id)
+    program.is_group = not program.is_group
+    program.save()
+
+    return JsonResponse({
+        'success': True,
+        'program_id': program.id,
+        'is_group': program.is_group,
+        'status': 'Group' if program.is_group else 'Individual'
+    })
+
+
+
+@login_required
+def edit_program(request, program_id):
+    if request.user.role != 'admin':
+        return redirect('dashboard_team')
+
+    program = get_object_or_404(ProgramOff, id=program_id)
+    categories = CategoryOff.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name').strip()
+        category_id = request.POST.get('category')
+
+        if name and category_id:
+            category = get_object_or_404(CategoryOff, id=category_id)
+            program.name = name
+            program.category = category
+            program.save()
+            messages.success(request, "Program updated successfully.")
+            return redirect('add_program')
+        else:
+            messages.error(request, "All fields are required.")
+
+    return render(request, 'edit_program.html', {
+        'program': program,
+        'categories': categories
+    })
+
+@login_required
+def delete_program(request, program_id):
+    if request.user.role != 'admin':
+        return redirect('dashboard_team')
+
+    program = get_object_or_404(ProgramOff, id=program_id)
+    program.delete()
+    messages.success(request, "Program deleted successfully.")
+    return redirect('add_program')
+
+@login_required
+def bulk_delete_programs(request):
+    if request.user.role != 'admin':
+        return redirect('dashboard_team')
+
+    if request.method == "POST":
+        program_ids = request.POST.getlist("program_ids")  # get selected IDs
+        if program_ids:
+            ProgramOff.objects.filter(id__in=program_ids).delete()
+            messages.success(request, f"{len(program_ids)} programs deleted successfully.")
+        else:
+            messages.warning(request, "No programs selected.")
+        return redirect('add_program')
+
+    # If GET request → show programs list with checkboxes
+    programs = ProgramOff.objects.all().order_by('name')
+    return render(request, "bulk_delete_programs.html", {"programs": programs})
+
+def program_list(request):
+    programs = ProgramOff.objects.all().order_by('category__name', 'name')
+    categories = CategoryOff.objects.all()
+
+    context = {
+        'programs':programs,
+        'categories': categories
+    }
+    return render(request, 'program_list.html', context)

@@ -82,7 +82,7 @@ from .models import Participation
 class MarkEntryForm(forms.ModelForm):
     class Meta:
         model = Participation
-        fields = ['marks']
+        fields = ['marks','code_letter']
         widgets = {
             'marks': forms.NumberInput(attrs={
                 'class': 'marks-input',
@@ -90,7 +90,10 @@ class MarkEntryForm(forms.ModelForm):
                 'max': '100',
                 'step': '0.01',
                 'placeholder': '0.00'
-            })
+            }),
+            'code_letter': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '...'}),
         }
     
     def clean_marks(self):

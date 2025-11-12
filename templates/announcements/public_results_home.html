@@ -1,0 +1,68 @@
+<!-- ==================== 2. PUBLIC: public_results_home.html ==================== -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">🏆 Competition Results</h1>
+        <p class="lead text-muted">View announced program results</p>
+        <a href="{% url 'public_leaderboard' %}" class="btn btn-primary btn-lg mt-3">
+            📊 View Team Leaderboard
+        </a>
+    </div>
+
+    {% if categories %}
+        {% for category, programs in categories.items %}
+        <div class="mb-5">
+            <h3 class="mb-4 pb-2 border-bottom">{{ category }}</h3>
+            <div class="row">
+                {% for program in programs %}
+                <div class="col-md-2 mb-4">
+                    <div class="card h-100 shadow-sm hover-shadow program-card"
+                        data-href="{% url 'public_program_result' program.id %}"
+                        style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ program.name }}</h5>
+                            {% if program.is_group %}
+                                <span class="badge bg-info">👥 Group</span>
+                            {% else %}
+                                <span class="badge bg-primary">👤 Individual</span>
+                            {% endif %}
+                            <p class="card-text text-muted mt-3">
+                                <small>{{ program.participants_count }} participants</small>
+                            </p>
+                            <div class="text-end">
+                                <span class="text-primary">View Results →</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning text-center py-5">
+            <h4>No results announced yet</h4>
+            <p>Check back later for program results!</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+}
+</style>
+<script>
+document.querySelectorAll('.program-card').forEach(card => {
+    card.addEventListener('click', () => {
+        window.location.href = card.dataset.href;
+    });
+});
+</script>
+
+{% endblock %}

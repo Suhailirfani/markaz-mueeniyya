@@ -1,21 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
+    <!-- Header with Recalculate Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3>📊 Entered Marks Summary</h3>
-        <div class="d-flex align-items-center">
-            <span class="me-2 text-muted">Filter by Program:</span>
-            <form method="get" class="d-flex">
-                <select name="program" class="form-select me-2" onchange="this.form.submit()" style="min-width: 200px;">
-                    <option value="">-- All Programs --</option>
-                    {% for program in programs %}
-                        <option value="{{ program.id }}" {% if program_id == program.id|slugify %}selected{% endif %}>
-                            {{ program.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-outline-primary btn-sm">Go</button>
-            </form>
+        <a href="{% url 'recalculate_rankings' %}" 
+           class="btn btn-warning"
+           onclick="return confirm('This will recalculate all rankings and fix any inconsistencies. Continue?')">
+            🔄 Recalculate All Rankings
+        </a>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <span class="me-3 text-muted fw-bold">Filter by Program:</span>
+                <form method="get" class="d-flex flex-grow-1">
+                    <select name="program" class="form-select me-2" onchange="this.form.submit()" style="max-width: 400px;">
+                        <option value="">-- All Programs --</option>
+                        {% for program in programs %}
+                            <option value="{{ program.id }}" {% if program_id == program.id|slugify %}selected{% endif %}>
+                                {{ program.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary">Go</button>
+                </form>
+            </div>
         </div>
     </div>
     
@@ -26,28 +38,25 @@
         </div>
     {% endif %}
     
+    <!-- Statistics Cards -->
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row text-center">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <h5 class="text-primary">{{ participations.count }}</h5>
                             <small class="text-muted">Total Entries</small>
                         </div>
-                        {% if selected_program %}
-                            <div class="col-md-3">
-                                <h5 class="text-success">{{ participations|length }}</h5>
-                                <small class="text-muted">Program Participants</small>
-                            </div>
-                        {% endif %}
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <h5 class="text-warning">
-                                {{ participations|length|add:"-3" }}
+                                {% with non_top_three=participations|length|add:"-3" %}
+                                    {% if non_top_three < 0 %}0{% else %}{{ non_top_three }}{% endif %}
+                                {% endwith %}
                             </h5>
                             <small class="text-muted">Other Ranks</small>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <h5 class="text-info">
                                 {% with top_three=participations|slice:":3" %}{{ top_three|length }}{% endwith %}
                             </h5>
@@ -59,13 +68,15 @@
         </div>
     </div>
     
+    <!-- Results Table -->
     <div class="table-responsive">
-        <table class="table table-bordered table-hover table-striped">
+        <table class="table table-bordered table-hover">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
                     {% if not selected_program %}
                         <th>Program</th>
+                        <th>Category</th>
                     {% endif %}
                     <th>Chest No</th>
                     <th>Contestant</th>
@@ -78,11 +89,14 @@
             </thead>
             <tbody>
                 {% for p in participations %}
-                    <tr {% if p.rank <= 3 %}class="table-warning"{% endif %}>
+                    <tr {% if p.rank and p.rank <= 3 %}class="table-warning"{% endif %}>
                         <td>{{ forloop.counter }}</td>
                         {% if not selected_program %}
                             <td>
                                 <span class="badge bg-secondary">{{ p.program.name }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ p.program.category.name }}</span>
                             </td>
                         {% endif %}
                         <td><strong>{{ p.contestant.chest_no }}</strong></td>
@@ -91,13 +105,28 @@
                             <span class="badge bg-primary">{{ p.contestant.team.name }}</span>
                         </td>
                         <td>
-                            <span class="badge {% if p.marks >= 80 %}bg-success{% elif p.marks >= 60 %}bg-info{% elif p.marks >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
-                                {{ p.marks }}
-                            </span>
+                            {% if p.marks == 0 %}
+                                <span class="badge bg-danger">0</span>
+                            {% elif p.marks >= 90 %}
+                                <span class="badge bg-success">{{ p.marks }}</span>
+                            {% elif p.marks >= 70 %}
+                                <span class="badge bg-info">{{ p.marks }}</span>
+                            {% elif p.marks >= 60 %}
+                                <span class="badge bg-warning">{{ p.marks }}</span>
+                            {% elif p.marks >= 50 %}
+                                <span class="badge bg-secondary">{{ p.marks }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ p.marks }}</span>
+                            {% endif %}
                         </td>
                         <td>
                             {% if p.grade %}
-                                <span class="badge {% if p.grade == 'A' %}bg-success{% elif p.grade == 'B' %}bg-info{% elif p.grade == 'C' %}bg-warning{% endif %}">
+                                <span class="badge 
+                                    {% if p.grade == 'A+' %}bg-success
+                                    {% elif p.grade == 'A' %}bg-info
+                                    {% elif p.grade == 'B' %}bg-warning
+                                    {% elif p.grade == 'C' %}bg-secondary
+                                    {% endif %}">
                                     {{ p.grade }}
                                 </span>
                             {% else %}
@@ -106,18 +135,20 @@
                         </td>
                         <td>
                             {% if p.rank == 1 %}
-                                <span class="fs-5">🥇</span> 1st
+                                🥇 1st
                             {% elif p.rank == 2 %}
-                                <span class="fs-5">🥈</span> 2nd
+                                🥈 2nd
                             {% elif p.rank == 3 %}
-                                <span class="fs-5">🥉</span> 3rd
-                            {% else %}
+                                🥉 3rd
+                            {% elif p.rank %}
                                 <span class="badge bg-secondary">{{ p.rank }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if p.points_awarded %}
-                                <span class="badge {% if p.rank <= 3 %}bg-success{% else %}bg-secondary{% endif %} fs-6">
+                                <span class="badge bg-success fs-6">
                                     {{ p.total_points }} pts
                                 </span>
                                 <span class="text-success ms-1">✅</span>
@@ -125,7 +156,7 @@
                                     ({{ p.rank_points }}+{{ p.grade_points }})
                                 </small>
                             {% else %}
-                                <span class="text-danger fs-5">❌</span>
+                                <span class="text-muted">0 pts</span>
                                 <small class="text-muted d-block">Not awarded</small>
                             {% endif %}
                         </td>
@@ -133,11 +164,12 @@
                 {% empty %}
                     <tr>
                         <td colspan="{% if selected_program %}8{% else %}9{% endif %}" class="text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-2x mb-2"></i><br>
-                            No marked participations found.
-                            {% if selected_program %}
-                                <br><small>Try selecting a different program or <a href="?">view all programs</a>.</small>
-                            {% endif %}
+                            <div class="py-4">
+                                <h5>No marked participations found.</h5>
+                                {% if selected_program %}
+                                    <p>Try selecting a different program or <a href="?">view all programs</a>.</p>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
@@ -145,33 +177,35 @@
         </table>
     </div>
     
+    <!-- Legend and Points Calculation Info -->
     {% if participations %}
         <div class="mt-4">
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header bg-light">
                             <h6 class="mb-0">🏆 Ranking Legend</h6>
                         </div>
                         <div class="card-body">
-                            <small>
-                                <span class="badge bg-warning me-2">Top 3</span> Highlighted rows<br>
-                                🥇 1st Place (6 rank points) | 🥈 2nd Place (3 rank points) | 🥉 3rd Place (1 rank point)
-                            </small>
+                            <p class="mb-2"><span class="badge bg-warning me-2">Highlighted</span> Top 3 positions</p>
+                            <p class="mb-2">🥇 1st Place (3 rank points)</p>
+                            <p class="mb-2">🥈 2nd Place (2 rank points)</p>
+                            <p class="mb-0">🥉 3rd Place (1 rank point)</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header bg-light">
                             <h6 class="mb-0">🎯 Points Calculation</h6>
                         </div>
                         <div class="card-body">
-                            <small>
-                                <strong>Total Points = Rank Points + Grade Points</strong><br>
-                                <span class="text-primary">Rank:</span> 1st=6pts, 2nd=3pts, 3rd=1pt, Others=0pts<br>
-                                <span class="text-success">Grade:</span> A=6pts, B=3pts, C=1pt
-                            </small>
+                            <p class="mb-2"><strong>Total Points = Rank Points + Grade Points</strong></p>
+                            <p class="mb-2"><span class="text-primary fw-bold">Individual Programs:</span></p>
+                            <p class="mb-1">Rank: 1st=3pts, 2nd=2pts, 3rd=1pt</p>
+                            <p class="mb-2">Grade: A+=6pts, A=5pts, B=3pts, C=1pt</p>
+                            <p class="mb-2"><span class="text-success fw-bold">Group Programs:</span></p>
+                            <p class="mb-0">Rank: Multiplied by contestant count</p>
                         </div>
                     </div>
                 </div>

@@ -53,6 +53,7 @@ urlpatterns = [
     path('download_participants_list/', views.download_participation_list_pdf, name='download_participation_list'),
     path('add_marks/', views.add_marks, name='add_marks'),
     path('undo-points/<int:participation_id>/', views.undo_points, name='undo_points'),
+    path('recalculate-rankings/', views.recalculate_all_rankings, name='recalculate_rankings'),
     path('view_results/', views.view_results, name='view_results'),
     path('team-leaderboard/', views.team_leaderboard, name='team_leaderboard'),
     path('team-detail/<int:team_id>/', views.team_detail, name='team_detail'),
@@ -85,6 +86,7 @@ urlpatterns = [
     
     # Leaderboard URLs
     path('leaderboard/', views.team_leaderboard2, name='team_leaderboard2'),
+    path('leaderboard_cat/', views.leaderboard_cat, name='leaderboard_cat'),
     
     # Utility URLs
     path('recalculate-points/', views.recalculate_points_view, name='recalculate_points'),
@@ -101,6 +103,8 @@ urlpatterns = [
     path('contestant-programs/', views.contestant_programs, name='contestant_programs'),
     path('contestant-programs-pdf/', views.contestant_programs_pdf_xml, name='contestant_programs_pdf'),
     path('enter-marks-sum-cat/', views.enter_marks_summary_cat, name='enter_marks_summary_cat'),
+    path('program_result_pdf/<int:program_id>/', views.program_result_pdf, name='program_result_pdf'),
+
 
     
 
