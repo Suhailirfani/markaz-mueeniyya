@@ -3,10 +3,6 @@
 <div class="container mt-5">
     <h2>Edit Program</h2>
 
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">

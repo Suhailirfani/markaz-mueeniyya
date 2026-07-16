@@ -232,5 +232,18 @@
             <a href="{% url 'login' %}" class="btn btn-outline-primary">Sign In</a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.style.display = 'none', 500);
+                });
+            }, 5000);
+        });
+    </script>
 </body>
 </html>

@@ -576,6 +576,41 @@
     </a>
   </div>
 
+  <!-- Settings Card -->
+  <div class="card mb-4 border-warning shadow-sm">
+    <div class="card-header bg-warning text-dark d-flex align-items-center py-3">
+      <i class="fas fa-cogs me-2"></i>
+      <span class="fw-bold">Group Point System Configuration</span>
+    </div>
+    <div class="card-body p-4">
+      <form method="post" action="{% url 'update_settings' %}">
+        {% csrf_token %}
+        <div class="row align-items-center">
+          <div class="col-lg-8 col-md-7">
+            <div class="mb-2">
+              <label class="form-label fw-bold text-dark mb-2">Select Group Point System:</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input border-secondary" type="radio" name="group_point_system" id="system_member_count" value="member_count" {% if group_point_system == 'member_count' %}checked{% endif %}>
+              <label class="form-check-label text-dark cursor-pointer" for="system_member_count">
+                <strong>Participant Count Multiplier</strong> <span class="text-muted">(Current: Points = Rank Multiplier × Member Count)</span>
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input border-secondary" type="radio" name="group_point_system" id="system_fixed" value="fixed" {% if group_point_system == 'fixed' %}checked{% endif %}>
+              <label class="form-check-label text-dark cursor-pointer" for="system_fixed">
+                <strong>Fixed Rank Points</strong> <span class="text-muted">(1st Rank: 10, 2nd Rank: 6, 3rd Rank: 3)</span>
+              </label>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-5 text-md-end mt-3 mt-md-0">
+            <button type="submit" class="btn btn-warning fw-bold text-dark px-4 py-2 shadow-sm"><i class="fas fa-save me-2"></i>Save Configuration</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="dashboard-grid">
     <!-- Operations Card -->
     <div class="card operations-card">

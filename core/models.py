@@ -1,6 +1,7 @@
 from datetime import timezone
 from django.utils import timezone
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
 # ----------------- Custom User -----------------
@@ -141,8 +142,6 @@ class GroupParticipation(models.Model):
                     f"and {self.program.max_participants}"
                 )
 
-   
-
 # ----------------- Team Points -----------------
 class TeamPoints(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
@@ -176,3 +175,19 @@ class PointsConfig(models.Model):
         """Get or create the points configuration"""
         config, created = cls.objects.get_or_create(id=1)
         return config
+
+# ----------------- System Setting -----------------
+class SystemSetting(models.Model):
+    key = models.CharField(max_length=100, unique=True)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+    @classmethod
+    def get_setting(cls, key, default=None):
+        try:
+            return cls.objects.get(key=key).value
+        except cls.DoesNotExist:
+            return default
+

@@ -18,7 +18,7 @@
     </div>
 
     {% for pr in program_results %}
-        <h4 class="mt-4">
+        <h4 class="mt-4" id="heading-{{ pr.program.id }}">
             {{ pr.program.result_number }}️ - {{ pr.program.name }}
             {% if pr.is_group %}
                 <span class="badge bg-primary">Group ({{ pr.members_count }} members)</span>
@@ -27,7 +27,7 @@
             {% endif %}
         </h4>
 
-        <table class="table table-bordered table-hover mt-2 results-table" data-category="{{ pr.program.category.name }}">
+        <table class="table table-bordered table-hover mt-2 results-table" id="table-{{ pr.program.id }}" data-category="{{ pr.program.category.name }}" data-program="{{ pr.program.name|lower }}">
             <thead class="table-dark">
                 <tr>
                     <th>Rank</th>
@@ -109,7 +109,7 @@
             </tfoot>
         </table>
 
-        <div class="text-end mt-2">
+        <div class="text-end mt-2" id="pdf-{{ pr.program.id }}">
             <a href="{% url 'program_result_pdf' pr.program.id %}" 
             class="btn btn-sm btn-outline-danger">
             📄 Download {{ pr.program.name }} PDF
@@ -127,34 +127,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const tables = document.querySelectorAll('.results-table');
 
     function filterResults() {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = searchInput.value.toLowerCase().trim();
         const selectedCategory = categoryFilter.value;
 
         tables.forEach(table => {
+            const programId = table.id.replace('table-', '');
+            const heading = document.getElementById('heading-' + programId);
+            const pdfDiv = document.getElementById('pdf-' + programId);
+            
             const tableCategory = table.dataset.category;
+            const blockProgram = table.dataset.program || '';
             const rows = table.querySelectorAll('tbody tr');
-            let hasVisibleRows = false;
-
+            
+            // Check Category filter
             if (selectedCategory && tableCategory !== selectedCategory) {
-                table.closest('div').previousElementSibling.style.display = 'none';
-                table.closest('table').style.display = 'none';
+                if (heading) heading.style.display = 'none';
+                table.style.display = 'none';
+                if (pdfDiv) pdfDiv.style.display = 'none';
                 return;
             }
 
+            // Check if search matches program name
+            const matchesProgram = blockProgram.includes(searchTerm);
+            let hasVisibleRows = false;
+
             rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const matches = text.includes(searchTerm);
-                row.style.display = matches ? '' : 'none';
-                if (matches) hasVisibleRows = true;
+                const emptyCell = row.querySelector('td.text-center');
+                if (emptyCell && row.cells.length === 1) return;
+
+                if (matchesProgram) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    const text = row.textContent.toLowerCase();
+                    const matches = text.includes(searchTerm);
+                    row.style.display = matches ? '' : 'none';
+                    if (matches) hasVisibleRows = true;
+                }
             });
 
-            const heading = table.closest('div').previousElementSibling;
             if (hasVisibleRows) {
-                heading.style.display = '';
+                if (heading) heading.style.display = '';
                 table.style.display = '';
+                if (pdfDiv) pdfDiv.style.display = '';
             } else {
-                heading.style.display = 'none';
+                if (heading) heading.style.display = 'none';
                 table.style.display = 'none';
+                if (pdfDiv) pdfDiv.style.display = 'none';
             }
         });
     }

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Premium Leaderboard design */
+    .leaderboard-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .leaderboard-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #0d6efd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .podium-section {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin: 3rem 0;
+        padding-bottom: 1rem;
+    }
+    
+    .podium-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .podium-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 1st Place */
+    .podium-card.first {
+        order: 2;
+        width: 220px;
+        height: 260px;
+        background: linear-gradient(180deg, #ffffff 0%, #fffdf0 100%);
+        border: 2px solid #ffd700;
+        z-index: 3;
+    }
+    .podium-card.first .medal-badge {
+        background: #ffd700;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    /* 2nd Place */
+    .podium-card.second {
+        order: 1;
+        width: 180px;
+        height: 220px;
+        background: linear-gradient(180deg, #ffffff 0%, #f6f8fa 100%);
+        border: 1px solid #c0c0c0;
+        z-index: 2;
+    }
+    .podium-card.second .medal-badge {
+        background: #c0c0c0;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(192, 192, 192, 0.3);
+    }
+    
+    /* 3rd Place */
+    .podium-card.third {
+        order: 3;
+        width: 180px;
+        height: 200px;
+        background: linear-gradient(180deg, #ffffff 0%, #faf6f0 100%);
+        border: 1px solid #cd7f32;
+        z-index: 1;
+    }
+    .podium-card.third .medal-badge {
+        background: #cd7f32;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(205, 127, 50, 0.3);
+    }
+    
+    .medal-badge {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .team-name {
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .team-points {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--primary-blue);
+    }
+    
+    /* Table Rows styling */
+    .leaderboard-row {
+        transition: all 0.2s ease;
+    }
+    .leaderboard-row:hover {
+        background-color: #f8fafc !important;
+        transform: translateX(3px);
+    }
+    
+    /* Confetti fallback styles */
+    .confetti {
+        position: fixed;
+        top: -10px;
+        z-index: 9999;
+        pointer-events: none;
+        animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+        to {
+            transform: translateY(105vh) rotate(360deg);
+        }
+    }
+</style>
+
+<div class="leaderboard-container">
+    <h2 class="leaderboard-title">🏆 Public Leaderboard Standings</h2>
+    <p class="text-center text-muted small mb-4">
+        Announced Results compiled: <strong class="text-dark">{{ announced_programs_count }} programs</strong>
+    </p>
+
+    <div class="text-center mb-4">
+        <a href="{% url 'public_results_home' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="fas fa-bullhorn me-1"></i>View Program Results
+        </a>
+    </div>
+
+    <!-- Podium for Top 3 -->
+    {% if top_three %}
+        <div class="podium-section">
+            {% for t in top_three %}
+                <div class="podium-card {% if t.position == 1 %}first{% elif t.position == 2 %}second{% elif t.position == 3 %}third{% endif %}">
+                    <div class="medal-badge">
+                        {{ t.position }}
+                    </div>
+                    <div class="team-name">{{ t.team.name|upper }}</div>
+                    <div class="team-points">{{ t.points }} <span class="fs-6 text-muted">Pts</span></div>
+                    <div class="small text-muted mt-2">
+                        Winners: {{ t.winners_count }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Standings Table -->
+    <div class="card shadow border-0 rounded-3 overflow-hidden mt-4">
+        <div class="card-header bg-light py-3 border-bottom">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-list-ol me-2 text-primary"></i>Leaderboard Standings</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light border-bottom">
+                        <tr>
+                            <th class="fw-bold ps-4" style="width: 100px;">Rank</th>
+                            <th class="fw-bold">Team Name</th>
+                            <th class="fw-bold text-center">Total Matches</th>
+                            <th class="fw-bold text-center">Winners</th>
+                            <th class="fw-bold text-end pe-4" style="width: 150px;">Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                            <tr class="leaderboard-row">
+                                <td class="ps-4 fw-bold text-secondary">
+                                    {% if team.position == 1 %}🥇{% elif team.position == 2 %}🥈{% elif team.position == 3 %}🥉{% else %}{{ team.position }}{% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark fs-5">{{ team.team.name|upper }}</span>
+                                </td>
+                                <td class="text-center text-muted fw-semibold">{{ team.total_participations }}</td>
+                                <td class="text-center"><span class="badge bg-success-subtle text-success px-2.5 py-1">{{ team.winners_count }}</span></td>
+                                <td class="text-end pe-4 fw-black text-primary fs-4">{{ team.points }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">No team rankings recorded.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sparkles and Confetti Scripts -->
+<script>
+    function createConfetti() {
+        const colors = ['#ffd700', '#c0c0c0', '#cd7f32', '#0d6efd', '#28a745', '#dc3545'];
+        const confettiCount = 50;
+
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            confetti.style.animationDelay = (Math.random() * 1.5) + 's';
+            confetti.style.width = (Math.random() * 8 + 4) + 'px';
+            confetti.style.height = (Math.random() * 8 + 4) + 'px';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 4000);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        createConfetti();
+    });
+</script>
+{% endblock %}

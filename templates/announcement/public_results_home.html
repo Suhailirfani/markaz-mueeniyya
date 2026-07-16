@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .program-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .program-card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(3, 48, 103, 0.12) !important;
+        border-color: rgba(3, 48, 103, 0.2);
+    }
+    .category-header {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #1e293b;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    .category-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 4px;
+        background: var(--primary-blue);
+        border-radius: 2px;
+    }
+</style>
+
+<div class="container-fluid px-0">
+    <!-- Header banner -->
+    <div class="text-center py-5 mb-5 rounded-3 bg-light position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, rgba(3, 48, 103, 0.05) 0%, rgba(13, 110, 253, 0.05) 100%);">
+        <div class="position-relative z-index-1">
+            <h1 class="fw-black text-dark mb-2"><i class="fas fa-bullhorn text-primary me-2"></i>Announced Results</h1>
+            <p class="text-muted fs-5 mb-4">View official announced results for completed competition programs</p>
+            <a href="{% url 'public_leaderboard' %}" class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold shadow-sm">
+                <i class="fas fa-chart-line me-2"></i>View Team Standings
+            </a>
+        </div>
+    </div>
+
+    {% if categories %}
+        {% for category, programs in categories.items %}
+            <div class="mb-5">
+                <h3 class="category-header mb-4">{{ category|upper }}</h3>
+                <div class="row g-4">
+                    {% for program in programs %}
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm program-card-hover program-card cursor-pointer rounded-3" 
+                                 data-href="{% url 'public_program_result' program.id %}" 
+                                 style="cursor: pointer;">
+                                <div class="card-body d-flex flex-column p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <span class="badge {% if program.is_group %}bg-info-subtle text-info-emphasis{% else %}bg-primary-subtle text-primary-emphasis{% endif %} px-2.5 py-1.5 fw-bold">
+                                            {% if program.is_group %}<i class="fas fa-users me-1"></i>Group{% else %}<i class="fas fa-user me-1"></i>Individual{% endif %}
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title fw-bold text-dark mb-3 flex-grow-1" style="line-height: 1.4;">{{ program.name|upper }}</h5>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                        <span class="text-muted small"><i class="fas fa-user-check me-1"></i>{{ program.participants_count }} contestants</span>
+                                        <span class="text-primary fw-semibold small">Results <i class="fas fa-arrow-right ms-1"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-body py-5 text-center">
+                <div class="text-muted fs-1 mb-3"><i class="fas fa-bullhorn"></i></div>
+                <h4 class="fw-bold text-dark">No results announced yet</h4>
+                <p class="text-muted mb-0">Check back soon! Results are updated dynamically as soon as they are announced.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.querySelectorAll('.program-card').forEach(card => {
+        card.addEventListener('click', () => {
+            window.location.href = card.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

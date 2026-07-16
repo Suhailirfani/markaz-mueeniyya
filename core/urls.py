@@ -59,7 +59,7 @@ urlpatterns = [
     path('team-detail/<int:team_id>/', views.team_detail, name='team_detail'),
     path('team_marks_summary/', views.team_marks_summary, name='team_marks_summary'),
     path('download/pdf/', views.download_participants_pdf, name='download_participants_pdf'),
-    path('api/programs-by-category/', views.get_programs_by_category, name='programs_by_category'), 
+    path('api/programs-by-category/', views.get_programs_by_category, name='programs_by_category'),
     path('participants/', views.participant_list, name='participant_list'),
     path('participants/category/', views.participants_by_category, name='participants_by_category'),
     path('participants/team/', views.participants_by_team, name='participants_by_team'),
@@ -71,7 +71,6 @@ urlpatterns = [
     path('all-green-room-lists/', views.all_green_room_lists, name='all_green_room_lists'),
     path('download/all-valuation-forms/', views.download_all_valuation_forms_pdf, name='download_all_valuation_forms_pdf'),
     path('download/all-green-room-lists', views.download_all_green_room_pdf, name='download_all_green_room_pdf'),
-
     path('chest_number/', views.chest_number, name='chest_number'),
     # path('download-chest-cards/', views.download_chest_cards_pdf, name='download_chest_cards_pdf'),
     path('download/chest-cards/', views.download_chest_cards_pdf, name='download_chest_cards'),
@@ -104,9 +103,11 @@ urlpatterns = [
     path('contestant-programs-pdf/', views.contestant_programs_pdf_xml, name='contestant_programs_pdf'),
     path('enter-marks-sum-cat/', views.enter_marks_summary_cat, name='enter_marks_summary_cat'),
     path('program_result_pdf/<int:program_id>/', views.program_result_pdf, name='program_result_pdf'),
+    path('update-settings/', views.update_settings, name='update_settings'),
 
-
-    
-
-
-]
+    #added on 23-09-2025
+    path('assigned-programs/pdf/', views.assigned_programs_pdf, name='assigned_programs_pdf'),
+    path('edit-programs/<int:contestant_id>/', views.edit_assigned_programs, name='edit_assigned_programs'),
+    path('assigned-programs/delete/<int:participation_id>/', views.delete_assigned_program, name='delete_assigned_program'),
+    path('program_list/', views.program_list, name='program_list'),
+]
