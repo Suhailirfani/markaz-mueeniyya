@@ -1,38 +1,80 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label for="name" class="form-label">Category Name</label>
-        <input type="text" name="name" id="name" class="form-control" placeholder="e.g., Senior">
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h3 class="fw-bold mb-0 text-slate-800"><i class="fas fa-folder me-2 text-primary"></i>Manage Categories</h3>
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
     </div>
 
-    <div class="mb-3">
-        <label for="type" class="form-label">Category Type</label>
-        <select name="competition_type" id="competition_type" class="form-select">
-            <option value="MAIN">Main Campus</option>
-            <option value="OFF">Off Campus</option>
-        </select>
+    <div class="row g-4">
+        <!-- Add Category Form Card -->
+        <div class="col-lg-5">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-plus-circle me-2 text-primary"></i>Add New Category</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-semibold">Category Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-folder-open text-muted"></i></span>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="e.g., Senior" required>
+                            </div>
+                            <div class="form-text text-muted">Categories help group contestants and programs (e.g. Apex, Vertex).</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="fas fa-check-circle me-2"></i>Create Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing Categories List Card -->
+        <div class="col-lg-7">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-list-ul me-2 text-primary"></i>Existing Categories ({{ categories|length }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush rounded-bottom">
+                        {% for category in categories %}
+                            <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center bg-hover-light transition-all">
+                                <div>
+                                    <span class="fw-bold text-dark fs-6">{{ category.name|upper }}</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="Edit Category">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                       onclick="return confirm('Are you sure you want to delete this category?');" title="Delete Category">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-5">
+                                <div class="text-muted fs-2 mb-2"><i class="fas fa-folder-open"></i></div>
+                                <p class="text-muted mb-0">No categories created yet.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary">Add Category</button>
-</form>
-
-<hr class="my-4">
-
-<h4>Existing Categories</h4>
-<ul class="list-group">
-    {% for category in categories %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ category.name }} <span class="badge bg-secondary">{{category.get_competition_type_display}}</span>
-            <span>
-                <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-danger"
-                   onclick="return confirm('Are you sure you want to delete this category?');">Delete</a>
-            </span>
-        </li>
-    {% empty %}
-        <li class="list-group-item text-muted">No categories yet.</li>
-    {% endfor %}
-</ul>
+<style>
+    .bg-hover-light:hover {
+        background-color: #f8fafc;
+        transform: translateX(3px);
+    }
+    .transition-all {
+        transition: all 0.2s ease-in-out;
+    }
+</style>
 {% endblock %}

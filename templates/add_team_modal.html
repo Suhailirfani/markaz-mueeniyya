@@ -1,450 +1,82 @@
-
+{% extends 'base.html' %}
 {% load static %}
 
-<!-- Bootstrap 5.1+ CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h3 class="fw-bold mb-0 text-slate-800"><i class="fas fa-users me-2 text-primary"></i>Manage Teams</h3>
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+    </div>
 
-<!-- Bootstrap 5.1+ JS Bundle (includes Popper.js) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<div class="container mt-4">
-    <h3 class="mb-4">Manage Teams</h3>
-
-    <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addTeamModal">
-        + Add Team
-    </button>
-
-    <!-- Team Modal -->
-    <div class="modal fade" id="addTeamModal" tabindex="-1" aria-labelledby="addTeamModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addTeamModalLabel">Add Team</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+    <div class="row g-4">
+        <!-- Add Team Form Card -->
+        <div class="col-lg-5">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-plus-circle me-2 text-primary"></i>Create New Team</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation">
+                        {% csrf_token %}
                         <div class="mb-3">
-                            <label class="form-label">Select User</label>
+                            <label for="id_user" class="form-label fw-semibold">Select User / Leader</label>
                             {{ form.user }}
+                            <div class="form-text text-muted">Assign a user account as the leader for this team.</div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Team Name</label>
+                        <div class="mb-4">
+                            <label for="id_name" class="form-label fw-semibold">Team Name</label>
                             {{ form.name }}
                         </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="fas fa-check-circle me-2"></i>Save Team</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing Teams List Card -->
+        <div class="col-lg-7">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-list-ul me-2 text-primary"></i>Existing Teams ({{ teams|length }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush rounded-bottom">
+                        {% for team in teams %}
+                            <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center bg-hover-light transition-all">
+                                <div>
+                                    <span class="fw-bold text-dark fs-5">{{ team.name|upper }}</span>
+                                    <div class="text-muted small mt-1"><i class="fas fa-user-shield me-1"></i>Leader: {{ team.user.username }}</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'edit_team' team.id %}" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="Edit Team">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <a href="{% url 'delete_team' team.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                       onclick="return confirm('Are you sure you want to delete this team?');" title="Delete Team">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-5">
+                                <div class="text-muted fs-2 mb-2"><i class="fas fa-users-slash"></i></div>
+                                <p class="text-muted mb-0">No teams registered yet.</p>
+                            </div>
+                        {% endfor %}
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save Team</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Existing Teams List -->
-    <ul class="list-group">
-        {% for team in teams %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>{{ team.name }}</strong> ({{ team.user.username }})
-                </div>
-                <div>
-                    <a href="{% url 'edit_team' team.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="{% url 'delete_team' team.id %}" class="btn btn-sm btn-danger" 
-                       onclick="return confirm('Are you sure to delete this team?')">Delete</a>
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item">No teams found.</li>
-        {% endfor %}
-    </ul>
 </div>
-<hr>
-  <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-buttons">
-            {% if request.user.role == 'admin' %}
-                <a href="{% url 'dashboard_admin' %}" class="nav-btn admin">
-                    Admin Dashboard
-                </a>
-            {% elif request.user.role == 'team' %}
-                <a href="{% url 'dashboard_team' %}" class="nav-btn team">
-                    Team Dashboard
-                </a>
-            {% endif %}
-            <a href="{% url 'results' %}" class="nav-btn results">
-                Results
-            </a>
-            <a href="{% url 'leaderboard' %}" class="nav-btn leaderboard">
-                Leaderboard
-            </a>
-        </div>
-    </div>
 
-    <style>
-        :root {
-            --primary-blue: #033067;
-            --primary-light: rgba(3, 48, 103, 0.1);
-            --accent-blue: #0d6efd;
-            --success-green: #28a745;
-            --warning-orange: #fd7e14;
-            --danger-red: #dc3545;
-            --light-gray: #f8f9fa;
-            --dark-gray: #6c757d;
-            --border-radius: 12px;
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.08);
-            --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--gradient-bg);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Header Styles */
-       .app-header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-    box-shadow: var(--shadow-medium);
-    margin: 1rem;
-    padding: 1.5rem;
-    text-align: center;
-    top: 1rem;
-    z-index: 1000;
-    
-    /* Add smooth transition */
-    transition: transform 0.3s ease-in-out;
-}
-
-
-        .app-title {
-            color: var(--primary-blue);
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .app-subtitle {
-            color: var(--dark-gray);
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            font-weight: 400;
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem 2rem 1rem;
-        }
-
-        .content-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-light);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            min-height: 400px;
-        }
-
-        /* Navigation Bar */
-        .bottom-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin: 0 1rem 1rem 1rem;
-            bottom: 1rem;
-            z-index: 1000;
-        }
-
-        .nav-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .nav-btn {
-            background: var(--light-gray);
-            border: 2px solid transparent;
-            color: var(--primary-blue);
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            min-height: 50px;
-            font-size: 0.95rem;
-            white-space: nowrap;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-            color: var(--primary-blue);
-        }
-
-        .nav-btn.admin {
-            background: linear-gradient(135deg, var(--primary-blue), #2c5aa0);
-            color: white;
-        }
-
-        .nav-btn.admin:hover {
-            color: white;
-            background: linear-gradient(135deg, #2c5aa0, var(--primary-blue));
-        }
-
-        .nav-btn.team {
-            background: linear-gradient(135deg, var(--warning-orange), #e67e00);
-            color: white;
-        }
-
-        .nav-btn.team:hover {
-            color: white;
-            background: linear-gradient(135deg, #e67e00, var(--warning-orange));
-        }
-
-        .nav-btn.results {
-            background: linear-gradient(135deg, var(--accent-blue), #0056b3);
-            color: white;
-        }
-
-        .nav-btn.results:hover {
-            color: white;
-            background: linear-gradient(135deg, #0056b3, var(--accent-blue));
-        }
-
-        .nav-btn.leaderboard {
-            background: linear-gradient(135deg, var(--success-green), #1e7e34);
-            color: white;
-        }
-
-        .nav-btn.leaderboard:hover {
-            color: white;
-            background: linear-gradient(135deg, #1e7e34, var(--success-green));
-        }
-
-        /* Button Icons */
-        .nav-btn::before {
-            font-size: 1.1rem;
-        }
-
-        .nav-btn.admin::before {
-            content: "🎛️";
-        }
-
-        .nav-btn.team::before {
-            content: "👥";
-        }
-
-        .nav-btn.results::before {
-            content: "🏆";
-        }
-
-        .nav-btn.leaderboard::before {
-            content: "📊";
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            body {
-                font-size: 16px; /* Prevents iOS zoom */
-            }
-
-            .app-header {
-                margin: 0.5rem;
-                padding: 1rem;
-                top: 0.5rem;
-            }
-
-            .app-title {
-                font-size: 1.5rem;
-            }
-
-            .app-subtitle {
-                font-size: 0.9rem;
-                margin-top: 0.25rem;
-            }
-
-            .main-container {
-                padding: 0 0.5rem 1rem 0.5rem;
-            }
-
-            .content-wrapper {
-                padding: 1.5rem;
-                margin-bottom: 1rem;
-                min-height: 300px;
-            }
-
-            .bottom-nav {
-                margin: 0 0.5rem 0.5rem 0.5rem;
-                padding: 1rem;
-                bottom: 0.5rem;
-            }
-
-            .nav-buttons {
-                gap: 0.5rem;
-            }
-
-            .nav-btn {
-                flex: 1 1 auto;
-                min-width: 120px;
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-                justify-content: center;
-            }
-
-            /* Stack navigation on very small screens */
-            @media (max-width: 480px) {
-                .nav-buttons {
-                    flex-direction: column;
-                    width: 100%;
-                }
-
-                .nav-btn {
-                    width: 100%;
-                    min-width: unset;
-                    justify-content: center;
-                }
-            }
-        }
-
-        /* Tablet Optimizations */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .app-header {
-                margin: 1rem;
-                padding: 1.5rem;
-            }
-
-            .main-container {
-                padding: 0 1rem 2rem 1rem;
-            }
-
-            .nav-btn {
-                min-width: 140px;
-            }
-        }
-
-        /* Desktop Optimizations */
-        @media (min-width: 1025px) {
-            .app-title {
-                font-size: 2.2rem;
-            }
-
-            .content-wrapper {
-                padding: 2.5rem;
-            }
-
-            .bottom-nav {
-                position: relative;
-                margin: 0 0 2rem 0;
-                border-radius: var(--border-radius);
-                bottom: unset;
-            }
-
-            .nav-btn {
-                min-width: 160px;
-                font-size: 1rem;
-                padding: 0.85rem 1.75rem;
-            }
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Focus States for Accessibility */
-        .nav-btn:focus {
-            outline: 3px solid rgba(13, 110, 253, 0.5);
-            outline-offset: 2px;
-        }
-
-        /* Reduced Motion Support */
-        @media (prefers-reduced-motion: reduce) {
-            .nav-btn {
-                transition: none;
-            }
-
-            .nav-btn:hover {
-                transform: none;
-            }
-
-            .loading {
-                animation: none;
-            }
-        }
-
-        /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            }
-
-            .app-header,
-            .content-wrapper,
-            .bottom-nav {
-                background: rgba(45, 55, 72, 0.95);
-                color: white;
-            }
-
-            .app-title {
-                color: #90cdf4;
-            }
-
-            .app-subtitle {
-                color: #a0aec0;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .app-header,
-            .bottom-nav {
-                display: none;
-            }
-
-            .content-wrapper {
-                box-shadow: none;
-                background: white;
-            }
-        }
-
-        /* High DPI Display Support */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .app-title {
-                text-rendering: optimizeLegibility;
-            }
-        }
-    </style>
+<style>
+    .bg-hover-light:hover {
+        background-color: #f8fafc;
+        transform: translateX(3px);
+    }
+    .transition-all {
+        transition: all 0.2s ease-in-out;
+    }
+</style>
+{% endblock %}

@@ -9,18 +9,6 @@
             <label for="name" class="form-label">New Category Name</label>
             <input type="text" name="name" id="name" class="form-control" value="{{ category.name }}">
         </div>
-
-        <div class="mb-3">
-            <label for="type" class="form-label">Category Type</label>
-            <select name="type" id="type" class="form-select">
-                {% for value, label in competition_types %}
-                    <option value="{{ value }}" {% if category.competition_type == value %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
         <button type="submit" class="btn btn-success">Update</button>
         <a href="{% url 'add_category' %}" class="btn btn-secondary">Cancel</a>
     </form>

@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#033067">
-    <title>Competition App</title>
-    <link rel="icon" type="image/png" href="{% static 'kubba.png' %}">
+    <title>Meelad Fest Portal</title>
+    <link rel="icon" type="image/png" href="{% static    'FDL.png' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
+
     <style>
         :root {
             --primary-blue: #033067;
@@ -20,10 +21,9 @@
             --danger-red: #dc3545;
             --light-gray: #f8f9fa;
             --dark-gray: #6c757d;
-            --border-radius: 12px;
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.08);
-            --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --border-radius: 16px;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.1);
+            --shadow-medium: 0 8px 30px rgba(0,0,0,0.2);
         }
 
         * {
@@ -31,284 +31,201 @@
         }
 
         body {
-            background: var(--gradient-bg);
+            background: radial-gradient(at 0% 0%, #033067 0px, transparent 50%), 
+                        radial-gradient(at 50% 0%, #1a2035 0px, transparent 50%), 
+                        radial-gradient(at 100% 0%, #0f172a 0px, transparent 50%), 
+                        #0b0f19;
+            background-attachment: fixed;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
             margin: 0;
             padding: 0;
+            padding-bottom: 75px; /* For mobile fixed tab bar */
         }
 
-        /* Header Styles */
-       .app-header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-    box-shadow: var(--shadow-medium);
-    margin: 1rem;
-    padding: 1.5rem;
-    text-align: center;
-    top: 1rem;
-    z-index: 1000;
-    
-    /* Add smooth transition */
-    transition: transform 0.3s ease-in-out;
-}
+        /* Header Navbar */
+        .app-header {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
 
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
 
         .app-title {
-            color: var(--primary-blue);
-            font-size: 2rem;
-            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 800;
             margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .app-subtitle {
-            color: var(--dark-gray);
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            font-weight: 400;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin: 0;
+            font-weight: 500;
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem 2rem 1rem;
-        }
-
-        .content-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-light);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            min-height: 400px;
-        }
-
-        /* Navigation Bar */
-        .bottom-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin: 0 1rem 1rem 1rem;
-            bottom: 1rem;
-            z-index: 1000;
-        }
-
-        .nav-buttons {
+        /* Desktop Header Nav Links */
+        .desktop-nav {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            justify-content: center;
             align-items: center;
+            gap: 1rem;
         }
 
-        .nav-btn {
-            background: var(--light-gray);
-            border: 2px solid transparent;
-            color: var(--primary-blue);
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
+        .nav-link-btn {
+            color: #cbd5e1;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            min-height: 50px;
-            font-size: 0.95rem;
-            white-space: nowrap;
+            border: 1px solid transparent;
         }
 
-        .nav-btn:hover {
-            transform: translateY(-2px);
+        .nav-link-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .nav-link-btn.active {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        /* Main Container Wrapper */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow-medium);
-            color: var(--primary-blue);
+            padding: 2.5rem;
+            min-height: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
 
-        .nav-btn.admin {
-            background: linear-gradient(135deg, var(--primary-blue), #2c5aa0);
-            color: white;
+        /* Mobile Bottom Tab Bar */
+        .mobile-tab-bar {
+            display: none; /* Hidden on desktop */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 0.6rem 1rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .nav-btn.admin:hover {
-            color: white;
-            background: linear-gradient(135deg, #2c5aa0, var(--primary-blue));
+        .tab-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
-        .nav-btn.team {
-            background: linear-gradient(135deg, var(--warning-orange), #e67e00);
-            color: white;
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
-        .nav-btn.team:hover {
-            color: white;
-            background: linear-gradient(135deg, #e67e00, var(--warning-orange));
+        .tab-item i {
+            font-size: 1.2rem;
         }
 
-        .nav-btn.results {
-            background: linear-gradient(135deg, var(--accent-blue), #0056b3);
-            color: white;
+        .tab-item.active {
+            color: #38bdf8;
         }
 
-        .nav-btn.results:hover {
-            color: white;
-            background: linear-gradient(135deg, #0056b3, var(--accent-blue));
-        }
-
-        .nav-btn.leaderboard {
-            background: linear-gradient(135deg, var(--success-green), #1e7e34);
-            color: white;
-        }
-        .nav-btn.leaderboard2 {
-            background: linear-gradient(135deg, var(--success-green), #4e0242);
-            color: white;
-        }
-
-        .nav-btn.leaderboard:hover {
-            color: white;
-            background: linear-gradient(135deg, #1e7e34, var(--success-green));
-        }
-
-        /* Button Icons */
-        .nav-btn::before {
-            font-size: 1.1rem;
-        }
-
-        .nav-btn.admin::before {
-            content: "🎛️";
-        }
-
-        .nav-btn.team::before {
-            content: "👥";
-        }
-
-        .nav-btn.results::before {
-            content: "🏆";
-        }
-
-        .nav-btn.leaderboard::before {
-            content: "📊";
-        }
-
-        /* Mobile Optimizations */
+        /* Responsive Layouts */
         @media (max-width: 768px) {
             body {
-                font-size: 16px; /* Prevents iOS zoom */
+                padding-bottom: 85px; /* Room for fixed mobile tab bar */
             }
-
             .app-header {
-                margin: 0.5rem;
-                padding: 1rem;
-                top: 0.5rem;
+                padding: 0.75rem 1rem;
             }
-
-            .app-title {
-                font-size: 1.5rem;
+            .desktop-nav {
+                display: none; /* Hide header links on mobile */
             }
-
-            .app-subtitle {
-                font-size: 0.9rem;
-                margin-top: 0.25rem;
+            .mobile-tab-bar {
+                display: block; /* Show bottom bar on mobile */
             }
-
             .main-container {
-                padding: 0 0.5rem 1rem 0.5rem;
+                margin: 1rem auto;
+                padding: 0 0.75rem;
             }
-
             .content-wrapper {
-                padding: 1.5rem;
-                margin-bottom: 1rem;
-                min-height: 300px;
-            }
-
-            .bottom-nav {
-                margin: 0 0.5rem 0.5rem 0.5rem;
-                padding: 1rem;
-                bottom: 0.5rem;
-            }
-
-            .nav-buttons {
-                gap: 0.5rem;
-            }
-
-            .nav-btn {
-                flex: 1 1 auto;
-                min-width: 120px;
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-                justify-content: center;
-            }
-
-            /* Stack navigation on very small screens */
-            @media (max-width: 480px) {
-                .nav-buttons {
-                    flex-direction: column;
-                    width: 100%;
-                }
-
-                .nav-btn {
-                    width: 100%;
-                    min-width: unset;
-                    justify-content: center;
-                }
+                padding: 1.5rem 1rem;
+                min-height: 400px;
+                border-radius: 12px;
             }
         }
-
-        /* Tablet Optimizations */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .app-header {
-                margin: 1rem;
-                padding: 1.5rem;
-            }
-
-            .main-container {
-                padding: 0 1rem 2rem 1rem;
-            }
-
-            .nav-btn {
-                min-width: 140px;
-            }
-        }
-
-        /* Desktop Optimizations */
-        @media (min-width: 1025px) {
-            .app-title {
-                font-size: 2.2rem;
-            }
-
-            .content-wrapper {
-                padding: 2.5rem;
-            }
-
-            .bottom-nav {
-                position: relative;
-                margin: 0 0 2rem 0;
-                border-radius: var(--border-radius);
-                bottom: unset;
-            }
-
-            .nav-btn {
-                min-width: 160px;
-                font-size: 1rem;
-                padding: 0.85rem 1.75rem;
+        
+        @media (min-width: 769px) {
+            body {
+                padding-bottom: 0;
             }
         }
 
         /* Loading Animation */
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0,0,0,.1);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: var(--primary-blue);
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -317,65 +234,22 @@
         }
 
         /* Focus States for Accessibility */
-        .nav-btn:focus {
-            outline: 3px solid rgba(13, 110, 253, 0.5);
+        .nav-link-btn:focus, .tab-item:focus {
+            outline: 2px solid #38bdf8;
             outline-offset: 2px;
-        }
-
-        /* Reduced Motion Support */
-        @media (prefers-reduced-motion: reduce) {
-            .nav-btn {
-                transition: none;
-            }
-
-            .nav-btn:hover {
-                transform: none;
-            }
-
-            .loading {
-                animation: none;
-            }
-        }
-
-        /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            }
-
-            .app-header,
-            .content-wrapper,
-            .bottom-nav {
-                background: rgba(45, 55, 72, 0.95);
-                color: white;
-            }
-
-            .app-title {
-                color: #90cdf4;
-            }
-
-            .app-subtitle {
-                color: #a0aec0;
-            }
         }
 
         /* Print Styles */
         @media print {
             .app-header,
-            .bottom-nav {
+            .mobile-tab-bar {
                 display: none;
             }
 
             .content-wrapper {
                 box-shadow: none;
                 background: white;
-            }
-        }
-
-        /* High DPI Display Support */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .app-title {
-                text-rendering: optimizeLegibility;
+                border: none;
             }
         }
     </style>
@@ -383,25 +257,57 @@
 <body>
     <!-- App Header -->
     <div class="app-header">
-        <h1 class="app-title">🎉 Competition Management System</h1>
-        <p class="app-subtitle">Manage competitions, track results, and celebrate achievements</p>
-        <div class="top-nav">
-        {% if request.user.role == 'admin' and request.resolver_match.url_name != 'dashboard_admin' %}
-                <a href="{% url 'dashboard_admin' %}" class="nav-btn admin">
-                    Admin Dashboard
+        <div class="brand-section">
+            <img src="{% static 'FDL.png' %}" class="brand-logo" alt="Logo">
+            <div class="brand-text">
+                <h1 class="app-title">Meelad Fest Portal</h1>
+                <p class="app-subtitle">Hayathul Islam Madrasa Vettikkattiri</p>
+            </div>
+        </div>
+        
+        <!-- Desktop Navigation Links -->
+        <div class="desktop-nav">
+            {% if user.is_authenticated %}
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'dashboard_admin' %}" class="nav-link-btn {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                {% elif user.role == 'team' %}
+                    <a href="{% url 'dashboard_team' %}" class="nav-link-btn {% if request.resolver_match.url_name == 'dashboard_team' %}active{% endif %}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'view_results' %}" class="nav-link-btn {% if request.resolver_match.url_name == 'view_results' %}active{% endif %}">
+                <i class="fas fa-trophy"></i> Results
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-link-btn {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i> Leaderboard
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="nav-link-btn text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
-            {% elif request.user.role == 'team' and request.resolver_match.url_name != 'dashboard_team' %}
-                <a href="{% url 'dashboard_team' %}" class="nav-btn team">
-                    Team Dashboard
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link-btn text-success">
+                    <i class="fas fa-sign-in-alt"></i> Login
                 </a>
             {% endif %}
-
-            </div>
+        </div>
     </div>
-    
 
     <!-- Main Content -->
     <div class="main-container">
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="content-wrapper">
             {% block content %}
             <div class="text-center">
@@ -412,50 +318,80 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-buttons">
-            {% if request.user.role == 'admin' %}
-                <a href="{% url 'dashboard_admin' %}" class="nav-btn admin">
-                    Admin Dashboard
+    <!-- Mobile Bottom Tab Bar -->
+    <div class="mobile-tab-bar">
+        <div class="tab-items">
+            {% if user.is_authenticated %}
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'dashboard_admin' %}" class="tab-item {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                {% elif user.role == 'team' %}
+                    <a href="{% url 'dashboard_team' %}" class="tab-item {% if request.resolver_match.url_name == 'dashboard_team' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                {% endif %}
+            {% endif %}
+            
+            <a href="{% url 'view_results' %}" class="tab-item {% if request.resolver_match.url_name == 'view_results' %}active{% endif %}">
+                <i class="fas fa-trophy"></i>
+                <span>Results</span>
+            </a>
+            
+            <a href="{% url 'leaderboard' %}" class="tab-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i>
+                <span>Leaderboard</span>
+            </a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="tab-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
                 </a>
-            {% elif request.user.role == 'team' %}
-                <a href="{% url 'dashboard_team' %}" class="nav-btn team">
-                    Team Dashboard
+            {% else %}
+                <a href="{% url 'login' %}" class="tab-item text-success">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
                 </a>
             {% endif %}
-            <a href="{% url 'results' %}" class="nav-btn results">
-                Results
-            </a>
-            <a href="{% url 'leaderboard' %}" class="nav-btn leaderboard">
-                Leaderboard (Admin)
-            </a>
-            <a href="{% url 'public_results_home' %}" class="nav-btn leaderboard2">
-                Leaderboard (Public)
-            </a>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Mobile Touch Enhancement -->
     <script>
         // Improve touch responsiveness on mobile
         document.addEventListener('DOMContentLoaded', function() {
-            const navButtons = document.querySelectorAll('.nav-btn');
-            
+            const navButtons = document.querySelectorAll('.nav-link-btn, .tab-item');
+
             navButtons.forEach(button => {
                 button.addEventListener('touchstart', function() {
                     this.style.transform = 'scale(0.95)';
                 });
-                
+
                 button.addEventListener('touchend', function() {
                     setTimeout(() => {
                         this.style.transform = '';
                     }, 150);
                 });
             });
+
+            // Auto-hide messages after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.messages-container .alert');
+                alerts.forEach(alert => {
+                    const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    if (bsAlert) {
+                        bsAlert.close();
+                    } else {
+                        alert.style.display = 'none';
+                    }
+                });
+            }, 5000);
         });
 
         // Add loading state to navigation
@@ -463,7 +399,7 @@
             const originalText = button.innerHTML;
             button.innerHTML = '<span class="loading"></span>';
             button.style.pointerEvents = 'none';
-            
+
             setTimeout(() => {
                 button.innerHTML = originalText;
                 button.style.pointerEvents = 'auto';

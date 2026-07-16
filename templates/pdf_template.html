@@ -18,19 +18,37 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #333;
             padding-bottom: 10px;
+        }
+        
+        .institution {
+            font-size: 11px;
+            font-weight: bold;
+            color: #033067;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+        
+        .event-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d63384;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
         
         .header h1 {
             margin: 0;
             color: #333;
-            font-size: 18px;
+            font-size: 16px;
+            text-transform: uppercase;
         }
         
         .header .subtitle {
             color: #666;
-            font-size: 14px;
+            font-size: 12px;
             margin-top: 5px;
         }
         
@@ -103,6 +121,8 @@
 </head>
 <body>
     <div class="header">
+        <div class="institution">HAYATHUL ISLAM MADRASA VETTIKKATTIRI</div>
+        <div class="event-title">MEELAD FEST</div>
         <h1>Participants List</h1>
         {% if is_team_user %}
             <div class="subtitle">{{ team_name }} Team</div>

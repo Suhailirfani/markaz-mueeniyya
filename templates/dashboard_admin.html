@@ -2,184 +2,171 @@
 
 {% block content %}
 <style>
-  :root {
-    --primary-blue: rgba(3, 48, 103, 0.95);
-    --primary-light: rgba(3, 48, 103, 0.1);
-    --accent-blue: #0d6efd;
-    --success-green: #28a745;
-    --danger-red: #dc3545;
-    --warning-orange: #fd7e14;
-    --light-gray: #f8f9fa;
-    --border-radius: 12px;
-    --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
-    --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-  .mobile-header {
-    background: var(--primary-blue);
-    color: white;
-    padding: 1rem 0.5rem;
-    top: 0;
-    z-index: 1000;
-    box-shadow: var(--shadow-medium);
-  }
-
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .logo-icon {
-    font-size: 1.5rem;
-  }
-
-  .app-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 0;
-  }
-  .admin-title{
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 0;
-    color: white;
-  }
-
-  .header-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .header-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    min-width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-
-  .header-btn:hover {
-    background: rgba(255,255,255,0.3);
-    color: white;
-  }
-
-  .main-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0.5rem;
-  }
-
-  .dashboard-grid {
+  /* Stats Bar */
+  .stats-bar {
     display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
-  .card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-light);
-    overflow: hidden;
+  .stat-item-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .stat-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
-  }
-
-  .card-header {
-    background: var(--primary-blue);
-    color: white;
-    padding: 1rem;
-    font-weight: 600;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
   }
 
-  .card-body {
-    padding: 1rem;
+  .stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    border-color: #cbd5e1;
   }
 
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  /* Operations Grid */
   .operations-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 0.75rem;
   }
 
   .operation-btn {
-    background: linear-gradient(135deg, var(--accent-blue), #0056b3);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 500;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    border-radius: 12px;
+    padding: 1.25rem 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     text-align: center;
     text-decoration: none;
     transition: all 0.2s ease;
-    min-height: 65px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    gap: 0.5rem;
+    min-height: 95px;
+  }
+
+  .operation-btn i {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    transition: transform 0.2s ease;
   }
 
   .operation-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    color: white;
+    background: var(--primary-blue);
+    color: #ffffff;
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(3, 48, 103, 0.25);
   }
 
-  .operation-btn:active {
-    transform: translateY(0);
+  .operation-btn:hover i {
+    color: #ffffff;
+    transform: scale(1.15);
   }
 
+  /* Dashboard Grid Layout */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Cards Styling */
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
+  .card-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-header i {
+    color: var(--primary-blue);
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  /* Lists Container */
   .list-container {
-    max-height: 300px;
+    max-height: 320px;
     overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  /* Custom scrollbar */
+  .list-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  .list-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+  .list-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
   }
 
   .list-item {
-    background: var(--light-gray);
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
     border-radius: 8px;
-    border-left: 4px solid var(--accent-blue);
+    border-left: 4px solid var(--primary-blue);
     transition: all 0.2s ease;
+    border-top: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
   }
 
   .list-item:hover {
-    background: #e9ecef;
-    transform: translateX(2px);
+    background: #f1f5f9;
+    transform: translateX(3px);
   }
 
   .list-item:last-child {
@@ -187,27 +174,38 @@
   }
 
   .list-item-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.25rem;
-    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.95rem;
   }
 
   .list-item-subtitle {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.25rem;
   }
 
+  /* Pending Approvals */
   .pending-user {
-    background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,193,7,0.05));
-    border: 1px solid rgba(255,193,7,0.3);
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 0.75rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .pending-user:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(251, 191, 36, 0.08);
+  }
+
+  .pending-user:last-child {
+    margin-bottom: 0;
   }
 
   .pending-user-info {
@@ -215,394 +213,234 @@
   }
 
   .user-name {
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: #78350f;
+    font-size: 0.95rem;
   }
 
   .user-email {
-    color: #666;
-    font-size: 0.95rem;
+    color: #b45309;
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
   }
 
   .approve-btn {
-    background: var(--success-green);
+    background: #10b981;
     color: white;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-decoration: none;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
     white-space: nowrap;
   }
 
   .approve-btn:hover {
-    background: #218838;
+    background: #059669;
     color: white;
-    transform: scale(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
   }
 
   .empty-state {
     text-align: center;
-    padding: 2rem;
-    color: #666;
+    padding: 2.5rem 1.5rem;
+    color: #64748b;
   }
 
   .empty-state-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
   }
 
+  /* Bottom Actions Bar */
   .bottom-actions {
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding: 1rem;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    margin: 1rem -0.5rem -0.5rem -0.5rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.75rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
   }
 
   .primary-action {
     background: linear-gradient(135deg, var(--accent-blue), #0056b3);
     color: white;
     border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 700;
     text-decoration: none;
-    text-align: center;
     transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
   }
 
   .primary-action:hover {
+    background: linear-gradient(135deg, #0056b3, var(--accent-blue));
     color: white;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.35);
   }
 
-  .secondary-action {
-    background: var(--light-gray);
-    color: var(--accent-blue);
-    border: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.2s ease;
-  }
-
-  .secondary-action:hover {
-    background: #e9ecef;
-    color: var(--accent-blue);
-  }
-
-  .logout-btn {
-    background: var(--danger-red);
-    color: white;
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    text-align: center;
-    min-width: 80px;
-  }
-
-  .logout-btn:hover {
-    background: #c82333;
-    color: white;
-  }
-
-  .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .stat-item {
-    background: white;
-    padding: 0.75rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: var(--shadow-light);
-  }
-
-  .stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--accent-blue);
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: #666;
-    margin-top: 0.25rem;
-  }
-
-  /* Mobile Optimizations */
+  /* Mobile adjustments */
   @media (max-width: 768px) {
-    body {
-      font-size: 16px; /* Prevent iOS zoom on form inputs */
-    }
-
-    .app-title {
-      font-size: 1.4rem;
-    }
-
-    .main-container {
-      padding: 0.25rem;
-    }
-
-    .dashboard-grid {
-      grid-template-columns: 1fr;
-      gap: 0.75rem;
-    }
-
-    .operations-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.6rem;
-    }
-
-    .operation-btn {
-      padding: 0.8rem 0.5rem;
-      font-size: 0.95rem;
-      min-height: 65px;
-      font-weight: 600;
-    }
-
-    .card-header {
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .card-body {
-      padding: 1rem;
-      font-size: 1rem;
-    }
-
-    .list-item {
-      padding: 0.8rem;
-    }
-
-    .list-item-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .list-item-subtitle {
-      font-size: 0.95rem;
-      margin-top: 0.25rem;
-    }
-
-    .user-name {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .user-email {
-      font-size: 0.95rem;
-    }
-
-    .approve-btn {
-      font-size: 1rem;
-      padding: 0.7rem 1.3rem;
-      font-weight: 600;
-    }
-
-    .pending-user {
-      flex-direction: column;
-      align-items: stretch;
-      text-align: center;
-      gap: 0.75rem;
-      padding: 1.2rem;
-    }
-
-    .bottom-actions {
-      grid-template-columns: 1fr;
-      gap: 0.6rem;
-      padding: 1rem;
-    }
-
-    .primary-action, .secondary-action, .logout-btn {
-      font-size: 1rem;
-      padding: 0.9rem 1rem;
-      font-weight: 600;
-    }
-
     .stats-bar {
-      grid-template-columns: repeat(2, 1fr);
-      margin-bottom: 1.2rem;
-    }
-
-    .stat-item {
-      padding: 1rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
     }
 
     .stat-number {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
     }
 
     .stat-label {
-      font-size: 0.85rem;
-      margin-top: 0.4rem;
-    }
-
-    .header-btn {
-      font-size: 1rem;
-      min-width: 44px;
-      height: 44px;
-    }
-
-    .empty-state {
-      padding: 2.5rem;
-      font-size: 1rem;
-    }
-
-    .empty-state-icon {
-      font-size: 3.5rem;
-    }
-  }
-
-  /* Tablet Optimizations */
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .dashboard-grid {
-      grid-template-columns: 1fr;
+      font-size: 0.75rem;
     }
 
     .operations-grid {
       grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
     }
 
-    .bottom-actions {
-      grid-template-columns: 1fr 1fr auto;
-    }
-  }
-
-  /* Desktop Optimizations */
-  @media (min-width: 1025px) {
-    .main-container {
-      padding: 1rem;
+    .operation-btn {
+      min-height: 85px;
+      padding: 0.75rem 0.25rem;
     }
 
     .dashboard-grid {
-      grid-template-columns: 1fr 1fr;
-      align-items: start;
+      grid-template-columns: 1fr;
+      gap: 1rem;
     }
-
-    .operations-card {
-      grid-column: 1 / -1;
-    }
-
-    .operations-grid {
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .bottom-actions {
-      position: relative;
-      margin: 1rem 0 0 0;
-      grid-template-columns: 1fr 1fr auto;
-      box-shadow: var(--shadow-light);
-      border-radius: var(--border-radius);
-    }
-
-    .mobile-header {
-      position: relative;
-    }
-  }
-
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    body {
-      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-    }
-  }
-
-  /* Accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      transition: none !important;
-      transform: none !important;
-    }
-  }
-
-  /* Focus styles for keyboard navigation */
-  .operation-btn:focus,
-  .header-btn:focus,
-  .approve-btn:focus {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
   }
 </style>
 
-<!-- Mobile Header -->
-<div class="mobile-header">
-  <div class="header-content">
-    <div class="logo-section">
-      <span class="logo-icon">🎛️</span>
-      <h1 class="admin-title">Admin Dashboard</h1>
-      <a href="{% url 'girls_page' %}" class="btn btn-primary">Go To Off Campus</a>
-    </div>
-    <div class="header-actions">
-      <a href="{% url 'view_users' %}" class="header-btn" title="Users">👥</a>
-      <a href="{% url 'logout' %}" class="header-btn logout-btn" title="Logout">Logout</a>
-    </div>
+<div class="container-fluid px-0">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h3 class="fw-bold mb-0 text-slate-800"><i class="fas fa-sliders-h me-2 text-primary"></i>Admin Dashboard</h3>
+    <a href="{% url 'view_users' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3"><i class="fas fa-users-cog me-1"></i>Manage Users</a>
   </div>
-</div>
 
-<div class="main-container">
   <!-- Stats Bar -->
   <div class="stats-bar">
     <div class="stat-item">
       <div class="stat-number">{{ programs|length }}</div>
       <div class="stat-label">Programs</div>
     </div>
-    <div class="stat-item">
-      <div class="stat-number">{{ teams|length }}</div>
-      <div class="stat-label">Teams</div>
-    </div>
-    <a href="{% url 'pending_users' %}" >
-    <div class="stat-item">
-      <div class="stat-number">{{ pending_users|length }}</div>
-      <div class="stat-label">Pending</div>
-    </div>
+    <a href="{% url 'add_team' %}" class="stat-item-link">
+      <div class="stat-item">
+        <div class="stat-number">{{ teams|length }}</div>
+        <div class="stat-label">Teams</div>
+      </div>
+    </a>
+    <a href="{% url 'pending_users' %}" class="stat-item-link">
+      <div class="stat-item position-relative">
+        <div class="stat-number">{{ pending_users|length }}</div>
+        <div class="stat-label">Pending</div>
+        {% if pending_users %}
+          <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+        {% endif %}
+      </div>
     </a>
   </div>
 
-  <!-- Settings Card -->
-  <div class="card mb-4" style="grid-column: 1 / -1; margin-bottom: 1.5rem;">
+  <!-- Operations Card -->
+  <div class="card mb-4">
     <div class="card-header">
-      <span>⚙️</span>
-      <span style="font-weight: bold;">Group Point System Configuration</span>
+      <i class="fas fa-bolt"></i>
+      <span>Quick Actions</span>
     </div>
-    <div class="card-body" style="padding: 1.5rem;">
+    <div class="card-body">
+      <div class="operations-grid">
+        <a href="{% url 'add_category' %}" class="operation-btn">
+          <i class="fas fa-folder-plus"></i>
+          Add Category
+        </a>
+        <a href="{% url 'add_program' %}" class="operation-btn">
+          <i class="fas fa-file-signature"></i>
+          Add Program
+        </a>
+        <a href="{% url 'participant_list' %}" class="operation-btn">
+          <i class="fas fa-user-friends"></i>
+          Participants
+        </a>
+        <a href="{% url 'add_team' %}" class="operation-btn">
+          <i class="fas fa-users"></i>
+          Add Team
+        </a>
+        <a href="{% url 'assign_programs' %}" class="operation-btn">
+          <i class="fas fa-tasks"></i>
+          Assign Program
+        </a>
+        <a href="{% url 'assigned_programs' %}" class="operation-btn">
+          <i class="fas fa-clipboard-list"></i>
+          Assignments
+        </a>
+        <a href="{% url 'add_marks' %}" class="operation-btn">
+          <i class="fas fa-plus-circle"></i>
+          Add Marks
+        </a>
+        <a href="{% url 'view_results' %}" class="operation-btn">
+          <i class="fas fa-trophy"></i>
+          View Results
+        </a>
+        <a href="{% url 'enter_marks_summary' %}" class="operation-btn">
+          <i class="fas fa-poll-h"></i>
+          Marks Summary
+        </a>
+        <a href="{% url 'team_leaderboard' %}" class="operation-btn">
+          <i class="fas fa-medal"></i>
+          Leaderboard
+        </a>
+        <a href="{% url 'contestant_points_list' %}" class="operation-btn">
+          <i class="fas fa-crown"></i>
+          Toppers
+        </a>
+        <a href="{% url 'contestant_programs' %}" class="operation-btn">
+          <i class="fas fa-id-card"></i>
+          Contestant Progs
+        </a>
+        <a href="{% url 'manage_announcements' %}" class="operation-btn">
+          <i class="fas fa-bullhorn"></i>
+          Announcements
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Card -->
+  <div class="card mb-4 border-warning shadow-sm">
+    <div class="card-header bg-warning text-dark d-flex align-items-center py-3">
+      <i class="fas fa-cogs me-2"></i>
+      <span class="fw-bold">Group Point System Configuration</span>
+    </div>
+    <div class="card-body p-4">
       <form method="post" action="{% url 'update_settings' %}">
         {% csrf_token %}
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-          <div>
-            <div style="margin-bottom: 0.75rem; font-weight: bold; color: #333;">Select Group Point System:</div>
-            <div style="margin-bottom: 0.5rem;">
-              <input type="radio" name="group_point_system" id="system_member_count" value="member_count" {% if group_point_system == 'member_count' %}checked{% endif %} style="cursor: pointer; margin-right: 0.5rem;">
-              <label for="system_member_count" style="cursor: pointer; color: #555;">
-                <strong>Participant Count Multiplier</strong> (Points = Rank Multiplier × Member Count)
+        <div class="row align-items-center">
+          <div class="col-lg-8 col-md-7">
+            <div class="mb-2">
+              <label class="form-label fw-bold text-dark mb-2">Select Group Point System:</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input border-secondary" type="radio" name="group_point_system" id="system_member_count" value="member_count" {% if group_point_system == 'member_count' %}checked{% endif %}>
+              <label class="form-check-label text-dark cursor-pointer" for="system_member_count">
+                <strong>Participant Count Multiplier</strong> <span class="text-muted">(Current: Points = Rank Multiplier × Member Count)</span>
               </label>
             </div>
-            <div>
-              <input type="radio" name="group_point_system" id="system_fixed" value="fixed" {% if group_point_system == 'fixed' %}checked{% endif %} style="cursor: pointer; margin-right: 0.5rem;">
-              <label for="system_fixed" style="cursor: pointer; color: #555;">
-                <strong>Fixed Rank Points</strong> (1st Rank: 10, 2nd Rank: 6, 3rd Rank: 3)
+            <div class="form-check">
+              <input class="form-check-input border-secondary" type="radio" name="group_point_system" id="system_fixed" value="fixed" {% if group_point_system == 'fixed' %}checked{% endif %}>
+              <label class="form-check-label text-dark cursor-pointer" for="system_fixed">
+                <strong>Fixed Rank Points</strong> <span class="text-muted">(1st Rank: 10, 2nd Rank: 6, 3rd Rank: 3)</span>
               </label>
             </div>
           </div>
-          <div>
-            <button type="submit" class="btn btn-primary" style="background: var(--accent-blue); color: white; border: none; padding: 0.6rem 1.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">Save Configuration</button>
+          <div class="col-lg-4 col-md-5 text-md-end mt-3 mt-md-0">
+            <button type="submit" class="btn btn-warning fw-bold text-dark px-4 py-2 shadow-sm"><i class="fas fa-save me-2"></i>Save Configuration</button>
           </div>
         </div>
       </form>
@@ -610,54 +448,22 @@
   </div>
 
   <div class="dashboard-grid">
-    <!-- Operations Card -->
-    <div class="card operations-card">
-      <div class="card-header">
-        <span>📋</span>
-        <span>Quick Actions</span>
-      </div>
-      <div class="card-body">
-        <div class="operations-grid">
-          <a href="{% url 'add_category' %}" class="operation-btn">Add Category</a>
-          <a href="{% url 'add_program' %}" class="operation-btn">Add Program</a>
-          <a href="{% url 'add_group_program' %}" class="operation-btn">Add Group Program</a>
-          <a href="{% url 'participant_list' %}" class="operation-btn">Participants</a>
-          <a href="{% url 'add_team' %}" class="operation-btn">Add Team</a>
-          <a href="{% url 'assign_programs' %}" class="operation-btn">Assign Program</a>
-          <a href="{% url 'assign_group_program' %}" class="operation-btn">Assign Group Programme</a>
-          <a href="{% url 'assigned_programs' %}" class="operation-btn">Assigned Programs</a>
-          <a href="{% url 'add_marks' %}" class="operation-btn">Add Marks</a>
-          <a href="{% url 'view_results' %}" class="operation-btn">View Results</a>
-          <a href="{% url 'enter_marks_summary' %}" class="operation-btn">Marks Summary</a>
-          <a href="{% url 'team_leaderboard' %}" class="operation-btn">Leaderboard</a>
-          <a href="{% url 'create_group_participation' %}" class="operation-btn">Group program assign</a>
-          <a href="{% url 'group_participation_list' %}" class="operation-btn">gplist</a>
-          <a href="{% url 'contestant_points_list' %}" class="operation-btn" >individual</a>
-          <a href="{% url 'results_page' %}" class="operation-btn" >Results</a>
-          <a href="{% url 'contestant_programs' %}" class="operation-btn">Contestant programs</a>
-          <a href="{% url 'enter_marks_summary_cat' %}" class="operation-btn">Category wise</a>
-          <a href="{% url 'manage_announcements' %}" class="operation-btn">📢 Manage Announcements</a>
-          <a href="{% url 'leaderboard_cat' %}" class="operation-btn">Leaderboard category wise</a>
-        </div>
-      </div>
-    </div>
-
     <!-- Programs Card -->
     <div class="card">
       <div class="card-header">
-        <span>📋</span>
+        <i class="fas fa-calendar-alt"></i>
         <span>Programs ({{ programs|length }})</span>
       </div>
       <div class="card-body">
         <div class="list-container">
           {% for program in programs %}
           <div class="list-item">
-            <div class="list-item-title">{{ program.name }}</div>
-            <div class="list-item-subtitle">{{ program.category.name }} • {{ program.stage }} • {{ program.schedule_time }}</div>
+            <div class="list-item-title">{{ program.name|upper }}</div>
+            <div class="list-item-subtitle">{{ program.category.name|upper }} • {{ program.stage|upper }} • {{ program.schedule_time }}</div>
           </div>
           {% empty %}
           <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-icon"><i class="fas fa-calendar-times"></i></div>
             <div>No programs available</div>
           </div>
           {% endfor %}
@@ -667,19 +473,24 @@
 
     <!-- Teams Card -->
     <div class="card">
-      <div class="card-header">
-        <span>👥</span>
-        <span>Teams ({{ teams|length }})</span>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <i class="fas fa-shield-alt"></i>
+          <span>Teams ({{ teams|length }})</span>
+        </div>
+        <a href="{% url 'add_team' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+          <i class="fas fa-plus-circle me-1"></i>Add Team
+        </a>
       </div>
       <div class="card-body">
         <div class="list-container">
           {% for team in teams %}
           <div class="list-item">
-            <div class="list-item-title">{{ team.name }}</div>
+            <div class="list-item-title">{{ team.name|upper }}</div>
           </div>
           {% empty %}
           <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
+            <div class="empty-state-icon"><i class="fas fa-users-slash"></i></div>
             <div>No teams created yet</div>
           </div>
           {% endfor %}
@@ -690,7 +501,7 @@
     <!-- Pending Users Card -->
     <div class="card">
       <div class="card-header">
-        <span>⏳</span>
+        <i class="fas fa-user-clock"></i>
         <span>Pending Approvals ({{ pending_users|length }})</span>
       </div>
       <div class="card-body">
@@ -700,12 +511,11 @@
             <div class="user-name">{{ user.username }}</div>
             <div class="user-email">{{ user.email }}</div>
           </div>
-          <a href="{% url 'approve_user' user.id %}" class="approve-btn">Approve ✅</a>
-          <a href="{% url 'disapprove_user' user.id %}" class="btn btn-danger btn-sm">Disapprove</a>
+          <a href="{% url 'approve_user' user.id %}" class="approve-btn"><i class="fas fa-check me-1"></i>Approve</a>
         </div>
         {% empty %}
         <div class="empty-state">
-          <div class="empty-state-icon">🎉</div>
+          <div class="empty-state-icon"><i class="fas fa-smile text-success"></i></div>
           <div>No users pending approval</div>
         </div>
         {% endfor %}
@@ -715,10 +525,7 @@
 
   <!-- Bottom Actions -->
   <div class="bottom-actions">
-    <a href="{% url 'enter_marks_summary' %}" class="primary-action">POINT TABLE</a>
-    <a href="{% url 'view_users' %}" class="secondary-action d-none d-md-block">Manage Users</a>
-    <a href="{% url 'logout' %}" class="logout-btn d-none d-md-block">Logout</a>
+    <a href="{% url 'enter_marks_summary' %}" class="primary-action"><i class="fas fa-table me-2"></i>POINT TABLE</a>
   </div>
 </div>
-
 {% endblock %}
