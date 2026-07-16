@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
-from ..models import Program, Category, Team, Contestant, Participation
+from ..models import Program, Category, Team, Contestant, Participation, GroupParticipation
 from ..forms import ContestantForm, TeamForm
 
 def face_page(request):
@@ -644,3 +645,105 @@ def all_green_room_lists(request):
 
 def list_page(request):
     return render(request, 'list_page.html')
+
+def get_programs_for_contestant(request):
+    contestant_id = request.GET.get('contestant_id')
+    category_id = request.GET.get('category_id')
+
+    if not contestant_id or not category_id:
+        return JsonResponse({'programs': []})
+
+    # Get programs of selected category not already assigned
+    assigned_programs = Participation.objects.filter(
+        contestant_id=contestant_id
+    ).values_list('program_id', flat=True)
+
+    programs = Program.objects.filter(
+        category_id=category_id
+    ).exclude(id__in=assigned_programs)
+
+    return JsonResponse({
+        'programs': list(programs.values('id', 'name'))
+    })
+
+def get_contestants(request):
+    team_id = request.GET.get('team_id')
+    category_id = request.GET.get('category_id')
+
+    contestants = Contestant.objects.filter(
+        team_id=team_id, category_id=category_id
+    ).values('id', 'name')
+
+    return JsonResponse({'contestants': list(contestants)})
+
+@login_required
+def add_group_program(request):
+    if not (request.user.is_superuser or request.user.role == 'admin'):
+        return redirect('dashboard_team')
+
+    categories = Category.objects.all()
+    programs = Program.objects.filter(is_group=True).order_by('-id')
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        category_id = request.POST.get('category')
+
+        if name and category_id:
+            category = get_object_or_404(Category, id=category_id)
+            Program.objects.create(name=name, category=category, is_group=True)
+            messages.success(request, f"Group Program '{name}' added successfully.")
+            return redirect('add_group_program')
+        else:
+            messages.error(request, "All fields are required.")
+
+    return render(request, 'add_group_program.html', {'categories': categories, 'programs': programs})
+
+@login_required
+def assign_group_program(request):
+    if not (request.user.is_superuser or request.user.role == 'admin'):
+        return redirect('dashboard_team')
+
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        program_id = request.POST.get('program')
+        participant_ids = request.POST.getlist('participants')
+
+        if len(participant_ids) > 5:
+            messages.error(request, "You can select a maximum of 5 participants.")
+            return redirect('assign_group_program')
+
+        program = get_object_or_404(Program, id=program_id)
+        group_participation = GroupParticipation.objects.create(program=program)
+        group_participation.contestants.set(participant_ids) 
+
+        messages.success(request, "Participants assigned successfully.")
+        return redirect('assign_group_program')
+
+    return render(request, 'assign_group_program.html', {'categories': categories})
+
+@login_required
+@csrf_exempt
+def get_group_programs(request):
+    category_id = request.POST.get('category_id')
+    programs = Program.objects.filter(category_id=category_id, is_group=True)
+    program_list = [{"id": p.id, "name": p.name} for p in programs]
+    return JsonResponse({"programs": program_list})
+
+@login_required
+@csrf_exempt
+def get_participants_by_category(request):
+    category_id = request.POST.get('category_id')
+    contestants = Contestant.objects.filter(category_id=category_id)
+    contestant_list = [{"id": c.id, "name": c.name} for c in contestants]
+    return JsonResponse({"contestants": contestant_list})
+
+def chest_number(request):
+    contestant = Contestant.objects.all()
+
+    context = {
+        'contestant' : contestant
+    }
+    return render(request, 'chest_number.html', context)
+
+

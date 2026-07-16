@@ -149,3 +149,12 @@ def edit_user(request, user_id):
         return redirect('view_users')
 
     return render(request, 'edit_user.html', {'user': user})
+
+@login_required
+@user_passes_test(is_admin)
+def disapprove_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.is_approved = False
+    user.save()
+    return redirect('pending_users')
+

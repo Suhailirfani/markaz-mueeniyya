@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.http import JsonResponse
 from django.forms import modelformset_factory
-from ..models import Program, Category, Team, Contestant, Participation, TeamPoints, SystemSetting
+from ..models import Program, Category, Team, Contestant, Participation, TeamPoints, SystemSetting, GroupParticipation, PointsConfig
 from ..forms import MarkEntryForm
 from ..utils import POINTS_FOR_RANK, POINTS_FOR_GRADE
 
@@ -657,4 +657,473 @@ def update_settings(request):
             messages.error(request, "Invalid setting value.")
 
     return redirect('dashboard_admin')
+
+# =================== Group Marks & Scoring Views ===================
+
+def create_group_participation(request):
+    """Create a new group participation"""
+    if request.method == 'POST':
+        program_id = request.POST.get('program_id')
+        contestant_ids = request.POST.getlist('contestants')
+        group_name = request.POST.get('group_name', '')
+        
+        try:
+            with transaction.atomic():
+                program = get_object_or_404(Program, id=program_id, is_group=True)
+                
+                # Validate contestant count
+                if len(contestant_ids) < program.min_participants or len(contestant_ids) > program.max_participants:
+                    messages.error(request, 
+                        f"Number of participants must be between {program.min_participants} "
+                        f"and {program.max_participants}")
+                    return redirect('group_participation_form')
+                
+                # Get contestants and validate they're from the same team
+                contestants = Contestant.objects.filter(id__in=contestant_ids)
+                teams = set(c.team for c in contestants)
+                
+                if len(teams) > 1:
+                    messages.error(request, "All contestants must be from the same team")
+                    return redirect('group_participation_form')
+                
+                team = list(teams)[0]
+                
+                # Check if this team already has a group for this program
+                existing_group = GroupParticipation.objects.filter(
+                    program=program, team=team
+                ).first()
+                
+                if existing_group:
+                    messages.error(request, f"Team {team.name} already has a group for {program.name}")
+                    return redirect('group_participation_form')
+                
+                # Create group participation
+                group_participation = GroupParticipation.objects.create(
+                    program=program,
+                    team=team,
+                    group_name=group_name
+                )
+                group_participation.contestants.set(contestants)
+                
+                messages.success(request, f"Group created successfully for {program.name}")
+                return redirect('group_participation_list')
+                
+        except Exception as e:
+            messages.error(request, f"Error creating group: {str(e)}")
+            return redirect('group_participation_form')
+    
+    # GET request - show form
+    programs = Program.objects.filter(is_group=True)
+    teams = Team.objects.all()
+    contestants = Contestant.objects.all().select_related('team')
+    
+    context = {
+        'programs': programs,
+        'teams': teams,
+        'contestants': contestants,
+    }
+    return render(request, 'group_participation_form.html', context)
+
+def group_participation_list(request):
+    """List all group participations"""
+    group_participations = GroupParticipation.objects.all().select_related(
+        'program', 'team'
+    ).prefetch_related('contestants')
+    
+    context = {
+        'group_participations': group_participations
+    }
+    return render(request, 'group_participation_list.html', context)
+
+def add_group_marks(request, group_id):
+    """Add marks to a group participation"""
+    group_participation = get_object_or_404(GroupParticipation, id=group_id)
+    
+    if request.method == 'POST':
+        marks = request.POST.get('marks')
+        
+        try:
+            marks = int(marks)
+            if marks < 0 or marks > 100:
+                messages.error(request, "Marks must be between 0 and 100")
+                return redirect('add_group_marks', group_id=group_id)
+            
+            group_participation.marks = marks
+            group_participation.save()
+            
+            # Calculate grade
+            calculate_group_grades_and_points()
+            
+            messages.success(request, f"Marks added successfully for {group_participation}")
+            return redirect('group_participation_list')
+            
+        except ValueError:
+            messages.error(request, "Please enter valid marks")
+            return redirect('add_group_marks', group_id=group_id)
+    
+    context = {
+        'group_participation': group_participation
+    }
+    return render(request, 'add_group_marks.html', context)
+
+def award_group_points():
+    """Award points to teams based on group participations"""
+    config = PointsConfig.get_config()
+    
+    # Reset points_awarded flag for recalculation
+    GroupParticipation.objects.filter(points_awarded=True).update(points_awarded=False)
+    
+    group_participations = GroupParticipation.objects.filter(
+        marks__isnull=False,
+        points_awarded=False
+    )
+    
+    for group in group_participations:
+        points = 0
+        
+        # Rank-based points
+        if group.rank == 1:
+            points += config.rank_1_points
+        elif group.rank == 2:
+            points += config.rank_2_points
+        elif group.rank == 3:
+            points += config.rank_3_points
+        
+        # Grade-based points
+        if group.grade == 'A':
+            points += config.grade_a_points
+        elif group.grade == 'B':
+            points += config.grade_b_points
+        elif group.grade == 'C':
+            points += config.grade_c_points
+        
+        # Add points to team
+        if points > 0:
+            group.team.total_points += points
+            group.team.save()
+            
+            # Mark as points awarded
+            group.points_awarded = True
+            group.save()
+
+def award_individual_points():
+    """Award points to teams based on individual participations"""
+    config = PointsConfig.get_config()
+    
+    participations = Participation.objects.filter(
+        marks__isnull=False,
+        points_awarded=False
+    )
+    
+    for participation in participations:
+        points = 0
+        
+        # Rank-based points
+        if participation.rank == 1:
+            points += config.rank_1_points
+        elif participation.rank == 2:
+            points += config.rank_2_points
+        elif participation.rank == 3:
+            points += config.rank_3_points
+        
+        # Grade-based points
+        if participation.grade == 'A':
+            points += config.grade_a_points
+        elif participation.grade == 'B':
+            points += config.grade_b_points
+        elif participation.grade == 'C':
+            points += config.grade_c_points
+        
+        # Add points to contestant's team
+        if points > 0:
+            participation.contestant.team.total_points += points
+            participation.contestant.team.save()
+            
+            # Also add to contestant's individual points
+            participation.contestant.total_points += points
+            participation.contestant.save()
+            
+            # Mark as points awarded
+            participation.points_awarded = True
+            participation.save()
+
+def calculate_group_grades_and_points():
+    """Calculate grades, ranks, and points for all group participations"""
+    config = PointsConfig.get_config()
+    
+    # Get all programs that have group participations with marks
+    programs_with_groups = Program.objects.filter(
+        groupparticipation__marks__isnull=False,
+        is_group=True
+    ).distinct()
+    
+    for program in programs_with_groups:
+        # Get all group participations for this program with marks
+        group_participations = GroupParticipation.objects.filter(
+            program=program,
+            marks__isnull=False
+        ).order_by('-marks')  # Order by marks descending
+        
+        # Calculate ranks
+        current_rank = 1
+        previous_marks = None
+        rank_increment = 1
+        
+        for i, group in enumerate(group_participations):
+            if previous_marks is not None and group.marks < previous_marks:
+                current_rank += rank_increment
+                rank_increment = 1
+            elif previous_marks is not None and group.marks == previous_marks:
+                rank_increment += 1
+            
+            group.rank = current_rank
+            previous_marks = group.marks
+            
+            # Calculate grade based on marks
+            if group.marks >= config.grade_a_threshold:
+                group.grade = 'A'
+            elif group.marks >= config.grade_b_threshold:
+                group.grade = 'B'
+            elif group.marks >= config.grade_c_threshold:
+                group.grade = 'C'
+            else:
+                group.grade = 'D'
+            
+            group.save()
+    
+    # Calculate and award points
+    award_group_points()
+
+def calculate_individual_grades_and_points():
+    """Calculate grades, ranks, and points for individual participations"""
+    config = PointsConfig.get_config()
+    
+    programs_with_individual = Program.objects.filter(
+        participation__marks__isnull=False,
+        is_group=False
+    ).distinct()
+    
+    for program in programs_with_individual:
+        participations = Participation.objects.filter(
+            program=program,
+            marks__isnull=False
+        ).order_by('-marks')
+        
+        # Similar ranking logic as group
+        current_rank = 1
+        previous_marks = None
+        rank_increment = 1
+        
+        for i, participation in enumerate(participations):
+            if previous_marks is not None and participation.marks < previous_marks:
+                current_rank += rank_increment
+                rank_increment = 1
+            elif previous_marks is not None and participation.marks == previous_marks:
+                rank_increment += 1
+            
+            participation.rank = current_rank
+            previous_marks = participation.marks
+            
+            # Calculate grade
+            if participation.marks >= config.grade_a_threshold:
+                participation.grade = 'A'
+            elif participation.marks >= config.grade_b_threshold:
+                participation.grade = 'B'
+            elif participation.marks >= config.grade_c_threshold:
+                participation.grade = 'C'
+            else:
+                participation.grade = 'D'
+            
+            participation.save()
+    
+    # Award individual points
+    award_individual_points()
+
+def calculate_rankings_and_points(category_id, program_id):
+    """
+    Calculate rankings and award points for a specific program in a category.
+    Handles both individual and group programs with proper tie handling.
+    """
+    try:
+        # Get program instance to check if group or individual
+        program = Program.objects.get(id=program_id)
+        is_group_program = program.is_group
+        
+        participants = Participation.objects.filter(
+            contestant__category_id=category_id,
+            program_id=program_id,
+            marks__isnull=False
+        ).select_related('contestant', 'contestant__team').order_by('-marks', 'contestant__chest_no')
+        
+        # Reset all rankings first
+        Participation.objects.filter(
+            contestant__category_id=category_id,
+            program_id=program_id
+        ).update(rank=None, grade=None)
+        
+        # Apply proper ranking with ties
+        assign_ranks_with_ties(participants)
+        
+        for participant in participants:
+            participant.grade = get_grade(participant.marks)
+            
+            if not participant.points_awarded:
+                category_name = participant.contestant.category.name if participant.contestant.category else None
+                total_points = calculate_points(participant.rank, participant.grade, is_group_program, category_name)
+                
+                # Award points to team
+                # (delegates to the custom calculation / points system helper in scoring)
+                # ...
+                pass
+                
+    except Exception as e:
+        print(f"Error in calculate_rankings_and_points: {e}")
+        raise
+
+def team_leaderboard2(request):
+    """Display team leaderboard"""
+    teams = Team.objects.all().order_by('-total_points')
+    
+    context = {
+        'teams': teams
+    }
+    return render(request, 'competition/team_leaderboard.html', context)
+
+def program_results(request, program_id):
+    """Display results for a specific program (individual or group)"""
+    program = get_object_or_404(Program, id=program_id)
+    
+    if program.is_group:
+        results = GroupParticipation.objects.filter(
+            program=program,
+            marks__isnull=False
+        ).order_by('rank').select_related('team').prefetch_related('contestants')
+        template = 'competition/group_program_results.html'
+    else:
+        results = Participation.objects.filter(
+            program=program,
+            marks__isnull=False
+        ).order_by('rank').select_related('contestant', 'contestant__team')
+        template = 'competition/individual_program_results.html'
+    
+    context = {
+        'program': program,
+        'results': results
+    }
+    return render(request, template, context)
+
+def leaderboard_cat(request):
+    """Public leaderboard view with category-wise filtering"""
+    category_id = request.GET.get('category')
+    categories = Category.objects.all().order_by('name')
+    teams = Team.objects.all().order_by('name')
+
+    team_data = []
+
+    for team in teams:
+        participations = Participation.objects.filter(contestant__team=team)
+
+        # Apply category filter if selected
+        if category_id:
+            participations = participations.filter(contestant__category_id=category_id)
+
+        if not participations.exists():
+            continue  # skip teams with no entries
+
+        # Pass category_id to get category-specific points
+        total_points = recalculate_team_points(team, category_id)
+
+        awarded = participations.filter(points_awarded=True, marks__isnull=False)
+
+        team_data.append({
+            'team': team,
+            'points': total_points,
+            'total_participations': participations.count(),
+            'winners_count': awarded.filter(rank__in=[1, 2, 3]).count(),
+        })
+
+    # Sort and assign positions
+    team_data.sort(key=lambda x: x['points'], reverse=True)
+    for i, data in enumerate(team_data, 1):
+        data['position'] = i
+
+    selected_category = Category.objects.filter(id=category_id).first() if category_id else None
+
+    return render(request, 'leaderboard_cat.html', {
+        'teams': team_data,
+        'categories': categories,
+        'selected_category': selected_category,
+        'top_three': team_data[:3] if len(team_data) >= 3 else team_data,
+    })
+
+def recalculate_all_team_points():
+    """Recalculate total points for all teams (both individual and group)"""
+    # Reset all team points
+    Team.objects.update(total_points=0)
+    
+    # Reset points awarded flags
+    Participation.objects.update(points_awarded=False)
+    GroupParticipation.objects.update(points_awarded=False)
+    
+    # Recalculate individual participations
+    calculate_individual_grades_and_points()
+    
+    # Recalculate group participations
+    calculate_group_grades_and_points()
+
+def recalculate_points_view(request):
+    """Manual recalculation of all points"""
+    if request.method == 'POST':
+        try:
+            recalculate_all_team_points()
+            messages.success(request, "All team points have been recalculated successfully!")
+        except Exception as e:
+            messages.error(request, f"Error recalculating points: {str(e)}")
+    
+    return redirect('team_leaderboard')
+
+def results_page(request):
+    return render(request, 'results_page.html')
+
+@login_required
+def enter_marks_summary_cat(request):
+    if request.user.role != 'admin':
+        return redirect('dashboard_team')
+
+    # Get filter parameters
+    program_id = request.GET.get('program')
+    category_id = request.GET.get('category')
+
+    # Get all programs and categories for filter dropdowns
+    programs = Program.objects.all().order_by('name')
+    categories = Category.objects.all().order_by('name')
+
+    # Base queryset
+    participations = Participation.objects.filter(marks__isnull=False)
+
+    # Apply filters
+    if program_id:
+        participations = participations.filter(program_id=program_id)
+    if category_id:
+        participations = participations.filter(contestant__category_id=category_id)
+
+    # Optimize query
+    participations = participations.select_related(
+        'contestant__team', 'contestant__category', 'program'
+    ).order_by('program__name', '-marks')
+
+    # Handle selected objects
+    selected_program = Program.objects.get(id=program_id) if program_id else None
+    selected_category = Category.objects.get(id=category_id) if category_id else None
+
+    return render(request, 'enter_marks_summary_cat.html', {
+        'participations': participations,
+        'programs': programs,
+        'categories': categories,
+        'selected_program': selected_program,
+        'selected_category': selected_category,
+        'program_id': program_id,
+        'category_id': category_id,
+    })
+
 

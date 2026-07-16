@@ -618,3 +618,197 @@ def program_result_pdf(request, program_id):
 
     doc.build(elements, onFirstPage=add_watermark, onLaterPages=add_watermark)
     return response
+
+@login_required
+def contestant_programs_pdf(request):
+    """Generate PDF of contestant programs with filters"""
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from io import BytesIO
+    
+    is_team_user = request.user.role == 'team'
+    team_id = request.GET.get('team')
+    category_id = request.GET.get('category')
+    
+    # Get filtered contestants
+    if is_team_user:
+        contestants = Contestant.objects.filter(team=request.user.team)
+        team_name = request.user.team.name
+    else:
+        contestants = Contestant.objects.all()
+        team_name = None
+    
+    if team_id:
+        contestants = contestants.filter(team_id=team_id)
+        team_name = Team.objects.get(id=team_id).name
+    
+    if category_id:
+        contestants = contestants.filter(category_id=category_id)
+        category_name = Category.objects.get(id=category_id).name
+    else:
+        category_name = "All Categories"
+    
+    contestants = contestants.select_related(
+        'team', 'category'
+    ).prefetch_related(
+        'participation_set__program__category'
+    ).order_by('chest_no')
+    
+    # Create PDF
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.5*inch, bottomMargin=0.5*inch)
+    elements = []
+    styles = getSampleStyleSheet()
+    
+    # Title style
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        textColor=colors.HexColor('#1a1a1a'),
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    # Subtitle style
+    subtitle_style = ParagraphStyle(
+        'Subtitle',
+        parent=styles['Normal'],
+        fontSize=12,
+        textColor=colors.HexColor('#666666'),
+        spaceAfter=20,
+        alignment=TA_CENTER,
+    )
+    
+    # Add title
+    title = Paragraph("🎭 Contestant Programs", title_style)
+    elements.append(title)
+    
+    # Add filter info
+    filter_info = []
+    if team_name:
+        filter_info.append(f"Team: {team_name}")
+    if category_name != "All Categories":
+        filter_info.append(f"Category: {category_name}")
+    
+    if filter_info:
+        subtitle = Paragraph(" | ".join(filter_info), subtitle_style)
+        elements.append(subtitle)
+    
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Process each contestant
+    for idx, contestant in enumerate(contestants, 1):
+        # Contestant header data
+        data = [
+            ['#', 'Name', 'Chest No', 'Team', 'Category'],
+            [
+                str(idx),
+                contestant.name.upper(),
+                str(contestant.chest_no),
+                contestant.team.name if contestant.team else "-",
+                contestant.category.name if contestant.category else "-"
+            ]
+        ]
+        
+        # Create contestant info table
+        t = Table(data, colWidths=[0.5*inch, 2.5*inch, 1*inch, 1.5*inch, 1.5*inch])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#ecf0f1')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#bdc3c7')),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+            ('TOPPADDING', (0, 1), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
+        ]))
+        elements.append(t)
+        elements.append(Spacer(1, 0.1*inch))
+        
+        # Programs table
+        participations = contestant.participation_set.all()
+        if participations:
+            program_data = [['Program Name', 'Program Category', 'Type']]
+            
+            for p in participations:
+                program_type = "Group" if p.program.is_group else "Individual"
+                program_data.append([
+                    p.program.name,
+                    p.program.category.name,
+                    program_type
+                ])
+            
+            program_table = Table(program_data, colWidths=[3.5*inch, 2*inch, 1.5*inch])
+            program_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('FONTSIZE', (0, 1), (-1, -1), 8),
+                ('TOPPADDING', (0, 1), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            elements.append(program_table)
+        else:
+            no_programs = Paragraph("<i>No programs assigned</i>", styles['Italic'])
+            elements.append(no_programs)
+        
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Add page break after every 3 contestants (except last)
+        if idx % 3 == 0 and idx < len(contestants):
+            elements.append(PageBreak())
+    
+    # Build PDF
+    doc.build(elements)
+    
+    # Get PDF value and return response
+    pdf = buffer.getvalue()
+    buffer.close()
+    
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"contestant_programs"
+    if team_name:
+        filename += f"_{team_name.replace(' ', '_')}"
+    if category_name != "All Categories":
+        filename += f"_{category_name.replace(' ', '_')}"
+    filename += ".pdf"
+    
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response.write(pdf)
+    
+    return response
+
+def download_chest_cards_pdf(request):
+    """Download Chest Cards PDF for all contestants"""
+    contestants = Contestant.objects.all().order_by('chest_no')
+
+    template_path = 'chest_cards_pdf.html'
+    context = {'contestants': contestants}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="chest_cards.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error while generating PDF <pre>' + html + '</pre>')
+    return response
+
