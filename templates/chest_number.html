@@ -55,7 +55,7 @@
         {% for i in contestant %}
         <div class="card">
             <h3>HAYATHUL ISLAM MADRASA</h3>
-            <h3>MEELAD FEST</h3>
+            <h3>{{ fest_name|upper }}</h3>
             <p>{{ i.name|upper }}</p>
             <div class="chest-number">{{ i.chest_no }}</div>
         </div>

@@ -642,19 +642,33 @@ def update_settings(request):
         return redirect('dashboard_team')
 
     if request.method == 'POST':
+        # 1. Handle group point system
         group_point_system = request.POST.get('group_point_system')
-        if group_point_system in ['member_count', 'fixed']:
-            setting, _ = SystemSetting.objects.get_or_create(key='group_point_system')
-            setting.value = group_point_system
-            setting.save()
-            
-            # Recalculate all team points to update database values
-            for team in Team.objects.all():
-                recalculate_team_points(team)
+        if group_point_system:
+            if group_point_system in ['member_count', 'fixed']:
+                setting, _ = SystemSetting.objects.get_or_create(key='group_point_system')
+                setting.value = group_point_system
+                setting.save()
                 
-            messages.success(request, f"Group points system updated to: {'Fixed Rank Points (10, 6, 3)' if group_point_system == 'fixed' else 'Participant Count Multiplier'}")
-        else:
-            messages.error(request, "Invalid setting value.")
+                # Recalculate all team points to update database values
+                for team in Team.objects.all():
+                    recalculate_team_points(team)
+                    
+                messages.success(request, f"Group points system updated to: {'Fixed Rank Points (10, 6, 3)' if group_point_system == 'fixed' else 'Participant Count Multiplier'}")
+            else:
+                messages.error(request, "Invalid setting value.")
+
+        # 2. Handle fest name
+        fest_name = request.POST.get('fest_name')
+        if fest_name is not None:
+            fest_name = fest_name.strip()
+            if fest_name:
+                setting, _ = SystemSetting.objects.get_or_create(key='fest_name')
+                setting.value = fest_name
+                setting.save()
+                messages.success(request, f"Fest name updated to: {fest_name}")
+            else:
+                messages.error(request, "Fest name cannot be empty.")
 
     return redirect('dashboard_admin')
 
@@ -1126,27 +1140,5 @@ def enter_marks_summary_cat(request):
         'category_id': category_id,
     })
 
-@login_required
-def update_settings(request):
-    if request.user.role != 'admin':
-        messages.error(request, 'You do not have permission to perform this action.')
-        return redirect('dashboard_team')
-
-    if request.method == 'POST':
-        group_point_system = request.POST.get('group_point_system')
-        if group_point_system in ['member_count', 'fixed']:
-            setting, _ = SystemSetting.objects.get_or_create(key='group_point_system')
-            setting.value = group_point_system
-            setting.save()
-            
-            # Recalculate all team points to update database values
-            for team in Team.objects.all():
-                recalculate_team_points(team)
-                
-            messages.success(request, f"Group points system updated to: {'Fixed Rank Points (10, 6, 3)' if group_point_system == 'fixed' else 'Participant Count Multiplier'}")
-        else:
-            messages.error(request, "Invalid setting value.")
-
-    return redirect('dashboard_admin')
 
 

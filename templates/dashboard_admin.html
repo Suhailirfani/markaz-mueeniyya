@@ -416,13 +416,20 @@
   <div class="card mb-4 border-warning shadow-sm">
     <div class="card-header bg-warning text-dark d-flex align-items-center py-3">
       <i class="fas fa-cogs me-2"></i>
-      <span class="fw-bold">Group Point System Configuration</span>
+      <span class="fw-bold">General System Configuration</span>
     </div>
     <div class="card-body p-4">
       <form method="post" action="{% url 'update_settings' %}">
         {% csrf_token %}
-        <div class="row align-items-center">
-          <div class="col-lg-8 col-md-7">
+        <div class="row">
+          <!-- Fest Name Setting -->
+          <div class="col-md-6 mb-3">
+            <label for="fest_name" class="form-label fw-bold text-dark mb-2">Fest Name:</label>
+            <input type="text" name="fest_name" id="fest_name" value="{{ fest_name }}" class="form-control border-secondary" placeholder="e.g., Meelad Competition" required>
+          </div>
+          
+          <!-- Group Point System Setting -->
+          <div class="col-md-6 mb-3">
             <div class="mb-2">
               <label class="form-label fw-bold text-dark mb-2">Select Group Point System:</label>
             </div>
@@ -439,9 +446,9 @@
               </label>
             </div>
           </div>
-          <div class="col-lg-4 col-md-5 text-md-end mt-3 mt-md-0">
-            <button type="submit" class="btn btn-warning fw-bold text-dark px-4 py-2 shadow-sm"><i class="fas fa-save me-2"></i>Save Configuration</button>
-          </div>
+        </div>
+        <div class="text-end mt-3">
+          <button type="submit" class="btn btn-warning fw-bold text-dark px-4 py-2 shadow-sm"><i class="fas fa-save me-2"></i>Save Configuration</button>
         </div>
       </form>
     </div>
