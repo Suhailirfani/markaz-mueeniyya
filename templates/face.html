@@ -158,11 +158,20 @@
             display: inline-block;
         }
 
-        .hero-institution {
-            color: #94a3b8;
-            font-size: 1.05rem;
-            font-weight: 600;
+        .institution-hero-banner {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(3, 48, 103, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1.5px solid #38bdf8;
+            color: #ffffff;
+            font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+            font-weight: 800;
+            padding: 0.65rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.35);
             margin-bottom: 2rem;
+            letter-spacing: 0.3px;
         }
 
         .hero-action-group {
@@ -380,7 +389,7 @@
             <img src="{% static 'FDL.png' %}" class="brand-logo" alt="Logo">
             <div>
                 <h5 class="fw-bold mb-0 text-white leading-tight">{{ fest_name }}</h5>
-                <small class="text-muted d-none d-sm-block" style="font-size: 0.78rem;">Hidayathul Islam Higher Secondary Madrasa Vettikkattiri</small>
+                <div class="fw-bold text-info" style="font-size: 0.825rem; color: #38bdf8 !important;">Hidayathul Islam Higher Secondary Madrasa Vettikkattiri</div>
             </div>
         </div>
 
@@ -422,7 +431,9 @@
 
         <h1 class="hero-title">{{ fest_name }}</h1>
         <div class="malayalam-title">പുണ്യ റബീഇന് സ്വാഗതം</div>
-        <p class="hero-institution">Hidayathul Islam Higher Secondary Madrasa Vettikkattiri</p>
+        <div class="institution-hero-banner">
+            <i class="fas fa-mosque text-warning me-2"></i> Hidayathul Islam Higher Secondary Madrasa Vettikkattiri
+        </div>
 
         <div class="hero-action-group">
             {% if user.is_authenticated %}
