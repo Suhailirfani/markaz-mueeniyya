@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="fas fa-triangle-exclamation text-warning me-2"></i> Schedule Clash & Conflict Detector</h2>
+            <p class="text-muted small mb-0">Identifies participant overlaps, stage conflicts, and venue type mismatches across all fest days.</p>
+        </div>
+        <div>
+            <a href="{% url 'manage_schedule' %}" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to Schedule Manager
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Status Banner -->
+    {% if clash_data.total_clash_count == 0 %}
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center my-4">
+            <div class="text-success display-1 mb-3"><i class="fas fa-circle-check"></i></div>
+            <h3 class="fw-bold text-success">Zero Clashes Detected!</h3>
+            <p class="text-muted max-w-600 mx-auto">
+                All scheduled programs have conflict-free stage venues and participant time slots. No contestant is scheduled for two programs at the same time!
+            </p>
+        </div>
+    {% else %}
+        <div class="alert alert-danger rounded-4 shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-2"><i class="fas fa-bug me-2"></i> {{ clash_data.total_clash_count }} Total Conflict(s) Identified:</h5>
+            <ul class="mb-0 ps-3">
+                <li><strong>{{ clash_data.participant_clashes|length }} Participant Clash(es):</strong> A participant is scheduled in two overlapping programs on the same fest day.</li>
+                <li><strong>{{ clash_data.stage_clashes|length }} Stage Conflict(s):</strong> Two programs are scheduled at overlapping times on the same stage.</li>
+                <li><strong>{{ clash_data.venue_mismatches|length }} Venue Mismatch(es):</strong> A Stage program is assigned to an Off-Stage venue or vice versa.</li>
+            </ul>
+        </div>
+    {% endif %}
+
+    <!-- 1. Participant Clashes Section -->
+    {% if clash_data.participant_clashes %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+            <div class="card-header bg-danger text-white pt-3 px-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="fas fa-user-clock me-2"></i> Participant Time Overlap Clashes</h5>
+                <span class="badge bg-white text-danger fw-bold rounded-pill">{{ clash_data.participant_clashes|length }}</span>
+            </div>
+            <div class="card-body px-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Contestant</th>
+                                <th>Chest #</th>
+                                <th>Team</th>
+                                <th>Conflicting Program 1</th>
+                                <th>Conflicting Program 2</th>
+                                <th>Fest Day</th>
+                                <th>Overlapping Time Window</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in clash_data.participant_clashes %}
+                                <tr>
+                                    <td class="fw-bold text-dark">{{ c.contestant.name }}</td>
+                                    <td><span class="badge bg-secondary rounded-pill">#{{ c.contestant.chest_no }}</span></td>
+                                    <td>{{ c.contestant.team.name|default:"--" }}</td>
+                                    <td>
+                                        <div class="fw-bold text-danger">{{ c.schedule1.program.name }}</div>
+                                        <small class="text-muted">{{ c.schedule1.stage.name }} ({{ c.schedule1.start_time|time:"h:i A" }} - {{ c.schedule1.end_time|time:"h:i A" }})</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-danger">{{ c.schedule2.program.name }}</div>
+                                        <small class="text-muted">{{ c.schedule2.stage.name }} ({{ c.schedule2.start_time|time:"h:i A" }} - {{ c.schedule2.end_time|time:"h:i A" }})</small>
+                                    </td>
+                                    <td><span class="badge bg-info text-dark">Day {{ c.fest_day.day_number }}</span></td>
+                                    <td><span class="badge bg-danger text-white fw-bold">{{ c.overlap_range }}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'manage_schedule' %}" class="btn btn-outline-primary btn-sm rounded-pill">Reschedule</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- 2. Stage Overlap Clashes Section -->
+    {% if clash_data.stage_clashes %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+            <div class="card-header bg-warning text-dark pt-3 px-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="fas fa-layer-group me-2"></i> Stage Venue Overlap Conflicts</h5>
+                <span class="badge bg-dark text-white fw-bold rounded-pill">{{ clash_data.stage_clashes|length }}</span>
+            </div>
+            <div class="card-body px-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Stage Venue</th>
+                                <th>Fest Day</th>
+                                <th>Program A</th>
+                                <th>Program B</th>
+                                <th>Overlapping Time Window</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sc in clash_data.stage_clashes %}
+                                <tr>
+                                    <td class="fw-bold text-dark">{{ sc.stage.name }}</td>
+                                    <td><span class="badge bg-info text-dark">Day {{ sc.fest_day.day_number }}</span></td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ sc.schedule1.program.name }}</div>
+                                        <small class="text-muted">{{ sc.schedule1.start_time|time:"h:i A" }} - {{ sc.schedule1.end_time|time:"h:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ sc.schedule2.program.name }}</div>
+                                        <small class="text-muted">{{ sc.schedule2.start_time|time:"h:i A" }} - {{ sc.schedule2.end_time|time:"h:i A" }}</small>
+                                    </td>
+                                    <td><span class="badge bg-warning text-dark fw-bold">{{ sc.overlap_range }}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'manage_schedule' %}" class="btn btn-outline-primary btn-sm rounded-pill">Reschedule</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- 3. Venue Mismatches Section -->
+    {% if clash_data.venue_mismatches %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+            <div class="card-header bg-secondary text-white pt-3 px-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="fas fa-arrows-split-up-and-left me-2"></i> Stage vs Off-Stage Venue Type Mismatches</h5>
+                <span class="badge bg-white text-dark fw-bold rounded-pill">{{ clash_data.venue_mismatches|length }}</span>
+            </div>
+            <div class="card-body px-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Program Name</th>
+                                <th>Required Program Type</th>
+                                <th>Assigned Stage Venue</th>
+                                <th>Venue Type</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vm in clash_data.venue_mismatches %}
+                                <tr>
+                                    <td class="fw-bold text-dark">{{ vm.program.name }}</td>
+                                    <td><span class="badge bg-primary rounded-pill">{{ vm.program_type }}</span></td>
+                                    <td class="fw-bold text-danger">{{ vm.stage.name }}</td>
+                                    <td><span class="badge bg-secondary rounded-pill">{{ vm.stage_type }}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'manage_schedule' %}" class="btn btn-outline-primary btn-sm rounded-pill">Fix Venue</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

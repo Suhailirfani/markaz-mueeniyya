@@ -115,6 +115,19 @@ urlpatterns = [
     # Custom setting route
     path('update-settings/', views.update_settings, name='update_settings'),
 
+    # Schedule & Clash Management routes
+    path('schedule/', views.manage_schedule, name='manage_schedule'),
+    path('schedule/days/add/', views.add_fest_day, name='add_fest_day'),
+    path('schedule/days/delete/<int:day_id>/', views.delete_fest_day, name='delete_fest_day'),
+    path('schedule/stages/add/', views.add_stage, name='add_stage'),
+    path('schedule/stages/delete/<int:stage_id>/', views.delete_stage, name='delete_stage'),
+    path('schedule/program-config/<int:program_id>/', views.update_program_duration, name='update_program_duration'),
+    path('schedule/save/', views.save_program_schedule, name='save_program_schedule'),
+    path('schedule/delete/<int:schedule_id>/', views.delete_program_schedule, name='delete_program_schedule'),
+    path('schedule/auto-generate/', views.run_auto_scheduler, name='run_auto_scheduler'),
+    path('schedule/clear-all/', views.clear_all_schedules, name='clear_all_schedules'),
+    path('schedule/clashes/', views.view_clashes, name='view_clashes'),
+
     #added on 23-09-2025
     path('assigned-programs/pdf/', views.assigned_programs_pdf, name='assigned_programs_pdf'),
     path('edit-programs/<int:contestant_id>/', views.edit_assigned_programs, name='edit_assigned_programs'),

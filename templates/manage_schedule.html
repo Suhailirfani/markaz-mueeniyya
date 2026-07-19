@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- Page Header & Metrics Summary -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="fas fa-calendar-alt text-info me-2"></i> Fest Schedule & Clash Manager</h2>
+            <p class="text-muted small mb-0">Configure fest days, stages, auto-calculate program durations, and manage conflict-free timetables.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-success fw-bold rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#autoScheduleModal">
+                <i class="fas fa-wand-magic-sparkles me-1"></i> Auto-Generate Schedule
+            </button>
+            <a href="{% url 'view_clashes' %}" class="btn btn-warning fw-bold rounded-pill px-3 shadow-sm position-relative">
+                <i class="fas fa-triangle-exclamation me-1"></i> Clash Detector
+                {% if clash_data.total_clash_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ clash_data.total_clash_count }}
+                    </span>
+                {% endif %}
+            </a>
+            <form action="{% url 'clear_all_schedules' %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to clear ALL scheduled slots?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger fw-bold rounded-pill px-3">
+                    <i class="fas fa-trash-alt me-1"></i> Clear All
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if clash_data.total_clash_count > 0 %}
+        <div class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <i class="fas fa-exclamation-triangle fs-4 me-2"></i>
+                <strong>Schedule Conflicts Detected!</strong> {{ clash_data.total_clash_count }} clash(es) found ({{ clash_data.stage_clashes|length }} stage overlap, {{ clash_data.participant_clashes|length }} participant overlap, {{ clash_data.venue_mismatches|length }} venue type mismatch).
+            </div>
+            <a href="{% url 'view_clashes' %}" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Resolve Clashes</a>
+        </div>
+    {% endif %}
+
+    <!-- Top Metrics Overview -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <div class="text-primary fs-3 fw-bold">{{ total_programs }}</div>
+                <div class="text-muted small fw-semibold">Total Programs</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <div class="text-success fs-3 fw-bold">{{ scheduled_count }} / {{ total_programs }}</div>
+                <div class="text-muted small fw-semibold">Scheduled Programs</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <div class="text-info fs-3 fw-bold">{{ fest_days|length }}</div>
+                <div class="text-muted small fw-semibold">Fest Days Configured</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <div class="text-warning fs-3 fw-bold">{{ stages|length }}</div>
+                <div class="text-muted small fw-semibold">Stages & Venues</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Row: Fest Days & Stages Config -->
+    <div class="row g-4 mb-4">
+        <!-- Fest Days Card -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-calendar-day me-2"></i> 1. Fest Days Configuration</h5>
+                </div>
+                <div class="card-body px-4">
+                    <form action="{% url 'add_fest_day' %}" method="POST" class="row g-2 align-items-center mb-3">
+                        {% csrf_token %}
+                        <div class="col-3">
+                            <input type="number" name="day_number" class="form-control rounded-3" placeholder="Day #" min="1" required>
+                        </div>
+                        <div class="col-4">
+                            <input type="date" name="date" class="form-control rounded-3">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" name="name" class="form-control rounded-3" placeholder="Label (Day 1)">
+                        </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold">+</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Day #</th>
+                                    <th>Date</th>
+                                    <th>Label</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in fest_days %}
+                                    <tr>
+                                        <td class="fw-bold text-primary">Day {{ day.day_number }}</td>
+                                        <td>{{ day.date|date:"d M Y"|default:"--" }}</td>
+                                        <td>{{ day.name|default:"--" }}</td>
+                                        <td class="text-end">
+                                            <form action="{% url 'delete_fest_day' day.id %}" method="POST" class="d-inline" onsubmit="return confirm('Delete Day {{ day.day_number }}?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="4" class="text-center text-muted py-3">No fest days added yet. Please add at least one fest day.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stages & Venues Card -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-landmark me-2"></i> 2. Stages & Venues</h5>
+                </div>
+                <div class="card-body px-4">
+                    <form action="{% url 'add_stage' %}" method="POST" class="row g-2 align-items-center mb-3">
+                        {% csrf_token %}
+                        <div class="col-4">
+                            <input type="text" name="name" class="form-control rounded-3" placeholder="Stage Name" required>
+                        </div>
+                        <div class="col-4">
+                            <select name="stage_type" class="form-select rounded-3" required>
+                                <option value="STAGE">Stage Venue</option>
+                                <option value="OFF_STAGE">Off-Stage Venue</option>
+                            </select>
+                        </div>
+                        <div class="col-4 d-flex gap-1">
+                            <input type="text" name="location_details" class="form-control rounded-3" placeholder="Location">
+                            <button type="submit" class="btn btn-primary rounded-3 fw-bold">+</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Venue Name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for st in stages %}
+                                    <tr>
+                                        <td class="fw-bold">{{ st.name }}</td>
+                                        <td>
+                                            {% if st.stage_type == 'STAGE' %}
+                                                <span class="badge bg-primary rounded-pill">Stage Venue</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary rounded-pill">Off-Stage Venue</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ st.location_details|default:"--" }}</td>
+                                        <td class="text-end">
+                                            <form action="{% url 'delete_stage' st.id %}" method="POST" class="d-inline" onsubmit="return confirm('Delete venue {{ st.name }}?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="4" class="text-center text-muted py-3">No stages added yet. Please add stage and off-stage venues.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Timetable View Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+        <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-border-all me-2"></i> Master Fest Timetable</h5>
+        </div>
+        <div class="card-body px-4">
+            {% for day_matrix in timetable_by_day %}
+                <h6 class="fw-bold text-dark border-bottom pb-2 mt-3 mb-3">
+                    <i class="fas fa-calendar-day text-info me-1"></i> Day {{ day_matrix.day.day_number }} {% if day_matrix.day.name %}({{ day_matrix.day.name }}){% endif %} {% if day_matrix.day.date %}- {{ day_matrix.day.date|date:"d M Y" }}{% endif %}
+                </h6>
+
+                <div class="row g-3 mb-4">
+                    {% for st_col in day_matrix.stages %}
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 border rounded-3 bg-light h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-primary">{{ st_col.stage.name }}</span>
+                                    {% if st_col.stage.stage_type == 'STAGE' %}
+                                        <span class="badge bg-primary" style="font-size: 0.7rem;">Stage</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">Off-Stage</span>
+                                    {% endif %}
+                                </div>
+
+                                {% for s in st_col.schedules %}
+                                    <div class="card border-0 shadow-sm rounded-3 p-2 mb-2 bg-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong class="text-dark small">{{ s.program.name }}</strong>
+                                            <span class="badge bg-info text-dark" style="font-size: 0.65rem;">{{ s.program.category.name }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-1 text-muted" style="font-size: 0.75rem;">
+                                            <span><i class="far fa-clock text-warning me-1"></i> {{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}</span>
+                                            <span class="badge bg-light text-dark border">{{ s.total_duration_minutes }}m</span>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="text-muted small text-center py-2">No programs scheduled</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <div class="text-muted text-center py-4">Add Fest Days and Stages above to view the Master Timetable.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Programs Schedule Management Table -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white">
+        <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-tasks me-2"></i> Program Schedule & Duration Settings</h5>
+        </div>
+        <div class="card-body px-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Program Name</th>
+                            <th>Category</th>
+                            <th>Venue Type</th>
+                            <th>Assigned</th>
+                            <th>Duration / Part</th>
+                            <th>Buffer</th>
+                            <th>Total Mins</th>
+                            <th>Current Schedule Slot</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in program_list %}
+                            <tr>
+                                <td class="fw-bold text-dark">
+                                    {{ item.program.name }}
+                                    {% if item.program.is_group %}
+                                        <span class="badge bg-purple rounded-pill text-white ms-1" style="font-size: 0.65rem;">Group</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-light text-dark border">{{ item.program.category.name }}</span></td>
+                                
+                                <!-- Program Type Badge -->
+                                <td>
+                                    <form action="{% url 'update_program_duration' item.program.id %}" method="POST" class="d-inline-flex gap-1 align-items-center">
+                                        {% csrf_token %}
+                                        <select name="program_type" class="form-select form-select-sm rounded-2" onchange="this.form.submit()">
+                                            <option value="STAGE" {% if item.program.program_type == 'STAGE' %}selected{% endif %}>Stage</option>
+                                            <option value="OFF_STAGE" {% if item.program.program_type == 'OFF_STAGE' %}selected{% endif %}>Off-Stage</option>
+                                        </select>
+                                </td>
+
+                                <td><span class="badge bg-secondary rounded-pill">{{ item.assigned_count }}</span></td>
+
+                                <!-- Duration per participant input -->
+                                <td>
+                                        <input type="number" name="duration_per_participant" value="{{ item.program.duration_per_participant }}" class="form-control form-control-sm rounded-2" style="width: 65px;" min="1" onchange="this.form.submit()">
+                                </td>
+                                <td>
+                                        <input type="number" name="buffer_margin_minutes" value="{{ item.program.buffer_margin_minutes }}" class="form-control form-control-sm rounded-2" style="width: 60px;" min="0" onchange="this.form.submit()">
+                                    </form>
+                                </td>
+
+                                <td class="fw-bold text-primary">{{ item.calculated_duration }}m</td>
+
+                                <!-- Current Schedule Slot -->
+                                <td>
+                                    {% if item.has_schedule %}
+                                        <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-2">
+                                            Day {{ item.schedule.fest_day.day_number }} @ {{ item.schedule.stage.name }}
+                                            ({{ item.schedule.start_time|time:"h:i A" }} - {{ item.schedule.end_time|time:"h:i A" }})
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-muted border">Unscheduled</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm rounded-2" data-bs-toggle="modal" data-bs-target="#scheduleModal{{ item.program.id }}">
+                                            <i class="fas fa-clock me-1"></i> Slot
+                                        </button>
+
+                                        {% if item.has_schedule %}
+                                            <form action="{% url 'delete_program_schedule' item.schedule.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-2" title="Remove Schedule"><i class="fas fa-times"></i></button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Individual Program Schedule Modal -->
+                                    <div class="modal fade text-start" id="scheduleModal{{ item.program.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <form action="{% url 'save_program_schedule' %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="program_id" value="{{ item.program.id }}">
+                                                    <div class="modal-header border-0 pb-0">
+                                                        <h5 class="modal-title fw-bold text-primary">Schedule: {{ item.program.name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body py-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Fest Day</label>
+                                                            <select name="fest_day_id" class="form-select rounded-3" required>
+                                                                {% for d in fest_days %}
+                                                                    <option value="{{ d.id }}" {% if item.has_schedule and item.schedule.fest_day_id == d.id %}selected{% endif %}>
+                                                                        Day {{ d.day_number }} {% if d.name %}({{ d.name }}){% endif %}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Venue / Stage</label>
+                                                            <select name="stage_id" class="form-select rounded-3" required>
+                                                                {% for st in stages %}
+                                                                    <option value="{{ st.id }}" {% if item.has_schedule and item.schedule.stage_id == st.id %}selected{% endif %}>
+                                                                        {{ st.name }} [{{ st.get_stage_type_display }}]
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="row g-2 mb-3">
+                                                            <div class="col-6">
+                                                                <label class="form-label fw-semibold">Start Time</label>
+                                                                <input type="time" name="start_time" class="form-control rounded-3" value="{{ item.schedule.start_time|time:'H:i'|default:'09:00' }}" required>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label fw-semibold">End Time (Optional)</label>
+                                                                <input type="time" name="end_time" class="form-control rounded-3" value="{{ item.schedule.end_time|time:'H:i'|default:'' }}" placeholder="Auto-calculated if blank">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="alert alert-info rounded-3 small mb-0">
+                                                            <i class="fas fa-info-circle me-1"></i> Auto-calculated duration: <strong>{{ item.calculated_duration }} minutes</strong> ({{ item.assigned_count }} participants × {{ item.program.duration_per_participant }} mins + {{ item.program.buffer_margin_minutes }}m buffer).
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-0 pt-0">
+                                                        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Save Schedule</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-Generate Schedule Modal -->
+<div class="modal fade" id="autoScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <form action="{% url 'run_auto_scheduler' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-success"><i class="fas fa-wand-magic-sparkles me-2"></i> Smart Auto-Schedule Generator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="text-muted small">
+                        Automatically schedules all unscheduled programs across configured Fest Days and Stages while avoiding participant and stage clashes!
+                    </p>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Daily Start Time</label>
+                            <input type="time" name="daily_start_time" class="form-control rounded-3" value="09:00" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Daily End Time</label>
+                            <input type="time" name="daily_end_time" class="form-control rounded-3" value="17:00" required>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning rounded-3 small mb-0">
+                        <i class="fas fa-lightbulb me-1"></i> Respects <strong>Stage</strong> vs <strong>Off-Stage</strong> venue matching and calculates durations automatically.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">Run Auto-Scheduler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

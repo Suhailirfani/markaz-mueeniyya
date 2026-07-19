@@ -78,7 +78,12 @@
                 {% if cont.participation_set.all %}
                     <ol class="program-list">
                         {% for part in cont.participation_set.all %}
-                            <li>{{ part.program.name|upper }} — <em>{{ part.program.category.name|upper }}</em></li>
+                            <li>
+                                {{ part.program.name|upper }} — <em>{{ part.program.category.name|upper }}</em>
+                                {% if part.program.schedule %}
+                                    <br/><small style="color:#0284c7; font-weight:bold;">Day {{ part.program.schedule.fest_day.day_number }} @ {{ part.program.schedule.stage.name }} ({{ part.program.schedule.start_time|time:"h:i A" }} - {{ part.program.schedule.end_time|time:"h:i A" }})</small>
+                                {% endif %}
+                            </li>
                         {% endfor %}
                     </ol>
                 {% else %}

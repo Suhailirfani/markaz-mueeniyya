@@ -60,11 +60,18 @@ class Category(models.Model):
 
 # ----------------- Program -----------------
 class Program(models.Model):
+    PROGRAM_TYPES = (
+        ('STAGE', 'Stage Program'),
+        ('OFF_STAGE', 'Off-Stage Program'),
+    )
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_group = models.BooleanField(default=False, null=True)
     members_count = models.PositiveIntegerField(null=True, blank=True, default=1)
+    program_type = models.CharField(max_length=15, choices=PROGRAM_TYPES, default='STAGE')
+    duration_per_participant = models.PositiveIntegerField(default=5, help_text="Duration in minutes per participant/group")
+    buffer_margin_minutes = models.PositiveIntegerField(default=0, help_text="Extra buffer time in minutes")
     is_announced = models.BooleanField(default=False, help_text="Make results public")
     announced_at = models.DateTimeField(null=True, blank=True)
     result_number = models.PositiveIntegerField(null=True, blank=True)  # 🆕 new field
@@ -190,3 +197,52 @@ class SystemSetting(models.Model):
             return cls.objects.get(key=key).value
         except cls.DoesNotExist:
             return default
+
+
+# ----------------- Fest Days & Schedule -----------------
+class FestDay(models.Model):
+    day_number = models.PositiveIntegerField(unique=True)
+    date = models.DateField(null=True, blank=True)
+    name = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        ordering = ['day_number']
+
+    def __str__(self):
+        if self.name:
+            return f"Day {self.day_number} ({self.name})"
+        if self.date:
+            return f"Day {self.day_number} - {self.date.strftime('%d %b %Y')}"
+        return f"Day {self.day_number}"
+
+
+class Stage(models.Model):
+    STAGE_TYPES = (
+        ('STAGE', 'Stage Venue'),
+        ('OFF_STAGE', 'Off-Stage Venue'),
+    )
+    name = models.CharField(max_length=100)
+    stage_type = models.CharField(max_length=15, choices=STAGE_TYPES, default='STAGE')
+    location_details = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ['stage_type', 'name']
+
+    def __str__(self):
+        return f"{self.name} [{self.get_stage_type_display()}]"
+
+
+class ProgramSchedule(models.Model):
+    program = models.OneToOneField(Program, on_delete=models.CASCADE, related_name='schedule')
+    fest_day = models.ForeignKey(FestDay, on_delete=models.CASCADE, related_name='schedules')
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, related_name='schedules')
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    total_duration_minutes = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['fest_day__day_number', 'start_time']
+
+    def __str__(self):
+        return f"{self.program.name} ({self.fest_day} @ {self.stage.name}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')})"
+

@@ -110,6 +110,13 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
                                             <div class="fw-bold">{{ participation.program.name }}</div>
+                                            {% if participation.program.schedule %}
+                                                <div class="small text-success fw-semibold my-1">
+                                                    <i class="fas fa-clock text-warning me-1"></i>
+                                                    Day {{ participation.program.schedule.fest_day.day_number }} @ {{ participation.program.schedule.stage.name }}
+                                                    ({{ participation.program.schedule.start_time|time:"h:i A" }} - {{ participation.program.schedule.end_time|time:"h:i A" }})
+                                                </div>
+                                            {% endif %}
                                             <small class="text-muted">{{ participation.program.category.name }}</small>
                                         </div>
                                         <span class="badge {% if participation.program.is_group %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">
