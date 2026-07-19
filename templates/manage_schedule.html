@@ -14,11 +14,9 @@
             </button>
             <a href="{% url 'view_clashes' %}" class="btn btn-warning fw-bold rounded-pill px-3 shadow-sm position-relative">
                 <i class="fas fa-triangle-exclamation me-1"></i> Clash Detector
-                {% if clash_data.total_clash_count > 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ clash_data.total_clash_count }}
-                    </span>
-                {% endif %}
+                <span id="clashBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if clash_data.total_clash_count == 0 %}d-none{% endif %}">
+                    {{ clash_data.total_clash_count }}
+                </span>
             </a>
             <form action="{% url 'clear_all_schedules' %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to clear ALL scheduled slots?');">
                 {% csrf_token %}
@@ -39,15 +37,13 @@
         {% endfor %}
     {% endif %}
 
-    {% if clash_data.total_clash_count > 0 %}
-        <div class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <i class="fas fa-exclamation-triangle fs-4 me-2"></i>
-                <strong>Schedule Conflicts Detected!</strong> {{ clash_data.total_clash_count }} clash(es) found ({{ clash_data.stage_clashes|length }} stage overlap, {{ clash_data.participant_clashes|length }} participant overlap, {{ clash_data.venue_mismatches|length }} venue type mismatch).
-            </div>
-            <a href="{% url 'view_clashes' %}" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Resolve Clashes</a>
+    <div id="clashAlertBox" class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2 {% if clash_data.total_clash_count == 0 %}d-none{% endif %}">
+        <div>
+            <i class="fas fa-exclamation-triangle fs-4 me-2"></i>
+            <strong>Schedule Conflicts Detected!</strong> <span id="clashCountText">{{ clash_data.total_clash_count }}</span> clash(es) found.
         </div>
-    {% endif %}
+        <a href="{% url 'view_clashes' %}" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Resolve Clashes</a>
+    </div>
 
     <!-- Top Metrics Overview -->
     <div class="row g-3 mb-4">
@@ -59,7 +55,7 @@
         </div>
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
-                <div class="text-success fs-3 fw-bold">{{ scheduled_count }} / {{ total_programs }}</div>
+                <div class="text-success fs-3 fw-bold" id="scheduledCounter">{{ scheduled_count }} / {{ total_programs }}</div>
                 <div class="text-muted small fw-semibold">Scheduled Programs</div>
             </div>
         </div>
@@ -270,7 +266,7 @@
                     </thead>
                     <tbody>
                         {% for item in program_list %}
-                            <tr>
+                            <tr id="programRow{{ item.program.id }}" data-assigned="{{ item.assigned_count }}">
                                 <td class="fw-bold text-dark">
                                     {{ item.program.name }}
                                     {% if item.program.is_group %}
@@ -281,9 +277,10 @@
                                 
                                 <!-- Program Type Badge -->
                                 <td>
-                                    <form action="{% url 'update_program_duration' item.program.id %}" method="POST" class="d-inline-flex gap-1 align-items-center">
+                                    <form id="configForm{{ item.program.id }}" action="{% url 'update_program_duration' item.program.id %}" method="POST" class="d-inline-flex gap-1 align-items-center">
                                         {% csrf_token %}
-                                        <select name="program_type" class="form-select form-select-sm rounded-2" onchange="this.form.submit()">
+                                        <input type="hidden" name="is_ajax" value="1">
+                                        <select name="program_type" class="form-select form-select-sm rounded-2" onchange="updateProgramConfig(this, {{ item.program.id }})">
                                             <option value="STAGE" {% if item.program.program_type == 'STAGE' %}selected{% endif %}>Stage</option>
                                             <option value="OFF_STAGE" {% if item.program.program_type == 'OFF_STAGE' %}selected{% endif %}>Off-Stage</option>
                                         </select>
@@ -293,17 +290,17 @@
 
                                 <!-- Duration per participant input -->
                                 <td>
-                                        <input type="number" name="duration_per_participant" value="{{ item.program.duration_per_participant }}" class="form-control form-control-sm rounded-2" style="width: 65px;" min="1" onchange="this.form.submit()">
+                                        <input type="number" name="duration_per_participant" value="{{ item.program.duration_per_participant }}" class="form-control form-control-sm rounded-2 duration-input" style="width: 65px;" min="1" onchange="updateProgramConfig(this, {{ item.program.id }})">
                                 </td>
                                 <td>
-                                        <input type="number" name="buffer_margin_minutes" value="{{ item.program.buffer_margin_minutes }}" class="form-control form-control-sm rounded-2" style="width: 60px;" min="0" onchange="this.form.submit()">
+                                        <input type="number" name="buffer_margin_minutes" value="{{ item.program.buffer_margin_minutes }}" class="form-control form-control-sm rounded-2 buffer-input" style="width: 60px;" min="0" onchange="updateProgramConfig(this, {{ item.program.id }})">
                                     </form>
                                 </td>
 
-                                <td class="fw-bold text-primary">{{ item.calculated_duration }}m</td>
+                                <td class="fw-bold text-primary total-duration-badge" id="totalDurationBadge{{ item.program.id }}">{{ item.calculated_duration }}m</td>
 
                                 <!-- Current Schedule Slot -->
-                                <td>
+                                <td id="slotBadgeCell{{ item.program.id }}">
                                     {% if item.has_schedule %}
                                         <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-2">
                                             Day {{ item.schedule.fest_day.day_number }} @ {{ item.schedule.stage.name }}
@@ -321,10 +318,7 @@
                                         </button>
 
                                         {% if item.has_schedule %}
-                                            <form action="{% url 'delete_program_schedule' item.schedule.id %}" method="POST" class="d-inline">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-2" title="Remove Schedule"><i class="fas fa-times"></i></button>
-                                            </form>
+                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-2 delete-sched-btn" onclick="deleteScheduleAJAX({{ item.schedule.id }}, {{ item.program.id }})" title="Remove Schedule"><i class="fas fa-times"></i></button>
                                         {% endif %}
                                     </div>
 
@@ -332,12 +326,13 @@
                                     <div class="modal fade text-start" id="scheduleModal{{ item.program.id }}" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content rounded-4 border-0 shadow">
-                                                <form action="{% url 'save_program_schedule' %}" method="POST">
+                                                <form id="scheduleForm{{ item.program.id }}" action="{% url 'save_program_schedule' %}" method="POST" onsubmit="submitScheduleModalAJAX(event, {{ item.program.id }})">
                                                     {% csrf_token %}
+                                                    <input type="hidden" name="is_ajax" value="1">
                                                     <input type="hidden" name="program_id" value="{{ item.program.id }}">
                                                     <div class="modal-header border-0 pb-0">
                                                         <h5 class="modal-title fw-bold text-primary">Schedule: {{ item.program.name }}</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" data-bs-dismiss="modal"></button>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body py-3">
                                                         <div class="mb-3">
@@ -374,7 +369,7 @@
                                                         </div>
 
                                                         <div class="alert alert-info rounded-3 small mb-0">
-                                                            <i class="fas fa-info-circle me-1"></i> Auto-calculated duration: <strong>{{ item.calculated_duration }} minutes</strong> ({{ item.assigned_count }} participants × {{ item.program.duration_per_participant }} mins + {{ item.program.buffer_margin_minutes }}m buffer).
+                                                            <i class="fas fa-info-circle me-1"></i> Auto-calculated duration: <strong id="modalCalcDur{{ item.program.id }}">{{ item.calculated_duration }} minutes</strong> ({{ item.assigned_count }} participants × {{ item.program.duration_per_participant }} mins + {{ item.program.buffer_margin_minutes }}m buffer).
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer border-0 pt-0">
@@ -433,4 +428,137 @@
         </div>
     </div>
 </div>
+
+<!-- Floating Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="ajaxToast" class="toast align-items-center text-white bg-dark border-0 shadow-lg rounded-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                Setting saved!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showToast(message) {
+    const toastEl = document.getElementById('ajaxToast');
+    document.getElementById('toastMessage').innerText = message;
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+}
+
+function updateProgramConfig(elem, programId) {
+    const row = document.getElementById('programRow' + programId);
+    const form = document.getElementById('configForm' + programId);
+    const formData = new FormData(form);
+
+    // Calculate duration live locally for 0ms response
+    const assignedCount = parseInt(row.dataset.assigned) || 0;
+    const durPerPart = parseInt(formData.get('duration_per_participant')) || 1;
+    const bufMins = parseInt(formData.get('buffer_margin_minutes')) || 0;
+    
+    let effectiveCount = assignedCount === 0 ? 1 : assignedCount;
+    let localTotal = (effectiveCount * durPerPart) + bufMins;
+    localTotal = Math.max(localTotal, 5);
+
+    document.getElementById('totalDurationBadge' + programId).innerText = localTotal + 'm';
+
+    // Send async AJAX fetch in background
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('totalDurationBadge' + programId).innerText = data.calculated_duration + 'm';
+            updateClashCounters(data.total_clashes);
+            showToast('⚡ Updated duration settings (' + data.calculated_duration + 'm)');
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function submitScheduleModalAJAX(e, programId) {
+    e.preventDefault();
+    const form = document.getElementById('scheduleForm' + programId);
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update slot badge
+            document.getElementById('slotBadgeCell' + programId).innerHTML = 
+                '<span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-2">' + data.slot_text + '</span>';
+            
+            // Close modal
+            const modalEl = document.getElementById('scheduleModal' + programId);
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            updateClashCounters(data.total_clashes);
+            showToast('✅ Schedule saved!');
+        } else {
+            alert(data.message || 'Error saving schedule');
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function deleteScheduleAJAX(scheduleId, programId) {
+    if (!confirm('Remove schedule slot for this program?')) return;
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    formData.append('is_ajax', '1');
+
+    fetch('/schedule/delete/' + scheduleId + '/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('slotBadgeCell' + programId).innerHTML = 
+                '<span class="badge bg-light text-muted border">Unscheduled</span>';
+            
+            updateClashCounters(data.total_clashes);
+            showToast('🗑️ Schedule removed');
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function updateClashCounters(count) {
+    const badge = document.getElementById('clashBadge');
+    const alertBox = document.getElementById('clashAlertBox');
+    const countText = document.getElementById('clashCountText');
+
+    if (count > 0) {
+        badge.innerText = count;
+        badge.classList.remove('d-none');
+        if (countText) countText.innerText = count;
+        if (alertBox) alertBox.classList.remove('d-none');
+    } else {
+        badge.classList.add('d-none');
+        if (alertBox) alertBox.classList.add('d-none');
+    }
+}
+</script>
 {% endblock %}
