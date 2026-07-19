@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     path('manifest.json', views.manifest_view, name='manifest_json'),
     path('sw.js', views.service_worker, name='service_worker'),
+    path('favicon.ico', views.favicon_view, name='favicon_ico'),
+    path('favicon.svg', views.favicon_view, name='favicon_svg'),
     path('', views.face_page, name='face_page'),
     path('auth/', views.landing_view, name='landing'),
     path('signup', views.signup_view, name='signup'),

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#053b75"/>
+      <stop offset="50%" stop-color="#032249"/>
+      <stop offset="100%" stop-color="#011024"/>
+    </linearGradient>
+
+    <!-- Gold Metallic Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff59d"/>
+      <stop offset="30%" stop-color="#ffd54f"/>
+      <stop offset="70%" stop-color="#ffb300"/>
+      <stop offset="100%" stop-color="#ff6f00"/>
+    </linearGradient>
+
+    <!-- Gold Light Accent Gradient -->
+    <linearGradient id="goldLightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#ffe082"/>
+      <stop offset="100%" stop-color="#ffb300"/>
+    </linearGradient>
+
+    <!-- Platinum/White Glow -->
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffd54f" stop-opacity="0.2"/>
+    </radialGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="glowShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#ffd54f" flood-opacity="0.4"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background App Icon Frame -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="6"/>
+
+  <!-- Outer Victory Laurel Rays / Ring -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="12 12" opacity="0.4"/>
+
+  <!-- Main Trophy Illustration Group -->
+  <g filter="url(#glowShadow)">
+    
+    <!-- Trophy Left Handle -->
+    <path d="M 160 170 C 100 170 100 270 175 290" fill="none" stroke="url(#goldGrad)" stroke-width="20" stroke-linecap="round"/>
+    
+    <!-- Trophy Right Handle -->
+    <path d="M 352 170 C 412 170 412 270 337 290" fill="none" stroke="url(#goldGrad)" stroke-width="20" stroke-linecap="round"/>
+
+    <!-- Trophy Main Cup Bowl -->
+    <path d="M 165 140 H 347 C 347 140 355 270 256 315 C 157 270 165 140 165 140 Z" fill="url(#goldGrad)"/>
+
+    <!-- Trophy Top Rim Lip -->
+    <rect x="150" y="130" width="212" height="24" rx="12" fill="url(#goldLightGrad)"/>
+
+    <!-- Trophy Stem Base Connection -->
+    <path d="M 236 310 H 276 V 360 H 236 Z" fill="url(#goldGrad)"/>
+    <rect x="220" y="355" width="72" height="16" rx="8" fill="url(#goldLightGrad)"/>
+
+    <!-- Trophy Bottom Pedestal Base -->
+    <path d="M 180 370 H 332 L 348 425 H 164 L 180 370 Z" fill="url(#goldGrad)"/>
+    <rect x="150" y="420" width="212" height="20" rx="6" fill="url(#goldLightGrad)"/>
+
+    <!-- Central Victory Star Emblem -->
+    <g transform="translate(256, 215) scale(0.95)">
+      <!-- Star Outer Glow Accent -->
+      <polygon points="0,-45 13,-14 45,-12 20,10 28,42 0,24 -28,42 -20,10 -45,-12 -13,-14" fill="url(#starGlow)"/>
+      <!-- Inner Bright Star -->
+      <polygon points="0,-40 11,-12 40,-10 18,9 25,37 0,21 -25,37 -18,9 -40,-10 -11,-12" fill="#ffffff"/>
+    </g>
+
+    <!-- Laurel Crown Leaves Left -->
+    <path d="M 130 230 Q 110 200 135 170 M 125 280 Q 95 250 120 220" fill="none" stroke="#ffd54f" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+    
+    <!-- Laurel Crown Leaves Right -->
+    <path d="M 382 230 Q 402 200 377 170 M 387 280 Q 417 250 392 220" fill="none" stroke="#ffd54f" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+
+  </g>
+</svg>

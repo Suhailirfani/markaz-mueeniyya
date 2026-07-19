@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_control
@@ -192,20 +194,29 @@ def manifest_view(request):
         "orientation": "portrait",
         "icons": [
             {
-                "src": "/static/FDL.png",
-                "sizes": "192x192",
-                "type": "image/png",
+                "src": "/static/images/favicon.svg",
+                "sizes": "any",
+                "type": "image/svg+xml",
                 "purpose": "any maskable"
             },
             {
-                "src": "/static/FDL.png",
-                "sizes": "512x512",
-                "type": "image/png",
+                "src": "/static/images/favicon.svg",
+                "sizes": "192x192 512x512",
+                "type": "image/svg+xml",
                 "purpose": "any maskable"
             }
         ]
     }
     return JsonResponse(manifest_data)
+
+@cache_control(max_age=86400, public=True)
+def favicon_view(request):
+    svg_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'images', 'favicon.svg')
+    if os.path.exists(svg_path):
+        with open(svg_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='image/svg+xml')
+    return HttpResponse(status=404)
 
 @cache_control(max_age=86400, public=True)
 def service_worker(request):
