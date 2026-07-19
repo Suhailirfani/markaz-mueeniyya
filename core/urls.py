@@ -42,6 +42,7 @@ urlpatterns = [
     path('edit-category/<int:category_id>/', views.edit_category, name='edit_category'),
     path('delete-category/<int:category_id>/', views.delete_category, name='delete_category'),
     path('add-program/', views.add_program, name='add_program'),
+    path('add-program/download-template/', views.download_program_excel_template, name='download_program_excel_template'),
     path('edit-program/<int:program_id>/', views.edit_program, name='edit_program'),
     
     path('delete-program/<int:program_id>/', views.delete_program, name='delete_program'), 

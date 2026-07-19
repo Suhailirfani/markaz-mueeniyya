@@ -829,3 +829,89 @@ def chest_number(request):
     return render(request, 'chest_number.html', context)
 
 
+@login_required
+def download_program_excel_template(request):
+    """
+    Generates and downloads a clean Excel template (.xlsx) with sample program rows
+    and scheduling columns (name, category, members_count, type, mode, duration, buffer, stage).
+    """
+    sample_data = [
+        {
+            'name': 'Qur-an Recitation',
+            'category': 'SENIOR',
+            'members_count': 1,
+            'type': 'Stage',
+            'mode': 'Sequential',
+            'duration': 5,
+            'buffer': 0,
+            'stage': 'Stage 1'
+        },
+        {
+            'name': 'Elocution / Speech',
+            'category': 'JUNIOR',
+            'members_count': 1,
+            'type': 'Stage',
+            'mode': 'Sequential',
+            'duration': 6,
+            'buffer': 1,
+            'stage': 'Stage 2'
+        },
+        {
+            'name': 'Essay Writing',
+            'category': 'SENIOR',
+            'members_count': 1,
+            'type': 'Off-Stage',
+            'mode': 'Simultaneous',
+            'duration': 40,
+            'buffer': 5,
+            'stage': 'Stage 4'
+        },
+        {
+            'name': 'Pencil Drawing',
+            'category': 'SUBJUNIOR',
+            'members_count': 1,
+            'type': 'Off-Stage',
+            'mode': 'Simultaneous',
+            'duration': 30,
+            'buffer': 0,
+            'stage': 'Stage 4'
+        },
+        {
+            'name': 'Duffmuttu (Group)',
+            'category': 'SENIOR',
+            'members_count': 7,
+            'type': 'Stage',
+            'mode': 'Sequential',
+            'duration': 10,
+            'buffer': 2,
+            'stage': 'Stage 1'
+        }
+    ]
+
+    df = pd.DataFrame(sample_data)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="Program_Import_Template.xlsx"'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Program Templates')
+        
+        cat_names = list(Category.objects.values_list('name', flat=True))
+        stage_names = list(Stage.objects.values_list('name', flat=True))
+
+        max_len = max(len(cat_names), len(stage_names), 1)
+        cat_names += [''] * (max_len - len(cat_names))
+        stage_names += [''] * (max_len - len(stage_names))
+
+        ref_df = pd.DataFrame({
+            'Available Categories': cat_names,
+            'Available Stages / Venues': stage_names
+        })
+        ref_df.to_excel(writer, index=False, sheet_name='Reference Guide')
+
+    return response
+
+
+
