@@ -219,6 +219,15 @@ def favicon_view(request):
     return HttpResponse(status=404)
 
 @cache_control(max_age=86400, public=True)
+def fest_logo_view(request):
+    svg_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'images', 'fest_logo.svg')
+    if os.path.exists(svg_path):
+        with open(svg_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='image/svg+xml')
+    return HttpResponse(status=404)
+
+@cache_control(max_age=86400, public=True)
 def service_worker(request):
     sw_code = """
 const CACHE_NAME = 'himhs-fest-pwa-v1';

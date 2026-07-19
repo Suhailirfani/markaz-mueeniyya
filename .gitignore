@@ -30,5 +30,6 @@ db.sqlite3
 *.sqlite3-wal
 
 # Static / Media
+staticfiles/
 *.log
 .DS_Store
