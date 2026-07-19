@@ -115,7 +115,7 @@ urlpatterns = [
     # Custom setting route
     path('update-settings/', views.update_settings, name='update_settings'),
 
-    # Schedule & Clash Management routes
+    # Schedule & Clash Management routes (manage_schedule, view_clashes)
     path('schedule/', views.manage_schedule, name='manage_schedule'),
     path('schedule/days/add/', views.add_fest_day, name='add_fest_day'),
     path('schedule/days/delete/<int:day_id>/', views.delete_fest_day, name='delete_fest_day'),
