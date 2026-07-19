@@ -98,8 +98,16 @@
         <!-- TAB 1: MASTER TIMETABLE -->
         <div class="tab-pane fade show active" id="timetable-pane" role="tabpanel" aria-labelledby="timetable-tab" tabindex="0">
             <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-border-all me-2"></i> Master Fest Timetable</h5>
+                    
+                    <!-- Live Timetable Search Box -->
+                    <div style="min-width: 280px;">
+                        <div class="input-group input-group-sm rounded-pill border shadow-sm bg-light">
+                            <span class="input-group-text bg-transparent border-0 text-muted ps-3"><i class="fas fa-search"></i></span>
+                            <input type="text" id="timetableSearchInput" class="form-control bg-transparent border-0 pe-3" placeholder="Search timetable program, stage...">
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body px-4">
                     {% for day_matrix in timetable_by_day %}
@@ -109,7 +117,7 @@
 
                         <div class="row g-3 mb-4">
                             {% for st_col in day_matrix.stages %}
-                                <div class="col-12 col-md-6 col-lg-4">
+                                <div class="col-12 col-md-6 col-lg-4 stage-column-box" data-stage-name="{{ st_col.stage.name|lower }}">
                                     <div class="p-3 border rounded-3 bg-light h-100">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="fw-bold text-primary">{{ st_col.stage.name }}</span>
@@ -121,10 +129,10 @@
                                         </div>
 
                                         {% for s in st_col.schedules %}
-                                            <div class="card border-0 shadow-sm rounded-3 p-2 mb-2 bg-white">
+                                            <div class="card border-0 shadow-sm rounded-3 p-2 mb-2 bg-white timetable-program-card">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <strong class="text-dark small">{{ s.program.name }}</strong>
-                                                    <span class="badge bg-info text-dark" style="font-size: 0.65rem;">{{ s.program.category.name }}</span>
+                                                    <strong class="text-dark small program-name">{{ s.program.name }}</strong>
+                                                    <span class="badge bg-info text-dark category-badge" style="font-size: 0.65rem;">{{ s.program.category.name }}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center mt-1 text-muted" style="font-size: 0.75rem;">
                                                     <span><i class="far fa-clock text-warning me-1"></i> {{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}</span>
@@ -132,7 +140,7 @@
                                                 </div>
                                             </div>
                                         {% empty %}
-                                            <div class="text-muted small text-center py-2">No programs scheduled</div>
+                                            <div class="text-muted small text-center py-2 no-sched-msg">No programs scheduled</div>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -148,8 +156,16 @@
         <!-- TAB 2: PROGRAM SCHEDULE & DURATION SETTINGS -->
         <div class="tab-pane fade" id="programs-pane" role="tabpanel" aria-labelledby="programs-tab" tabindex="0">
             <div class="card border-0 shadow-sm rounded-4 bg-white">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-tasks me-2"></i> Program Schedule, Duration Mode & Stage Priority</h5>
+                    
+                    <!-- Live Program Settings Search Box -->
+                    <div style="min-width: 280px;">
+                        <div class="input-group input-group-sm rounded-pill border shadow-sm bg-light">
+                            <span class="input-group-text bg-transparent border-0 text-muted ps-3"><i class="fas fa-search"></i></span>
+                            <input type="text" id="programSettingsSearchInput" class="form-control bg-transparent border-0 pe-3" placeholder="Search programs by name, category...">
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body px-4">
                     <div class="table-responsive">
@@ -506,6 +522,42 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem('activeScheduleTab', event.target.getAttribute('data-bs-target'));
         });
     });
+
+    // 1. Live Search for Master Timetable
+    const ttSearch = document.getElementById('timetableSearchInput');
+    if (ttSearch) {
+        ttSearch.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.timetable-program-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (!q || text.includes(q)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // 2. Live Search for Program Settings Table
+    const progSearch = document.getElementById('programSettingsSearchInput');
+    if (progSearch) {
+        progSearch.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('tr[id^="programRow"]');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (!q || text.includes(q)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
 });
 
 function showToast(message) {
