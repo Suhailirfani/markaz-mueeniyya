@@ -1,221 +1,570 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>🏆 Team Leaderboard</h3>
-        <div class="text-muted">
-            <small>Last updated: {% now "M d, Y H:i" %}</small>
-        </div>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Poster Leaderboard – {{ fest_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- html2canvas for e-Poster JPEG download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    {% if is_admin %}
-    <div class="d-flex justify-content-center mb-3">
-        <div class="btn-group btn-group-sm rounded-pill border p-1 bg-light shadow-sm">
-            <a href="?view=announced" class="btn btn-sm rounded-pill px-3 {% if announced_only %}btn-primary{% else %}btn-light text-secondary{% endif %}">
-                <i class="fas fa-eye me-1"></i>Announced Only
-            </a>
-            <a href="?view=all" class="btn btn-sm rounded-pill px-3 {% if not announced_only %}btn-primary{% else %}btn-light text-secondary{% endif %}">
-                <i class="fas fa-eye-slash me-1"></i>All Entered (Admin)
-            </a>
-        </div>
-    </div>
-    {% if not announced_only %}
-    <div class="alert alert-warning border-0 rounded-3 py-2 px-3 mb-3 d-flex align-items-center gap-2" role="alert">
-        <i class="fas fa-lock-open text-warning"></i>
-        <span><strong>Admin View:</strong> Showing real total points from <em>all entered programs</em> — not visible to public.</span>
-    </div>
-    {% endif %}
-    {% endif %}
+    <style>
+        :root {
+            --gold: #FFD700;
+            --silver: #E0E0E0;
+            --bronze: #CD7F32;
+            --dark-bg: #0b091a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-light: rgba(255, 255, 255, 0.1);
+        }
 
-    
-    <!-- Overall Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center bg-primary text-white">
-                <div class="card-body">
-                    <h4>{{ total_teams }}</h4>
-                    <small>Total Teams</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center bg-success text-white">
-                <div class="card-body">
-                    <h4>{{ total_points_distributed }}</h4>
-                    <small>Points Distributed</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center bg-info text-white">
-                <div class="card-body">
-                    <h4>{{ total_participations_all }}</h4>
-                    <small>Total Participations</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center bg-warning text-white">
-                <div class="card-body">
-                    <h4>{{ total_winners_all }}</h4>
-                    <small>Winners (Top 3)</small>
-                </div>
-            </div>
-        </div>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #070510;
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* ── CONTROL TOOLBAR (outside poster) ────────────────────── */
+        .toolbar {
+            background: rgba(15, 12, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .toolbar .nav-left { display: flex; align-items: center; gap: 12px; }
+        .toolbar .nav-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-gold   { background: linear-gradient(135deg, #FFD700, #ffa500); color: #1a0a00; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.4); }
+
+        .btn-outline { background: transparent; color: #cbd5e0; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+        .btn-admin { background: rgba(99,102,241,0.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.4); }
+        .btn-admin.active { background: #4f46e5; color: #fff; }
+
+        /* ── E-POSTER CONTAINER ─────────────────────────────────── */
+        .eposter-wrapper {
+            max-width: 1100px;
+            margin: 24px auto 0;
+            padding: 0 16px;
+        }
+
+        .eposter-card {
+            background: linear-gradient(145deg, #0d0a22 0%, #161138 40%, #0d1728 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 28px;
+            padding: 40px 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.7), inset 0 0 100px rgba(255,215,0,0.03);
+        }
+
+        /* Decorative glowing corner ribbons */
+        .eposter-card::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .eposter-card::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; right: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── POSTER HEADER ──────────────────────────────────────── */
+        .poster-header {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 2;
+        }
+        .poster-header .badge-fest {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 50px;
+            background: rgba(255, 215, 0, 0.12);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 10px;
+        }
+        .poster-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFF, #FFD700, #FFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+        .poster-header .sub-title {
+            font-size: 1rem;
+            color: #a0aec0;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* ── 3D PODIUM SECTION ───────────────────────────────────── */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .podium-slot {
+            flex: 1;
+            max-width: 280px;
+            border-radius: 20px;
+            padding: 24px 16px 20px;
+            text-align: center;
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        /* 1st Place - Center Elevated */
+        .podium-slot.rank-1 {
+            order: 2;
+            transform: scale(1.08);
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            background: linear-gradient(180deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.02) 100%);
+            box-shadow: 0 15px 40px rgba(255,215,0,0.25);
+        }
+        /* 2nd Place - Left */
+        .podium-slot.rank-2 {
+            order: 1;
+            border: 1px solid rgba(224, 224, 224, 0.4);
+            background: linear-gradient(180deg, rgba(224,224,224,0.1) 0%, rgba(255,255,255,0.02) 100%);
+        }
+        /* 3rd Place - Right */
+        .podium-slot.rank-3 {
+            order: 3;
+            border: 1px solid rgba(205, 127, 50, 0.4);
+            background: linear-gradient(180deg, rgba(205,127,50,0.1) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        /* Crown icon for 1st place */
+        .crown-icon {
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 4px;
+            animation: floatCrown 3s ease-in-out infinite;
+        }
+        @keyframes floatCrown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .podium-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 900;
+        }
+        .rank-1 .podium-badge { background: linear-gradient(135deg, #FFD700, #b8860b); color: #3a2200; box-shadow: 0 0 16px rgba(255,215,0,0.6); }
+        .rank-2 .podium-badge { background: linear-gradient(135deg, #E0E0E0, #9E9E9E); color: #111; }
+        .rank-3 .podium-badge { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; }
+
+        .podium-team-name {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .podium-points {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        .rank-1 .podium-points { color: var(--gold); }
+        .rank-2 .podium-points { color: var(--silver); }
+        .rank-3 .podium-points { color: var(--bronze); }
+
+        .podium-stats {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+        .podium-stats span {
+            background: rgba(255,255,255,0.08);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* ── LEADERBOARD GRID / LIST ────────────────────────────── */
+        .leader-section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #a0aec0;
+            margin-bottom: 16px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .leader-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .leader-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .leader-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(4px);
+        }
+
+        .leader-rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.08);
+            color: #e2e8f0;
+        }
+        .leader-card.pos-1 .leader-rank { background: var(--gold); color: #111; }
+        .leader-card.pos-2 .leader-rank { background: var(--silver); color: #111; }
+        .leader-card.pos-3 .leader-rank { background: var(--bronze); color: #fff; }
+
+        .leader-main { flex: 1; min-width: 0; }
+        .leader-team {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .leader-sub {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        /* Progress Bar */
+        .progress-bar-wrap {
+            height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 6px;
+            width: 100%;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #4f46e5, #ec4899, #f59e0b);
+            transition: width 0.6s ease;
+        }
+
+        .pill-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .pill-gold   { background: rgba(255,215,0,0.18); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+        .pill-silver { background: rgba(224,224,224,0.18); color: var(--silver); border: 1px solid rgba(224,224,224,0.3); }
+        .pill-bronze { background: rgba(205,127,50,0.18); color: var(--bronze); border: 1px solid rgba(205,127,50,0.3); }
+        .pill-aplus  { background: rgba(72,199,142,0.18); color: #68d391; }
+
+        .leader-points {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .leader-points small { font-size: 0.75rem; font-weight: 600; color: #a0aec0; }
+
+        /* ── FOOTER BRANDING ────────────────────────────────────── */
+        .poster-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: #718096;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 2;
+        }
+        .poster-footer strong { color: #cbd5e0; }
+
+        /* ── SPINNER OVERLAY ─────────────────────────────────────── */
+        #dl-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(7,5,16,0.88);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        #dl-overlay.active { display: flex; }
+        #dl-overlay .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .podium-container { flex-direction: column; align-items: stretch; }
+            .podium-slot.rank-1 { order: 1; transform: none; }
+            .podium-slot.rank-2 { order: 2; }
+            .podium-slot.rank-3 { order: 3; }
+            .eposter-card { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Download overlay spinner -->
+<div id="dl-overlay"><div class="spinner"></div><span style="color:#fff;font-weight:600">Generating e-Poster JPEG…</span></div>
+
+<!-- ═══ CONTROL TOOLBAR ══════════════════════════════════════════ -->
+<div class="toolbar">
+    <div class="nav-left">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+        <span style="font-weight:800;font-size:1.05rem;color:var(--gold)">🏆 Official Leaderboard</span>
     </div>
-    
-    <!-- Top 3 Teams Highlight -->
-    {% if top_teams %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="mb-3">🎖️ Top Performers</h5>
-        </div>
-        {% for team_stat in top_teams %}
-        <div class="col-md-4">
-            <div class="card border-{% if team_stat.position == 1 %}warning{% elif team_stat.position == 2 %}secondary{% else %}danger{% endif %}">
-                <div class="card-header text-center bg-{% if team_stat.position == 1 %}warning{% elif team_stat.position == 2 %}secondary{% else %}danger{% endif %} text-white">
-                    <h5 class="mb-0">
-                        {% if team_stat.position == 1 %}🥇{% elif team_stat.position == 2 %}🥈{% else %}🥉{% endif %}
-                        {{ team_stat.team.name }}
-                    </h5>
-                </div>
-                <div class="card-body text-center">
-                    <h3 class="text-{% if team_stat.position == 1 %}warning{% elif team_stat.position == 2 %}secondary{% else %}danger{% endif %}">
-                        {{ team_stat.total_points }} pts
-                    </h3>
-                    <p class="mb-2">
-                        <span class="badge bg-success">{{ team_stat.winners }} Winners</span>
-                        <span class="badge bg-info">{{ team_stat.marked_participations }} Entries</span>
-                    </p>
-                    <small class="text-muted">
-                        Rank: {{ team_stat.rank_points }}pts | Grade: {{ team_stat.grade_points }}pts
-                    </small>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    
-    <!-- Full Leaderboard Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">📊 Complete Leaderboard</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>Total Points</th>
-                            <th>Winners</th>
-                            <th>Participations</th>
-                            <th>Points Breakdown</th>
-                            <th>Performance</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for team_stat in team_stats %}
-                        <tr {% if team_stat.position <= 3 %}class="table-warning"{% endif %}>
-                            <td>
-                                <span class="fw-bold">
-                                    {% if team_stat.position == 1 %}
-                                        🥇 #1
-                                    {% elif team_stat.position == 2 %}
-                                        🥈 #2
-                                    {% elif team_stat.position == 3 %}
-                                        🥉 #3
-                                    {% else %}
-                                        #{{ team_stat.position }}
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>
-                                <strong>{{ team_stat.team.name }}</strong>
-                                {% if team_stat.team.description %}
-                                    <br><small class="text-muted">{{ team_stat.team.description }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge bg-primary fs-6">{{ team_stat.total_points }} pts</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">{{ team_stat.winners }}</span>
-                                <small class="text-muted d-block">
-                                    🥇{{ team_stat.first_place }} 🥈{{ team_stat.second_place }} 🥉{{ team_stat.third_place }}
-                                </small>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{ team_stat.marked_participations }}</span>
-                                <small class="text-muted d-block">/ {{ team_stat.total_participations }} total</small>
-                            </td>
-                            <td>
-                                <small>
-                                    <strong>Rank:</strong> {{ team_stat.rank_points }}pts<br>
-                                    <strong>Grade:</strong> {{ team_stat.grade_points }}pts
-                                </small>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    {% if team_stat.grade_a %}<span class="badge bg-success">A:{{ team_stat.grade_a }}</span>{% endif %}
-                                    {% if team_stat.grade_b %}<span class="badge bg-info">B:{{ team_stat.grade_b }}</span>{% endif %}
-                                    {% if team_stat.grade_c %}<span class="badge bg-warning">C:{{ team_stat.grade_c }}</span>{% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                <a href="{% url 'team_detail' team_stat.team.id %}" class="btn btn-outline-primary btn-sm">
-                                    View Details
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                <i class="fas fa-trophy fa-2x mb-2"></i><br>
-                                No team data available yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Points Legend -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">🏅 Ranking Points</h6>
-                </div>
-                <div class="card-body">
-                    <small>
-                        🥇 <strong>1st Place:</strong> 6 points<br>
-                        🥈 <strong>2nd Place:</strong> 3 points<br>
-                        🥉 <strong>3rd Place:</strong> 1 point<br>
-                        <span class="text-muted">Other positions: 0 points</span>
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">📚 Grade Points</h6>
-                </div>
-                <div class="card-body">
-                    <small>
-                        <span class="badge bg-success me-1">A</span> <strong>Grade A:</strong> 6 points (80+ marks)<br>
-                        <span class="badge bg-info me-1">B</span> <strong>Grade B:</strong> 3 points (60-79 marks)<br>
-                        <span class="badge bg-warning me-1">C</span> <strong>Grade C:</strong> 1 point (50-59 marks)
-                    </small>
-                </div>
-            </div>
-        </div>
+    <div class="nav-right">
+        {% if is_admin %}
+        <a href="?view=announced" class="btn btn-admin {% if announced_only %}active{% endif %}">
+            <i class="fas fa-eye me-1"></i> Announced Only
+        </a>
+        <a href="?view=all" class="btn btn-admin {% if not announced_only %}active{% endif %}">
+            <i class="fas fa-lock-open me-1"></i> All Entered (Admin)
+        </a>
+        {% endif %}
+        <a href="{% url 'shareable_results' %}" class="btn btn-outline">
+            <i class="fas fa-trophy"></i> Winner Cards
+        </a>
+        <button class="btn btn-gold" onclick="downloadPoster()">
+            <i class="fas fa-file-image"></i> Download e-Poster JPEG
+        </button>
     </div>
 </div>
-{% endblock %}
+
+<!-- ═══ E-POSTER CARD CONTAINER ═════════════════════════════════ -->
+<div class="eposter-wrapper">
+    <div class="eposter-card" id="ePosterNode">
+
+        <!-- Header -->
+        <div class="poster-header">
+            <div class="badge-fest">OFFICIAL LEADERBOARD • {{ fest_name }}</div>
+            <h1>OVERALL TEAM STANDINGS</h1>
+            <p class="sub-title">
+                {% if announced_only %}
+                ✨ Real-time Official Announced Points
+                {% else %}
+                🔒 Total Points (All Entered Programs – Admin View)
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- 3D Podium for Top 3 -->
+        {% if top_teams %}
+        <div class="podium-container">
+            {% for tstat in top_teams %}
+            <div class="podium-slot rank-{{ tstat.position }}">
+                {% if tstat.position == 1 %}
+                <div class="crown-icon"><i class="fas fa-crown"></i></div>
+                {% endif %}
+
+                <div class="podium-badge">
+                    {% if tstat.position == 1 %}🥇
+                    {% elif tstat.position == 2 %}🥈
+                    {% else %}🥉{% endif %}
+                </div>
+
+                <div class="podium-team-name">{{ tstat.team.name }}</div>
+                <div class="podium-points">{{ tstat.total_points }} <small style="font-size:0.9rem">pts</small></div>
+
+                <div class="podium-stats">
+                    <span>🥇 {{ tstat.first_place }}</span>
+                    <span>🥈 {{ tstat.second_place }}</span>
+                    <span>🥉 {{ tstat.third_place }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- All Teams Standings List -->
+        <div class="leader-section-title">Full Team Rankings</div>
+
+        <div class="leader-grid">
+            {% for tstat in team_stats %}
+            <div class="leader-card pos-{{ tstat.position }}">
+                <div class="leader-rank">
+                    {% if tstat.position == 1 %}🥇
+                    {% elif tstat.position == 2 %}🥈
+                    {% elif tstat.position == 3 %}🥉
+                    {% else %}{{ tstat.position }}{% endif %}
+                </div>
+
+                <div class="leader-main">
+                    <div class="leader-team">
+                        {{ tstat.team.name }}
+                    </div>
+
+                    <div class="leader-sub">
+                        {% if tstat.first_place %}
+                        <span class="pill-badge pill-gold">🥇 {{ tstat.first_place }} 1st</span>
+                        {% endif %}
+                        {% if tstat.second_place %}
+                        <span class="pill-badge pill-silver">🥈 {{ tstat.second_place }} 2nd</span>
+                        {% endif %}
+                        {% if tstat.third_place %}
+                        <span class="pill-badge pill-bronze">🥉 {{ tstat.third_place }} 3rd</span>
+                        {% endif %}
+                        {% if tstat.grade_aplus %}
+                        <span class="pill-badge pill-aplus">⭐ {{ tstat.grade_aplus }} A+</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Progress bar relative to max points -->
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill" style="width: {% widthratio tstat.total_points max_points 100 %}%"></div>
+                    </div>
+                </div>
+
+                <div class="leader-points">
+                    {{ tstat.total_points }}
+                    <small>pts</small>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align:center;padding:40px;color:#a0aec0">
+                No team scores available yet.
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Poster Footer -->
+        <div class="poster-footer">
+            <div>
+                <strong>{{ fest_name }}</strong> • Official Scoreboard
+            </div>
+            <div>
+                Total Points Distributed: <strong>{{ total_points_distributed }} pts</strong>
+            </div>
+            <div>
+                Generated on {% now "d M Y, h:i A" %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    async function downloadPoster() {
+        const node = document.getElementById('ePosterNode');
+        showOverlay();
+
+        try {
+            const canvas = await html2canvas(node, {
+                backgroundColor: '#070510',
+                scale: 2.5,
+                useCORS: true,
+                logging: false,
+            });
+            const link = document.createElement('a');
+            link.download = 'Leaderboard_ePoster_{{ fest_name|slugify }}.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        } finally {
+            hideOverlay();
+        }
+    }
+
+    function showOverlay() { document.getElementById('dl-overlay').classList.add('active'); }
+    function hideOverlay() { document.getElementById('dl-overlay').classList.remove('active'); }
+</script>
+</body>
+</html>

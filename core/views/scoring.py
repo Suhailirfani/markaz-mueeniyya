@@ -501,6 +501,8 @@ def team_leaderboard(request):
             current_rank = i + 1
         stat['position'] = current_rank
 
+    max_points = team_stats[0]['total_points'] if team_stats else 1
+
     return render(request, 'team_leaderboard.html', {
         'team_stats': team_stats,
         'top_teams': team_stats[:3],
@@ -509,6 +511,8 @@ def team_leaderboard(request):
         'is_admin': is_admin,
         'view_mode': view_mode,
         'announced_only': announced_only,
+        'fest_name': SystemSetting.get_setting('fest_name', 'Madrasa Fest'),
+        'max_points': max_points,
     })
 
 @login_required
@@ -1049,13 +1053,8 @@ def calculate_rankings_and_points(category_id, program_id):
         raise
 
 def team_leaderboard2(request):
-    """Display team leaderboard"""
-    teams = Team.objects.all().order_by('-total_points')
-    
-    context = {
-        'teams': teams
-    }
-    return render(request, 'competition/team_leaderboard.html', context)
+    """Display team leaderboard (alias for team_leaderboard)"""
+    return team_leaderboard(request)
 
 def program_results(request, program_id):
     """Display results for a specific program (individual or group)"""
