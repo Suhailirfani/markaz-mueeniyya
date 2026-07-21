@@ -110,6 +110,7 @@ urlpatterns = [
     # path('list_page/', views.list_page, name='list_page'),
     # urls.py
     path('program/<int:program_id>/toggle/', views.toggle_is_group, name='toggle_is_group'),
+    path('program/<int:program_id>/toggle-announcement/', views.toggle_program_announcement, name='toggle_program_announcement'),
     path('contestant-points/', views.contestant_points_list, name='contestant_points_list'),
     path('results-page/', views.results_page, name='results_page'),
     # added on 26-09-25

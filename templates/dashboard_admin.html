@@ -466,6 +466,60 @@
         </div>
       </form>
     </div>
+  <!-- Smart Announcement Assistant (Recommended 5 Programs for Team Balance & Suspense) -->
+  <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="card-header text-white py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+      <h5 class="mb-0 fw-bold"><i class="fas fa-bolt text-warning me-2"></i>Smart Result Announcement Assistant</h5>
+      <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill"><i class="fas fa-balance-scale me-1"></i>Top 5 Team-Balancing Suggestions</span>
+    </div>
+    <div class="card-body p-4 bg-light">
+      <p class="text-muted small mb-3">
+        <i class="fas fa-info-circle me-1 text-primary"></i> 
+        These 5 completed programs are strategically calculated to <strong>keep competing team points balanced</strong> and maintain live suspense on the public leaderboard!
+      </p>
+
+      {% if suggested_announcements %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 bg-white rounded-3 shadow-sm border">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Suggested Program</th>
+                <th>Category</th>
+                <th>Estimated Team Impact</th>
+                <th class="text-center">Team Gap After Announcement</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in suggested_announcements %}
+                <tr>
+                  <td class="fw-bold text-primary">#{{ forloop.counter }}</td>
+                  <td class="fw-bold text-dark">{{ item.program.name }}</td>
+                  <td><span class="badge bg-secondary-subtle text-secondary px-2 py-1">{{ item.program.category.name }}</span></td>
+                  <td><small class="text-success fw-semibold">{{ item.impact_summary }}</small></td>
+                  <td class="text-center">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-2.5 py-1">
+                      1st vs 2nd Gap: {{ item.top_gap_after }} pts
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <a href="{% url 'toggle_program_announcement' item.program.id %}" class="btn btn-sm btn-success fw-bold px-3 rounded-pill shadow-sm" onclick="return confirm('Announce results for {{ item.program.name }} to public leaderboard?');">
+                      <i class="fas fa-bullhorn me-1"></i> 📢 Announce Now
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-4 text-muted bg-white rounded-3 border">
+          <i class="fas fa-check-circle text-success fs-3 mb-2 d-block"></i>
+          All completed program results have been announced, or pending mark entry.
+        </div>
+      {% endif %}
+    </div>
   </div>
 
   <div class="dashboard-grid">

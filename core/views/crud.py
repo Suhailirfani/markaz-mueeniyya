@@ -27,12 +27,15 @@ def dashboard_admin(request):
     User = get_user_model()
     pending_users = User.objects.filter(is_approved=False)
     from ..models import SystemSetting
+    from .scoring import get_top_5_balancing_announcement_suggestions
     group_point_system = SystemSetting.get_setting('group_point_system', 'member_count')
+    suggested_announcements = get_top_5_balancing_announcement_suggestions()
     context = {
         'programs': programs,
         'teams': teams,
         'pending_users': pending_users,
         'group_point_system': group_point_system,
+        'suggested_announcements': suggested_announcements,
     }
     return render(request, 'dashboard_admin.html', context)
 

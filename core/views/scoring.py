@@ -1175,5 +1175,93 @@ def enter_marks_summary_cat(request):
         'category_id': category_id,
     })
 
+# ================= Smart Announcement Assistant & Recommendation Engine =================
+
+def get_top_5_balancing_announcement_suggestions():
+    """
+    Calculates top 5 unannounced completed programs that best balance 
+    the current public team scores and create maximum suspense on the public leaderboard.
+    """
+    teams = list(Team.objects.all())
+    if not teams:
+        return []
+
+    public_team_scores = {t.id: recalculate_team_points(t, announced_only=True) for t in teams}
+    
+    unannounced_programs = Program.objects.filter(
+        is_announced=False
+    ).filter(
+        Q(participation__marks__isnull=False) | Q(groupparticipation__marks__isnull=False)
+    ).distinct()
+
+    suggestions = []
+    for prog in unannounced_programs:
+        simulated_gains = {t.id: 0 for t in teams}
+        
+        if prog.is_group:
+            gps = GroupParticipation.objects.filter(program=prog, marks__isnull=False)
+            for gp in gps:
+                if gp.team_id and gp.rank:
+                    pts = calculate_points(gp.rank, gp.grade, is_group=True, members_count=prog.members_count or 1)[2]
+                    simulated_gains[gp.team_id] = simulated_gains.get(gp.team_id, 0) + pts
+        else:
+            ps = Participation.objects.filter(program=prog, marks__isnull=False).select_related('contestant')
+            for p in ps:
+                if p.contestant and p.contestant.team_id and p.rank:
+                    pts = calculate_points(p.rank, p.grade, is_group=False, members_count=1)[2]
+                    simulated_gains[p.contestant.team_id] = simulated_gains.get(p.contestant.team_id, 0) + pts
+
+        simulated_scores = {tid: public_team_scores[tid] + simulated_gains[tid] for tid in teams}
+        sorted_scores = sorted(simulated_scores.values(), reverse=True)
+        
+        if len(sorted_scores) >= 2:
+            gap_1st_2nd = sorted_scores[0] - sorted_scores[1]
+            gap_1st_3rd = sorted_scores[0] - sorted_scores[2] if len(sorted_scores) >= 3 else gap_1st_2nd
+            balance_score = -(gap_1st_2nd * 1.5 + gap_1st_3rd * 0.5)
+        else:
+            balance_score = 0
+
+        total_prog_pts = sum(simulated_gains.values())
+        final_priority = balance_score + (total_prog_pts * 0.1)
+
+        impact_items = []
+        for t in teams:
+            gain = simulated_gains.get(t.id, 0)
+            if gain > 0:
+                impact_items.append(f"{t.name}: +{gain} pts")
+
+        suggestions.append({
+            'program': prog,
+            'total_pts': total_prog_pts,
+            'priority': round(final_priority, 2),
+            'impact_summary': ", ".join(impact_items) if impact_items else "No team points awarded",
+            'top_gap_after': sorted_scores[0] - sorted_scores[1] if len(sorted_scores) >= 2 else 0
+        })
+
+    suggestions.sort(key=lambda x: x['priority'], reverse=True)
+    return suggestions[:5]
+
+@login_required
+def toggle_program_announcement(request, program_id):
+    """Toggle announcement status for a program and update timestamp"""
+    if request.user.role != 'admin':
+        messages.error(request, 'Permission denied.')
+        return redirect('dashboard_admin')
+
+    program = get_object_or_404(Program, id=program_id)
+    program.is_announced = not program.is_announced
+    if program.is_announced:
+        program.announced_at = timezone.now()
+        messages.success(request, f"📢 Results for '{program.name}' are now PUBLICLY ANNOUNCED!")
+    else:
+        messages.info(request, f"🔒 Results for '{program.name}' are now hidden from public views.")
+    program.save()
+
+    for team in Team.objects.all():
+        recalculate_team_points(team)
+
+    next_url = request.META.get('HTTP_REFERER') or redirect('dashboard_admin')
+    return redirect(next_url)
+
 
 
