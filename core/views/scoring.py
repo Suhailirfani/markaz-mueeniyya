@@ -1267,5 +1267,65 @@ def toggle_program_announcement(request, program_id):
     next_url = request.META.get('HTTP_REFERER') or redirect('dashboard_admin')
     return redirect(next_url)
 
+@login_required
+def manage_announcements(request):
+    """Admin page for managing result announcements with smart balancing suggestions"""
+    if request.user.role != 'admin':
+        messages.error(request, 'Permission denied.')
+        return redirect('dashboard_admin')
+
+    programs = Program.objects.select_related('category').order_by('category__name', 'name')
+    
+    for p in programs:
+        if p.is_group:
+            p.has_marks = GroupParticipation.objects.filter(program=p, marks__isnull=False).exists()
+            p.marked_count = GroupParticipation.objects.filter(program=p, marks__isnull=False).count()
+        else:
+            p.has_marks = Participation.objects.filter(program=p, marks__isnull=False).exists()
+            p.marked_count = Participation.objects.filter(program=p, marks__isnull=False).count()
+
+    announced_count = programs.filter(is_announced=True).count()
+    total_programs = programs.count()
+    suggested_announcements = get_top_5_balancing_announcement_suggestions()
+
+    return render(request, 'manage_announcements.html', {
+        'programs': programs,
+        'announced_count': announced_count,
+        'total_programs': total_programs,
+        'suggested_announcements': suggested_announcements,
+    })
+
+@login_required
+def bulk_announce_programs(request):
+    """Bulk announce or hide selected programs"""
+    if request.user.role != 'admin':
+        messages.error(request, 'Permission denied.')
+        return redirect('dashboard_admin')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        program_ids = request.POST.getlist('program_ids')
+        
+        if not program_ids:
+            messages.warning(request, 'No programs selected.')
+            return redirect('manage_announcements')
+
+        if action == 'announce':
+            Program.objects.filter(id__in=program_ids).update(
+                is_announced=True,
+                announced_at=timezone.now()
+            )
+            messages.success(request, f"📢 Announced {len(program_ids)} programs successfully!")
+        elif action == 'unannounce':
+            Program.objects.filter(id__in=program_ids).update(
+                is_announced=False
+            )
+            messages.info(request, f"🔒 Hidden {len(program_ids)} programs from public view.")
+
+        for team in Team.objects.all():
+            recalculate_team_points(team)
+
+    return redirect('manage_announcements')
+
 
 

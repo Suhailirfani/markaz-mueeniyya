@@ -111,6 +111,8 @@ urlpatterns = [
     # urls.py
     path('program/<int:program_id>/toggle/', views.toggle_is_group, name='toggle_is_group'),
     path('program/<int:program_id>/toggle-announcement/', views.toggle_program_announcement, name='toggle_program_announcement'),
+    path('manage_announcements/', views.manage_announcements, name='manage_announcements'),
+    path('bulk_announce_programs/', views.bulk_announce_programs, name='bulk_announce_programs'),
     path('contestant-points/', views.contestant_points_list, name='contestant_points_list'),
     path('results-page/', views.results_page, name='results_page'),
     # added on 26-09-25
