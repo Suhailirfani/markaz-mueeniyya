@@ -11,7 +11,7 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
-from ..models import Program, Category, Team, Contestant, Participation
+from ..models import Program, Category, Team, Contestant, Participation, SystemSetting
 from .scoring import calculate_points, get_members_count_for_program
 
 @login_required
