@@ -3,64 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winner Cards – {{ fest_name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Winner Cards (10 Designs) – {{ fest_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Manjari:wght@700&family=Outfit:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- html2canvas for JPEG download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        :root {
-            --gold:   #FFD700;
-            --silver: #C0C0C0;
-            --bronze: #CD7F32;
-            --dark:   #0f0c29;
-            --card-bg: rgba(255,255,255,0.05);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: #09090b;
             min-height: 100vh;
             color: #fff;
+            padding-bottom: 60px;
         }
 
         /* ── HEADER ─────────────────────────────────────────────── */
         .page-header {
             text-align: center;
-            padding: 40px 20px 20px;
+            padding: 35px 20px 15px;
+            background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+            border-bottom: 1px solid #27272a;
         }
         .page-header .fest-title {
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            color: #a0aec0;
-            margin-bottom: 8px;
+            color: #fbbf24;
+            margin-bottom: 6px;
         }
         .page-header h1 {
-            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
             font-weight: 900;
-            background: linear-gradient(90deg, #FFD700, #fff, #FFD700);
+            background: linear-gradient(90deg, #f59e0b, #ffffff, #fbbf24);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .page-header .subtitle {
-            margin-top: 8px;
-            color: #a0aec0;
+            margin-top: 6px;
+            color: #a1a1aa;
             font-size: 0.95rem;
         }
 
-        /* ── CONTROLS ────────────────────────────────────────────── */
+        /* ── CONTROLS & THEME BAR ────────────────────────────────── */
+        .controls-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .controls {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 12px;
-            padding: 24px 20px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .btn {
             display: inline-flex;
@@ -72,101 +73,170 @@
             font-weight: 700;
             cursor: pointer;
             border: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
             text-decoration: none;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
-        .btn-gold    { background: linear-gradient(135deg, #f6d365, #fda085); color: #1a0a00; }
-        .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.3); }
-        .btn-dl-all  { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #003322; }
+        .btn-gold    { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+        .btn-outline { background: #18181b; color: #e4e4e7; border: 1px solid #3f3f46; }
+        .btn-dl-all  { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
 
-        /* ── GRID ────────────────────────────────────────────────── */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 28px;
-            padding: 10px 36px 60px;
-            max-width: 1400px;
-            margin: 0 auto;
+        /* ── 10 THEMES SELECTION BAR ────────────────────────────── */
+        .theme-selector-wrap {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+        }
+        .theme-selector-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #fbbf24;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .theme-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .theme-chip {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.825rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid #3f3f46;
+            background: #27272a;
+            color: #a1a1aa;
+            transition: all 0.2s;
+        }
+        .theme-chip:hover { color: #fff; border-color: #71717a; }
+        .theme-chip.active {
+            background: #f59e0b;
+            color: #000;
+            border-color: #fbbf24;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
         }
 
-        /* ── WINNER CARD ─────────────────────────────────────────── */
+        /* ── SEARCH BAR ─────────────────────────────────────────── */
+        .search-wrap {
+            max-width: 500px;
+            margin: 0 auto 25px;
+        }
+        .search-wrap input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-wrap input:focus { border-color: #f59e0b; }
+
+        /* ── CARDS GRID ─────────────────────────────────────────── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 28px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ── BASE WINNER CARD ────────────────────────────────────── */
         .winner-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             overflow: hidden;
-            backdrop-filter: blur(12px);
-            transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .winner-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
         }
 
-        /* category glow strip at top */
-        .winner-card .card-glow {
-            height: 4px;
-            width: 100%;
+        .card-inner {
+            padding: 24px;
         }
-        .cat-senior   { background: linear-gradient(90deg, #f093fb, #f5576c); }
-        .cat-junior   { background: linear-gradient(90deg, #4facfe, #00f2fe); }
-        .cat-general  { background: linear-gradient(90deg, #43e97b, #38f9d7); }
-        .cat-default  { background: linear-gradient(90deg, #FFD700, #fda085); }
 
-        .card-head {
-            padding: 18px 20px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+        .card-top-branding {
+            text-align: center;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px dashed rgba(255,255,255,0.15);
         }
-        .card-head .prog-name {
-            font-size: 1.05rem;
-            font-weight: 800;
-            line-height: 1.3;
-            color: #e2e8f0;
-        }
-        .card-head .cat-badge {
-            display: inline-block;
-            margin-top: 6px;
-            font-size: 0.7rem;
+        .inst-title {
+            font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            padding: 3px 10px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
-            color: #cbd5e0;
+            opacity: 0.85;
         }
-        .card-head .type-badge {
-            float: right;
+        .fest-badge {
+            font-size: 0.9rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .prog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .prog-name {
+            font-size: 1.15rem;
+            font-weight: 900;
+            line-height: 1.25;
+        }
+        .cat-badge {
+            display: inline-block;
             font-size: 0.68rem;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             padding: 3px 10px;
             border-radius: 20px;
-            background: rgba(255,215,0,0.15);
-            color: var(--gold);
-            border: 1px solid rgba(255,215,0,0.3);
-            margin-top: 6px;
+            margin-top: 4px;
+        }
+        .type-badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
         }
 
-        /* ── RANK ROWS ───────────────────────────────────────────── */
-        .ranks-list { padding: 14px 20px 18px; display: flex; flex-direction: column; gap: 10px; }
-
+        /* Rank Rows */
+        .ranks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
         .rank-row {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 10px 14px;
             border-radius: 12px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            transition: background 0.2s;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
         }
-        .rank-row:hover { background: rgba(255,255,255,0.09); }
 
-        /* medal icon */
-        .medal {
+        .rank-medal {
             width: 38px;
             height: 38px;
             border-radius: 50%;
@@ -174,165 +244,271 @@
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
-            flex-shrink: 0;
             font-weight: 900;
+            flex-shrink: 0;
         }
-        .medal-1 { background: linear-gradient(135deg, #FFD700, #b8860b); color: #3d2700; box-shadow: 0 0 12px rgba(255,215,0,0.5); }
-        .medal-2 { background: linear-gradient(135deg, #e0e0e0, #9e9e9e); color: #1a1a1a; box-shadow: 0 0 10px rgba(200,200,200,0.3); }
-        .medal-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: #fff8f0; box-shadow: 0 0 10px rgba(205,127,50,0.4); }
 
         .rank-info { flex: 1; min-width: 0; }
-        .rank-info .winner-name {
-            font-weight: 700;
-            font-size: 0.92rem;
-            color: #f7fafc;
+        .winner-name {
+            font-size: 0.95rem;
+            font-weight: 800;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .rank-info .team-name {
-            font-size: 0.75rem;
-            color: #a0aec0;
-            margin-top: 2px;
-            font-weight: 500;
+        .team-name {
+            font-size: 0.78rem;
+            opacity: 0.8;
+            font-weight: 600;
         }
-        .rank-info .members-name {
+        .members-name {
+            font-size: 0.72rem;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rank-grade {
             font-size: 0.7rem;
-            color: #718096;
-            margin-top: 2px;
-            font-style: italic;
-        }
-        .rank-info .grade-badge {
-            display: inline-block;
-            font-size: 0.68rem;
-            font-weight: 700;
+            font-weight: 800;
             padding: 2px 8px;
             border-radius: 10px;
-            margin-top: 3px;
-        }
-        .grade-A  { background: rgba(72,199,142,0.2); color: #68d391; }
-        .grade-B  { background: rgba(99,179,237,0.2); color: #63b3ed; }
-        .grade-C  { background: rgba(246,173,85,0.2); color: #f6ad55; }
-        .grade-D  { background: rgba(252,129,129,0.2); color: #fc8181; }
-        .grade-X  { background: rgba(160,174,192,0.1); color: #a0aec0; }
-
-        /* marks pill */
-        .marks-pill {
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.06);
-            color: #e2e8f0;
-            white-space: nowrap;
             flex-shrink: 0;
         }
 
-        /* ── DOWNLOAD BTN per card ──────────────────────────────── */
-        .card-footer {
-            border-top: 1px solid rgba(255,255,255,0.07);
-            padding: 12px 20px;
+        /* Card Actions Bar */
+        .card-actions-bar {
+            padding: 12px 18px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-dl-card {
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 7px 16px;
-            border-radius: 30px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .card-theme-select {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
             color: #fff;
-            border: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 8px;
+            outline: none;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s, transform 0.2s;
         }
-        .btn-dl-card:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-dl-card:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* ── EMPTY STATE ─────────────────────────────────────────── */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: #a0aec0;
+        .card-theme-select option { background: #18181b; color: #fff; }
+        .btn-dl-card {
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
-        .empty-state i { font-size: 4rem; margin-bottom: 16px; display: block; }
-        .empty-state h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+        .btn-dl-card:hover { opacity: 0.9; }
 
-        /* ── DOWNLOAD OVERLAY ────────────────────────────────────── */
+        /* ══════════════════════════════════════════════════════════
+           10 THEMES STYLING SPECIFICATIONS
+           ══════════════════════════════════════════════════════════ */
+
+        /* --- THEME 1: Royal Velvet & Gold --- */
+        .theme-1 {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            border: 2px solid #fbbf24;
+            color: #fff;
+        }
+        .theme-1 .fest-badge { color: #fbbf24; }
+        .theme-1 .cat-badge { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+        .theme-1 .type-badge { background: rgba(255,255,255,0.1); color: #e4e4e7; }
+        .theme-1 .rank-medal { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 10px rgba(245,158,11,0.4); }
+
+        /* --- THEME 2: Cyber Emerald & Neon Mint --- */
+        .theme-2 {
+            background: linear-gradient(135deg, #061e14 0%, #0d3827 100%);
+            border: 2px solid #10b981;
+            color: #ecfdf5;
+        }
+        .theme-2 .fest-badge { color: #34d399; }
+        .theme-2 .cat-badge { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .theme-2 .type-badge { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+        .theme-2 .rank-medal { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
+        .theme-2 .rank-row { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); }
+
+        /* --- THEME 3: Sunset Crimson & Coral --- */
+        .theme-3 {
+            background: linear-gradient(135deg, #3b0712 0%, #611221 100%);
+            border: 2px solid #f43f5e;
+            color: #fff1f2;
+        }
+        .theme-3 .fest-badge { color: #fb7185; }
+        .theme-3 .cat-badge { background: rgba(244, 63, 94, 0.25); color: #fecdd3; border: 1px solid #f43f5e; }
+        .theme-3 .type-badge { background: rgba(251, 146, 60, 0.2); color: #fdba74; }
+        .theme-3 .rank-medal { background: linear-gradient(135deg, #fb7185, #e11d48); color: #fff; }
+
+        /* --- THEME 4: Regal Sapphire & Silver --- */
+        .theme-4 {
+            background: linear-gradient(135deg, #071938 0%, #0f3460 100%);
+            border: 2px solid #38bdf8;
+            color: #f0f9ff;
+        }
+        .theme-4 .fest-badge { color: #38bdf8; }
+        .theme-4 .cat-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: 1px solid #38bdf8; }
+        .theme-4 .type-badge { background: rgba(147, 51, 234, 0.2); color: #c084fc; }
+        .theme-4 .rank-medal { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #000; }
+
+        /* --- THEME 5: Clean Luxury White --- */
+        .theme-5 {
+            background: #ffffff;
+            border: 2px solid #d97706;
+            color: #0f172a;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .theme-5 .card-top-branding { border-bottom-color: #e2e8f0; }
+        .theme-5 .inst-title { color: #64748b; }
+        .theme-5 .fest-badge { color: #d97706; }
+        .theme-5 .prog-name { color: #0f172a; }
+        .theme-5 .cat-badge { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .theme-5 .type-badge { background: #e2e8f0; color: #334155; }
+        .theme-5 .rank-row { background: #f8fafc; border-color: #e2e8f0; }
+        .theme-5 .winner-name { color: #0f172a; }
+        .theme-5 .team-name { color: #475569; }
+        .theme-5 .rank-medal { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; }
+
+        /* --- THEME 6: Cosmic Nebula & Violet --- */
+        .theme-6 {
+            background: linear-gradient(135deg, #18072b 0%, #3b1154 100%);
+            border: 2px solid #a855f7;
+            color: #faf5ff;
+        }
+        .theme-6 .fest-badge { color: #c084fc; }
+        .theme-6 .cat-badge { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid #a855f7; }
+        .theme-6 .type-badge { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+        .theme-6 .rank-medal { background: linear-gradient(135deg, #c084fc, #9333ea); color: #fff; }
+
+        /* --- THEME 7: Traditional Heritage Gold --- */
+        .theme-7 {
+            background: #fffdfa;
+            border: 3px double #780016;
+            color: #3b0007;
+            font-family: 'Cinzel', serif, sans-serif;
+        }
+        .theme-7 .card-top-branding { border-bottom-color: #f3e8d2; }
+        .theme-7 .inst-title { color: #780016; letter-spacing: 2px; }
+        .theme-7 .fest-badge { color: #9a031e; font-size: 1rem; }
+        .theme-7 .prog-name { color: #4a0404; font-family: 'Cinzel', serif; }
+        .theme-7 .cat-badge { background: #780016; color: #fffdfa; }
+        .theme-7 .type-badge { background: #e6ccb2; color: #582f0e; }
+        .theme-7 .rank-row { background: #fdf8ed; border-color: #ede0d4; }
+        .theme-7 .winner-name { color: #2c0005; font-family: 'Cinzel', serif; }
+        .theme-7 .team-name { color: #6c584c; }
+        .theme-7 .rank-medal { background: #9a031e; color: #fffdfa; }
+
+        /* --- THEME 8: Midnight Onyx & Amber --- */
+        .theme-8 {
+            background: #09090b;
+            border: 2px solid #f59e0b;
+            color: #f4f4f5;
+        }
+        .theme-8 .fest-badge { color: #f59e0b; }
+        .theme-8 .cat-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .theme-8 .type-badge { background: #27272a; color: #a1a1aa; }
+        .theme-8 .rank-medal { background: #f59e0b; color: #000; }
+        .theme-8 .rank-row { background: #18181b; border-color: #27272a; }
+
+        /* --- THEME 9: Tropical Ocean Teal --- */
+        .theme-9 {
+            background: linear-gradient(135deg, #042f2e 0%, #0f766e 100%);
+            border: 2px solid #14b8a6;
+            color: #ccfbf1;
+        }
+        .theme-9 .fest-badge { color: #2dd4bf; }
+        .theme-9 .cat-badge { background: rgba(20, 184, 166, 0.25); color: #99f6e4; border: 1px solid #14b8a6; }
+        .theme-9 .type-badge { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
+        .theme-9 .rank-medal { background: linear-gradient(135deg, #2dd4bf, #0d9488); color: #000; }
+
+        /* --- THEME 10: Champion Metallic Luxury --- */
+        .theme-10 {
+            background: linear-gradient(135deg, #1f1810 0%, #3d2d1d 100%);
+            border: 2px solid #d97706;
+            color: #fef3c7;
+        }
+        .theme-10 .fest-badge { color: #fbbf24; }
+        .theme-10 .cat-badge { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid #d97706; }
+        .theme-10 .type-badge { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; }
+        .theme-10 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
+
+        /* Overlay Spinner */
         #dl-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15,12,41,0.85);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 15px;
         }
         #dl-overlay.active { display: flex; }
-        #dl-overlay .spinner {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .spinner {
+            width: 48px; height: 48px; border: 4px solid #f59e0b;
+            border-bottom-color: transparent; border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── SEARCH BAR ──────────────────────────────────────────── */
-        .search-wrap {
-            display: flex;
-            justify-content: center;
-            padding: 0 20px 18px;
-        }
-        .search-wrap input {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 50px;
-            padding: 10px 22px;
-            color: #fff;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.9rem;
-            width: min(420px, 100%);
-            outline: none;
-            transition: border 0.2s;
-        }
-        .search-wrap input::placeholder { color: #718096; }
-        .search-wrap input:focus { border-color: rgba(255,215,0,0.5); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<!-- Download overlay spinner -->
-<div id="dl-overlay"><div class="spinner"></div><span style="color:#fff;font-weight:600">Preparing image…</span></div>
+<div id="dl-overlay">
+    <div class="spinner"></div>
+    <span style="color:#fff;font-weight:700">Generating High Quality Winner Card JPEG…</span>
+</div>
 
 <!-- ═══ HEADER ═══════════════════════════════════════════════════ -->
 <div class="page-header">
     <p class="fest-title">{{ fest_name }}</p>
-    <h1>🏆 Winner Cards</h1>
-    <p class="subtitle">Top 3 performers for every announced program</p>
+    <h1>🏆 Winner Graphics Studio</h1>
+    <p class="subtitle">Select from 10 premium themes to export and share winner announcement cards</p>
 </div>
 
-<!-- ═══ CONTROLS ═════════════════════════════════════════════════ -->
-<div class="controls">
-    <button class="btn btn-dl-all" onclick="downloadAll()">
-        <i class="fas fa-download"></i> Download All Cards
-    </button>
-    <a href="{% url 'public_results_home' %}" class="btn btn-outline">
-        <i class="fas fa-list"></i> Full Results Table
-    </a>
-    <a href="{% url 'manage_announcements' %}" class="btn btn-outline">
-        <i class="fas fa-cog"></i> Manage
-    </a>
-</div>
+<div class="controls-wrapper">
+    <!-- ═══ TOP CONTROLS ═════════════════════════════════════════════ -->
+    <div class="controls">
+        <button class="btn btn-dl-all" onclick="downloadAll()">
+            <i class="fas fa-download"></i> Download All Visible Cards (JPEG)
+        </button>
+        <a href="{% url 'view_results' %}" class="btn btn-outline">
+            <i class="fas fa-trophy"></i> Results Dashboard
+        </a>
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Admin Dashboard
+        </a>
+    </div>
 
-<!-- ═══ SEARCH ════════════════════════════════════════════════════ -->
-<div class="search-wrap">
-    <input type="text" id="searchInput" placeholder="🔍 Search by program name…" oninput="filterCards()">
+    <!-- ═══ 10 THEME SELECTOR BAR ════════════════════════════════════ -->
+    <div class="theme-selector-wrap">
+        <div class="theme-selector-title">
+            <i class="fas fa-palette"></i> Choose Global Card Design Theme (10 Designs):
+        </div>
+        <div class="theme-chips">
+            <div class="theme-chip active" onclick="setGlobalTheme('theme-1', this)">1. Royal Gold & Velvet</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-2', this)">2. Cyber Emerald</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-3', this)">3. Sunset Crimson</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-4', this)">4. Regal Sapphire</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-5', this)">5. Luxury White</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-6', this)">6. Cosmic Nebula</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-7', this)">7. Heritage Gold</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-8', this)">8. Midnight Onyx</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-9', this)">9. Ocean Teal</div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-10', this)">10. Champion Metal</div>
+        </div>
+    </div>
+
+    <!-- ═══ SEARCH ════════════════════════════════════════════════════ -->
+    <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="🔍 Search winner cards by program name…" oninput="filterCards()">
+    </div>
 </div>
 
 <!-- ═══ CARDS GRID ════════════════════════════════════════════════ -->
@@ -340,57 +516,61 @@
 <div class="cards-grid" id="cardsGrid">
     {% for item in cards_data %}
     {% with prog=item.program %}
-    <div class="winner-card" data-prog="{{ prog.name|lower }}">
-        <!-- Top glow strip by category -->
-        <div class="card-glow
-            {% if 'senior' in prog.category.name|lower %}cat-senior
-            {% elif 'junior' in prog.category.name|lower %}cat-junior
-            {% elif 'general' in prog.category.name|lower %}cat-general
-            {% else %}cat-default{% endif %}
-        "></div>
-
-        <!-- Card header -->
-        <div class="card-head">
-            <span class="type-badge">{% if prog.is_group %}Group{% else %}Solo{% endif %}</span>
-            <div class="prog-name">{{ prog.name }}</div>
-            <span class="cat-badge">{{ prog.category.name }}</span>
-        </div>
-
-        <!-- Rank rows -->
-        <div class="ranks-list">
-            {% for w in item.winners %}
-            <div class="rank-row">
-                <!-- Medal -->
-                <div class="medal medal-{{ w.rank }}">
-                    {% if w.rank == 1 %}🥇
-                    {% elif w.rank == 2 %}🥈
-                    {% else %}🥉{% endif %}
-                </div>
-
-                <!-- Info -->
-                <div class="rank-info">
-                    <div class="winner-name">{{ w.name }}</div>
-                    <div class="team-name">{{ w.team }}</div>
-                    {% if w.members %}
-                    <div class="members-name">{{ w.members }}</div>
-                    {% endif %}
-                    {% if w.grade %}
-                    <span class="grade-badge grade-{{ w.grade|upper|slice:':1' }}">Grade {{ w.grade }}</span>
-                    {% endif %}
-                </div>
-
-                <!-- Marks pill -->
-                {% if w.marks %}
-                <div class="marks-pill">{{ w.marks }} pts</div>
-                {% endif %}
+    <div class="winner-card theme-1" data-prog="{{ prog.name|lower }}">
+        <div class="card-inner">
+            <!-- Top Branding -->
+            <div class="card-top-branding">
+                <div class="inst-title">{{ institution_name }}</div>
+                <div class="fest-badge">{{ fest_name }}</div>
             </div>
-            {% endfor %}
+
+            <!-- Program Header -->
+            <div class="prog-header">
+                <div>
+                    <div class="prog-name">{{ prog.name }}</div>
+                    <span class="cat-badge">{{ prog.category.name }}</span>
+                </div>
+                <span class="type-badge">{% if prog.is_group %}Group{% else %}Solo{% endif %}</span>
+            </div>
+
+            <!-- Winners Rank List -->
+            <div class="ranks-list">
+                {% for w in item.winners %}
+                <div class="rank-row">
+                    <div class="rank-medal">
+                        {% if w.rank == 1 %}🥇{% elif w.rank == 2 %}🥈{% else %}🥉{% endif %}
+                    </div>
+                    <div class="rank-info">
+                        <div class="winner-name">{{ w.name }}</div>
+                        <div class="team-name">{{ w.team }}</div>
+                        {% if w.members %}
+                        <div class="members-name">{{ w.members }}</div>
+                        {% endif %}
+                    </div>
+                    {% if w.grade %}
+                    <div class="rank-grade">Grade {{ w.grade }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
-        <!-- Download button -->
-        <div class="card-footer">
+        <!-- Card Bottom Bar (Theme switch per card & Download) -->
+        <div class="card-actions-bar">
+            <select class="card-theme-select" onchange="changeSingleCardTheme(this)">
+                <option value="theme-1" selected>Theme 1: Royal Gold</option>
+                <option value="theme-2">Theme 2: Cyber Emerald</option>
+                <option value="theme-3">Theme 3: Sunset Crimson</option>
+                <option value="theme-4">Theme 4: Regal Sapphire</option>
+                <option value="theme-5">Theme 5: Luxury White</option>
+                <option value="theme-6">Theme 6: Cosmic Nebula</option>
+                <option value="theme-7">Theme 7: Heritage Gold</option>
+                <option value="theme-8">Theme 8: Midnight Onyx</option>
+                <option value="theme-9">Theme 9: Ocean Teal</option>
+                <option value="theme-10">Theme 10: Champion Metal</option>
+            </select>
             <button class="btn-dl-card" onclick="downloadCard(this, '{{ prog.name|escapejs }}')">
-                <i class="fas fa-image"></i> Save as JPEG
+                <i class="fas fa-download me-1"></i> Save JPEG
             </button>
         </div>
     </div>
@@ -398,14 +578,38 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="empty-state">
-    <i class="fas fa-trophy"></i>
+<div class="text-center py-5 text-muted">
+    <i class="fas fa-trophy display-1 mb-3 text-warning opacity-50"></i>
     <h2>No results announced yet</h2>
-    <p>Announce programs to see winner cards here.</p>
+    <p>Announce programs to generate shareable winner cards.</p>
 </div>
 {% endif %}
 
 <script>
+    /* ── GLOBAL THEME SELECTOR ───────────────────────────────────── */
+    function setGlobalTheme(themeClass, chipEl) {
+        document.querySelectorAll('.theme-chip').forEach(c => c.classList.remove('active'));
+        chipEl.classList.add('active');
+
+        document.querySelectorAll('.winner-card').forEach(card => {
+            // Remove any existing theme class
+            card.className = card.className.replace(/\btheme-\d+\b/g, '').trim();
+            card.classList.add(themeClass);
+
+            // Update select dropdown inside card
+            const sel = card.querySelector('.card-theme-select');
+            if (sel) sel.value = themeClass;
+        });
+    }
+
+    /* ── SINGLE CARD THEME SWITCHER ────────────────────────────── */
+    function changeSingleCardTheme(selectEl) {
+        const card = selectEl.closest('.winner-card');
+        const chosenTheme = selectEl.value;
+        card.className = card.className.replace(/\btheme-\d+\b/g, '').trim();
+        card.classList.add(chosenTheme);
+    }
+
     /* ── SEARCH FILTER ───────────────────────────────────────────── */
     function filterCards() {
         const q = document.getElementById('searchInput').value.toLowerCase();
@@ -417,28 +621,25 @@
     /* ── JPEG DOWNLOAD – single card ────────────────────────────── */
     async function downloadCard(btn, progName) {
         const card = btn.closest('.winner-card');
-
-        // temporarily hide footer so it's cleaner in image
-        const footer = card.querySelector('.card-footer');
-        footer.style.display = 'none';
-
+        const actionsBar = card.querySelector('.card-actions-bar');
+        
+        // Hide actions bar during image capture
+        actionsBar.style.display = 'none';
         showOverlay();
-        btn.disabled = true;
 
         try {
             const canvas = await html2canvas(card, {
-                backgroundColor: '#1a1040',
-                scale: 2.5,
+                scale: 3.0,
                 useCORS: true,
                 logging: false,
+                allowTaint: true
             });
             const link = document.createElement('a');
-            link.download = safeFileName(progName) + '_winners.jpg';
+            link.download = safeFileName(progName) + '_winner_card.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         } finally {
-            footer.style.display = '';
-            btn.disabled = false;
+            actionsBar.style.display = '';
             hideOverlay();
         }
     }
@@ -454,24 +655,23 @@
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
             const progName = card.dataset.prog;
-            const footer = card.querySelector('.card-footer');
-            footer.style.display = 'none';
+            const actionsBar = card.querySelector('.card-actions-bar');
+            actionsBar.style.display = 'none';
 
             try {
                 const canvas = await html2canvas(card, {
-                    backgroundColor: '#1a1040',
-                    scale: 2.5,
+                    scale: 3.0,
                     useCORS: true,
                     logging: false,
+                    allowTaint: true
                 });
                 const link = document.createElement('a');
-                link.download = safeFileName(progName) + '_winners.jpg';
+                link.download = safeFileName(progName) + '_winner_card.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 0.95);
                 link.click();
-                // small delay to avoid browser blocking multiple downloads
                 await sleep(350);
             } finally {
-                footer.style.display = '';
+                actionsBar.style.display = '';
             }
         }
         hideOverlay();
@@ -484,5 +684,6 @@
     function hideOverlay() { document.getElementById('dl-overlay').classList.remove('active'); }
     function sleep(ms)     { return new Promise(r => setTimeout(r, ms)); }
 </script>
+
 </body>
 </html>

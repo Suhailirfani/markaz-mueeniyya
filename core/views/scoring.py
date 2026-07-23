@@ -1442,9 +1442,11 @@ def shareable_results_view(request):
             })
 
     fest_name = SystemSetting.get_setting('fest_name', 'Madrasa Fest')
+    institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
     return render(request, 'shareable_results.html', {
         'cards_data': cards_data,
-        'fest_name': fest_name
+        'fest_name': fest_name,
+        'institution_name': institution_name,
     })
 
 
