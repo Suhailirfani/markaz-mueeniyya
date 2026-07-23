@@ -1,71 +1,132 @@
-<!DOCTYPE html>
-<html lang="ml">
-<head>
-    <meta charset="UTF-8">
-    <title>Chest Number Cards</title>
-    <style>
-        body {
-            font-family: 'Noto Sans Malayalam', sans-serif;
-            background: #f4f6f8;
-            padding: 20px;
-            text-align: center;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
+{% block title %}Chest Number Distribution & Cards - {{ fest_name }}{% endblock %}
 
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            justify-content: center;
-        }
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1 text-primary">
+                <i class="fas fa-id-badge me-2"></i>Chest Number Distribution
+            </h2>
+            <p class="text-muted mb-0">Assign, manage, and print contestant chest numbers for <strong>{{ fest_name }}</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'download_chest_cards' %}" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm" target="_blank">
+                <i class="fas fa-file-pdf me-2"></i>Download Chest Cards PDF
+            </a>
+            <a href="{% url 'dashboard_admin' %}" class="btn btn-outline-secondary fw-bold rounded-pill px-3">
+                <i class="fas fa-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            border: 2px solid #2c3e50;
-        }
+    <!-- Quick Stats & Auto-Distribution Card -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
+                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-calculator me-2 text-primary"></i>Chest Number Summary</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+                    <span class="text-muted fw-semibold">Total Contestants</span>
+                    <span class="fs-4 fw-bold text-primary">{{ total_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+                    <span class="text-muted fw-semibold">Assigned Numbers</span>
+                    <span class="fs-4 fw-bold text-success">{{ assigned_count }}</span>
+                </div>
+            </div>
+        </div>
 
-        .card h3 {
-            margin: 5px 0;
-            color: #1a1a1a;
-        }
+        <div class="col-12 col-md-7 col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
+                <h5 class="fw-bold text-dark mb-2"><i class="fas fa-magic me-2 text-warning"></i>Auto-Distribute / Re-assign Chest Numbers</h5>
+                <p class="text-muted small mb-3">Automatically assign sequential chest numbers to all contestants based on your chosen sorting order.</p>
 
-        .card .chest-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #e74c3c;
-            margin-top: 10px;
-        }
-        td h3, td h5, td p {
-    margin: 2px 0;
-    line-height: 1.2;
-}
-    </style>
-</head>
-<body>
+                <form method="post" action="{% url 'chest_number' %}" class="row g-3 align-items-end">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="distribute">
+                    
+                    <div class="col-12 col-sm-4">
+                        <label class="form-label fw-semibold small text-muted">Starting Chest #</label>
+                        <input type="number" name="start_no" value="101" class="form-control rounded-3" min="1" required>
+                    </div>
+                    
+                    <div class="col-12 col-sm-4">
+                        <label class="form-label fw-semibold small text-muted">Sort / Group By</label>
+                        <select name="order_by" class="form-select rounded-3">
+                            <option value="category">Category then Name</option>
+                            <option value="team">Team then Name</option>
+                            <option value="name">Alphabetical Name</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 col-sm-4">
+                        <button type="submit" class="btn btn-warning w-100 fw-bold rounded-3 shadow-sm" onclick="return confirm('Assign sequential chest numbers to all contestants?');">
+                            <i class="fas fa-bolt me-1"></i> Auto-Assign Numbers
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <div class="card-container">
-        {% for i in contestant %}
-        <div class="card">
-            <h3>{{ institution_name|upper }}</h3>
-            <h3>{{ fest_name|upper }}</h3>
-            <p>{{ i.name|upper }}</p>
-            <div class="chest-number">{{ i.chest_no }}</div>
+    <!-- Search & Filter Controls -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control bg-light border-0" placeholder="Search by name or chest no...">
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-3">
+                <select name="category" class="form-select bg-light border-0" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for c in categories %}
+                        <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-3">
+                <select name="team" class="form-select bg-light border-0" onchange="this.form.submit()">
+                    <option value="">All Teams</option>
+                    {% for t in teams %}
+                        <option value="{{ t.id }}" {% if selected_team == t.id|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-primary w-100 fw-bold rounded-3">Filter</button>
+                <a href="{% url 'chest_number' %}" class="btn btn-light rounded-3" title="Clear Filters"><i class="fas fa-undo"></i></a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Chest Cards Grid -->
+    <div class="row g-3">
+        {% for c in contestant %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card border-2 shadow-sm rounded-4 text-center p-3 h-100 bg-white" style="border-color: #033067 !important;">
+                <div class="small fw-bold text-muted text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ institution_name }}</div>
+                <div class="fw-extrabold text-primary mb-2 text-uppercase" style="font-size: 0.85rem;">{{ fest_name }}</div>
+                <div class="border-top border-bottom py-2 my-2">
+                    <h5 class="fw-bold text-dark mb-0">{{ c.name|upper }}</h5>
+                    <small class="text-muted">{{ c.team.name|default:"No Team" }} • {{ c.category.name|default:"General" }}</small>
+                </div>
+                <div class="display-6 fw-bold text-danger mt-1">#{{ c.chest_no|default:"--" }}</div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted fs-4 mb-2"><i class="fas fa-folder-open"></i></div>
+            <p class="text-muted">No contestants found matching criteria.</p>
         </div>
         {% endfor %}
     </div>
-
-    <a href="{% url 'download_chest_cards' %}" class="btn btn-primary">
-    Download as PDF
-</a>
-
-</body>
-</html>
-
+</div>
+{% endblock %}

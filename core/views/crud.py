@@ -847,13 +847,69 @@ def get_participants_by_category(request):
     contestant_list = [{"id": c.id, "name": c.name} for c in contestants]
     return JsonResponse({"contestants": contestant_list})
 
+@login_required
 def chest_number(request):
-    contestant = Contestant.objects.all()
+    """View, manage, and auto-distribute chest numbers for contestants"""
+    if request.user.role != 'admin':
+        messages.error(request, 'Permission denied.')
+        return redirect('dashboard_admin')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'distribute':
+            try:
+                start_no = int(request.POST.get('start_no', 101))
+            except ValueError:
+                start_no = 101
+
+            order_by = request.POST.get('order_by', 'category')
+
+            if order_by == 'category':
+                contestants = Contestant.objects.select_related('category', 'team').order_by('category__name', 'name')
+            elif order_by == 'team':
+                contestants = Contestant.objects.select_related('category', 'team').order_by('team__name', 'name')
+            else:
+                contestants = Contestant.objects.select_related('category', 'team').order_by('name')
+
+            current_no = start_no
+            for c in contestants:
+                c.chest_no = current_no
+                c.save()
+                current_no += 1
+
+            messages.success(request, f"Chest numbers successfully assigned to {contestants.count()} contestants starting from #{start_no}.")
+            return redirect('chest_number')
+
+    category_id = request.GET.get('category')
+    team_id = request.GET.get('team')
+    query = request.GET.get('q', '').strip()
+
+    contestants = Contestant.objects.select_related('category', 'team').order_by('chest_no', 'id')
+
+    if category_id:
+        contestants = contestants.filter(category_id=category_id)
+    if team_id:
+        contestants = contestants.filter(team_id=team_id)
+    if query:
+        contestants = contestants.filter(
+            Q(name__icontains=query) | Q(chest_no__icontains=query)
+        )
+
+    categories = Category.objects.all()
+    teams = Team.objects.all()
 
     context = {
-        'contestant' : contestant
+        'contestant': contestants,
+        'categories': categories,
+        'teams': teams,
+        'selected_category': category_id,
+        'selected_team': team_id,
+        'search_query': query,
+        'total_count': Contestant.objects.count(),
+        'assigned_count': Contestant.objects.filter(chest_no__isnull=False).count(),
     }
     return render(request, 'chest_number.html', context)
+
 
 
 @login_required
