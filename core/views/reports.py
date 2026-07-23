@@ -57,13 +57,18 @@ def download_participation_list_pdf(request):
     if hasattr(user, 'team'):
         filename = f"{user.team.name}_participation_list.pdf"
 
+    fest_name = SystemSetting.get_setting('fest_name', 'ARTS FEST')
+    institution_name = SystemSetting.get_setting('institution_name', 'CAMPUS / INSTITUTION')
+
     context = {
-        'fest_name': "MEELAD FEST",
+        'fest_name': fest_name,
+        'institution_name': institution_name,
         'date': timezone.now().strftime("%d-%m-%Y"),
         'participants': participants,
         'is_team_user': hasattr(user, 'team'),
         'team_name': user.team.name if hasattr(user, 'team') else None
     }
+
 
     template_path = 'participation_list_pdf.html'
     response = HttpResponse(content_type='application/pdf')
@@ -564,9 +569,12 @@ def program_result_pdf(request, program_id):
 
     elements = []
 
+    fest_name = SystemSetting.get_setting('fest_name', 'ARTS FEST').upper()
+    institution_name = SystemSetting.get_setting('institution_name', 'CAMPUS / INSTITUTION').upper()
+
     title_style = styles['Title']
-    elements.append(Paragraph("<font size=10 color='#033067'><b>HIDAYATHUL ISLAM HIGHER SECONDARY MADRASA VETTIKKATTIRI</b></font>", title_style))
-    elements.append(Paragraph("<font size=15 color='#d63384'><b>MEELAD FEST</b></font>", title_style))
+    elements.append(Paragraph(f"<font size=10 color='#033067'><b>{institution_name}</b></font>", title_style))
+    elements.append(Paragraph(f"<font size=15 color='#d63384'><b>{fest_name}</b></font>", title_style))
     elements.append(Paragraph(f"<font size=14 color='#333333'><b>RESULTS: {program.name.upper()} - {program.category.name.upper()}</b></font>", title_style))
     elements.append(Spacer(1, 12))
 
@@ -613,11 +621,12 @@ def program_result_pdf(request, program_id):
         canvas.setFillColorRGB(0.9, 0.9, 0.9, alpha=0.2)
         canvas.translate(300, 600)
         canvas.rotate(45)
-        canvas.drawCentredString(0, 0, "MEELAD FEST")
+        canvas.drawCentredString(0, 0, fest_name)
         canvas.restoreState()
 
     doc.build(elements, onFirstPage=add_watermark, onLaterPages=add_watermark)
     return response
+
 
 @login_required
 def contestant_programs_pdf(request):

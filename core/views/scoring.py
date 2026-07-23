@@ -689,6 +689,23 @@ def system_config(request):
         return redirect('dashboard_admin')
 
     if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'reset_data':
+            # Reset festival transactional data
+            from ..models import ProgramSchedule
+            Participation.objects.all().delete()
+            GroupParticipation.objects.all().delete()
+            Contestant.objects.all().delete()
+            ProgramSchedule.objects.all().delete()
+            TeamPoints.objects.all().delete()
+            for team in Team.objects.all():
+                team.total_points = 0
+                team.save()
+            Program.objects.update(is_announced=False, announced_at=None, result_number=None)
+            messages.success(request, "All contestant, participation, score, and schedule data reset successfully.")
+            return redirect('system_config')
+
         # Handle group point system
         group_point_system = request.POST.get('group_point_system')
         if group_point_system:
@@ -712,20 +729,41 @@ def system_config(request):
         elif 'fest_name' in request.POST:
             messages.error(request, "Fest name cannot be empty.")
 
+        # Handle institution name
+        institution_name = request.POST.get('institution_name', '').strip()
+        if institution_name:
+            setting, _ = SystemSetting.objects.get_or_create(key='institution_name')
+            setting.value = institution_name
+            setting.save()
+            messages.success(request, f"Institution name updated to: {institution_name}")
+
+        # Handle short name
+        short_name = request.POST.get('short_name', '').strip()
+        if short_name:
+            setting, _ = SystemSetting.objects.get_or_create(key='short_name')
+            setting.value = short_name
+            setting.save()
+            messages.success(request, f"Short name updated to: {short_name}")
+
     # Build context
     group_point_system = SystemSetting.get_setting('group_point_system', 'member_count')
-    fest_name = SystemSetting.get_setting('fest_name', 'Madrasa Fest')
+    fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
+    institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
+    short_name = SystemSetting.get_setting('short_name', 'Fest Portal')
     total_programs = Program.objects.count()
     announced_programs = Program.objects.filter(is_announced=True).count()
 
     return render(request, 'system_config.html', {
         'group_point_system': group_point_system,
         'fest_name': fest_name,
+        'institution_name': institution_name,
+        'short_name': short_name,
         'total_programs': total_programs,
         'announced_programs': announced_programs,
         'total_teams': Team.objects.count(),
         'total_contestants': Contestant.objects.count(),
     })
+
 
 
 # =================== Group Marks & Scoring Views ===================

@@ -182,11 +182,13 @@ def disapprove_user(request, user_id):
     return redirect('pending_users')
 
 def manifest_view(request):
-    fest_name = SystemSetting.get_setting('fest_name', 'HIMHS Meelad Fest')
+    fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
+    institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
+    short_name = SystemSetting.get_setting('short_name', 'Fest Portal')
     manifest_data = {
-        "name": fest_name,
-        "short_name": "HIMHS Fest",
-        "description": f"{fest_name} - Hidayathul Islam Higher Secondary Madrasa Vettikkattiri",
+        "name": f"{fest_name} - {institution_name}",
+        "short_name": short_name,
+        "description": f"{fest_name} Portal - {institution_name}",
         "start_url": "/",
         "display": "standalone",
         "background_color": "#0b0f19",
@@ -230,7 +232,8 @@ def fest_logo_view(request):
 @cache_control(max_age=86400, public=True)
 def service_worker(request):
     sw_code = """
-const CACHE_NAME = 'himhs-fest-pwa-v1';
+const CACHE_NAME = 'fest-pwa-v1';
+
 const ASSETS_TO_CACHE = [
   '/',
   '/static/FDL.png',

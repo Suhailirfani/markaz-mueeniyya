@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HIMHS Fest">
+    <meta name="apple-mobile-web-app-title" content="{{ short_name }}">
     <link rel="apple-touch-icon" href="/static/images/favicon.svg">
     <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg">
     <!-- Google Fonts & FontAwesome -->
@@ -579,7 +579,7 @@
             <img src="{% static 'images/fest_logo.svg' %}" class="brand-logo" alt="Fest Logo">
             <div>
                 <h5 class="fw-bold mb-0 text-white leading-tight">{{ fest_name }}</h5>
-                <div class="fw-bold text-info d-none d-md-block" style="font-size: 0.825rem; color: #38bdf8 !important;">Hidayathul Islam Higher Secondary Madrasa Vettikkattiri</div>
+                <div class="fw-bold text-info d-none d-md-block" style="font-size: 0.825rem; color: #38bdf8 !important;">{{ institution_name }}</div>
             </div>
         </div>
 
@@ -620,9 +620,8 @@
         </div>
 
         <h1 class="hero-title">{{ fest_name }}</h1>
-        <div class="malayalam-title">പുണ്യ റബീഇന് സ്വാഗതം</div>
         <div class="institution-hero-banner">
-            <i class="fas fa-mosque text-warning me-2"></i> Hidayathul Islam Higher Secondary Madrasa Vettikkattiri
+            <i class="fas fa-university text-warning me-2"></i> {{ institution_name }}
         </div>
 
         <div class="hero-action-group">

@@ -351,19 +351,40 @@
         <div class="card-header">
             <div class="header-icon icon-yellow"><i class="fas fa-star"></i></div>
             <div class="header-text">
-                <h3>Fest Identity</h3>
-                <p>Competition name shown across the portal, PDFs, and public pages</p>
+                <h3>Fest Identity & Branding</h3>
+                <p>Competition & Institution details shown across the portal, PDFs, and public pages</p>
             </div>
         </div>
         <div class="card-body">
-            <label class="form-label" for="fest_name">Competition / Fest Name</label>
-            <input type="text" id="fest_name" name="fest_name"
-                   value="{{ fest_name }}"
-                   class="form-control"
-                   placeholder="e.g., HIMHS Meelad Fest 2025"
-                   required>
+            <div class="mb-3">
+                <label class="form-label" for="fest_name">Competition / Fest Name</label>
+                <input type="text" id="fest_name" name="fest_name"
+                       value="{{ fest_name }}"
+                       class="form-control"
+                       placeholder="e.g., Annual Arts Fest 2026"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="institution_name">Institution / Organization Name</label>
+                <input type="text" id="institution_name" name="institution_name"
+                       value="{{ institution_name }}"
+                       class="form-control"
+                       placeholder="e.g., Ideal Arts & Science College"
+                       required>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label" for="short_name">Short Name / Acronym (for App / Mobile)</label>
+                <input type="text" id="short_name" name="short_name"
+                       value="{{ short_name }}"
+                       class="form-control"
+                       placeholder="e.g., ArtsFest"
+                       required>
+            </div>
         </div>
     </div>
+
 
     <!-- ── GROUP POINTS SYSTEM ───────────────────────────────── -->
     <div class="config-card">
@@ -449,6 +470,27 @@
             </div>
         </div>
     </div>
+
+    <!-- ── RESET DATA FOR NEW CLIENT ──────────────────────────── -->
+    <div class="config-card border-danger">
+        <div class="card-header">
+            <div class="header-icon icon-red" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="header-text">
+                <h3 class="text-danger">Reset Data for New Client</h3>
+                <p>Wipe contestant participations, marks, schedules & scores for a fresh start</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">
+                This operation will clear all existing contestants, program entries, marks, and generated schedules so you can start a new competition fresh. Users, categories, and program definitions will be preserved.
+            </p>
+            <button type="submit" name="action" value="reset_data" class="btn btn-outline-danger w-100"
+                    onclick="return confirm('⚠️ ARE YOU SURE?\nThis will permanently clear all contestants, scores, participations, and schedules for a new client fest. This action CANNOT be undone.');">
+                <i class="fas fa-trash-alt me-2"></i>Reset All Transactional Fest Data
+            </button>
+        </div>
+    </div>
+
 
     <!-- ── QUICK LINKS ────────────────────────────────────────── -->
     <div class="config-card">

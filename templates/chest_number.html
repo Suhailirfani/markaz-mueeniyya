@@ -54,7 +54,7 @@
     <div class="card-container">
         {% for i in contestant %}
         <div class="card">
-            <h3>HIDAYATHUL ISLAM HIGHER SECONDARY MADRASA</h3>
+            <h3>{{ institution_name|upper }}</h3>
             <h3>{{ fest_name|upper }}</h3>
             <p>{{ i.name|upper }}</p>
             <div class="chest-number">{{ i.chest_no }}</div>
