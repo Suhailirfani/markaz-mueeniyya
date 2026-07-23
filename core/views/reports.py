@@ -804,14 +804,37 @@ def contestant_programs_pdf(request):
     return response
 
 def download_chest_cards_pdf(request):
-    """Download Chest Cards PDF for all contestants"""
-    contestants = Contestant.objects.all().order_by('chest_no')
+    """Download Chest Cards PDF for contestants, optionally filtered by category or team"""
+    category_id = request.GET.get('category')
+    team_id = request.GET.get('team')
+
+    contestants = Contestant.objects.select_related('category', 'team').all().order_by('chest_no', 'id')
+
+    if category_id:
+        contestants = contestants.filter(category_id=category_id)
+    if team_id:
+        contestants = contestants.filter(team_id=team_id)
+
+    fest_name = SystemSetting.get_setting('fest_name', 'ARTS FEST')
+    institution_name = SystemSetting.get_setting('institution_name', 'CAMPUS / INSTITUTION')
 
     template_path = 'chest_cards_pdf.html'
-    context = {'contestants': contestants}
+    context = {
+        'contestants': contestants,
+        'fest_name': fest_name,
+        'institution_name': institution_name,
+    }
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="chest_cards.pdf"'
+    filename = "chest_cards.pdf"
+    if category_id:
+        try:
+            cat = Category.objects.get(id=category_id)
+            filename = f"chest_cards_{cat.name.replace(' ', '_')}.pdf"
+        except Category.DoesNotExist:
+            pass
+
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     template = get_template(template_path)
     html = template.render(context)
@@ -820,4 +843,5 @@ def download_chest_cards_pdf(request):
     if pisa_status.err:
         return HttpResponse('Error while generating PDF <pre>' + html + '</pre>')
     return response
+
 

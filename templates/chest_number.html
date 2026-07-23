@@ -1,21 +1,64 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Chest Number Distribution & Cards - {{ fest_name }}{% endblock %}
+{% block title %}Chest Number Distribution & Print - {{ fest_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    /* Hide navigation, header, buttons, and controls during print */
+    .app-header, .desktop-nav, .mobile-tab-bar, .no-print, nav, .btn, .card-header, form {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .container-fluid {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .print-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+        page-break-inside: avoid;
+    }
+    .chest-card-print {
+        border: 2px solid #000 !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        text-align: center !important;
+        page-break-inside: avoid !important;
+        background: #fff !important;
+    }
+    .chest-card-print .chest-no {
+        font-size: 36pt !important;
+        font-weight: bold !important;
+        color: #d9534f !important;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <!-- Header Controls (Hidden during print) -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 no-print">
         <div>
             <h2 class="fw-bold mb-1 text-primary">
                 <i class="fas fa-id-badge me-2"></i>Chest Number Distribution
             </h2>
-            <p class="text-muted mb-0">Assign, manage, and print contestant chest numbers for <strong>{{ fest_name }}</strong></p>
+            <p class="text-muted mb-0">Assign category-wise chest numbers and print cards for <strong>{{ fest_name }}</strong></p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'download_chest_cards' %}" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm" target="_blank">
-                <i class="fas fa-file-pdf me-2"></i>Download Chest Cards PDF
+        <div class="d-flex gap-2 flex-wrap">
+            <button onclick="window.print()" class="btn btn-dark fw-bold rounded-pill px-4 shadow-sm">
+                <i class="fas fa-print me-2"></i>Print Chest Cards
+            </button>
+            <a href="{% url 'download_chest_cards' %}{% if selected_category %}?category={{ selected_category }}{% endif %}" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm" target="_blank">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF {% if selected_category %}(Filtered){% endif %}
             </a>
             <a href="{% url 'dashboard_admin' %}" class="btn btn-outline-secondary fw-bold rounded-pill px-3">
                 <i class="fas fa-arrow-left me-1"></i> Dashboard
@@ -23,57 +66,83 @@
         </div>
     </div>
 
-    <!-- Quick Stats & Auto-Distribution Card -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-5 col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
-                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-calculator me-2 text-primary"></i>Chest Number Summary</h5>
-                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
-                    <span class="text-muted fw-semibold">Total Contestants</span>
-                    <span class="fs-4 fw-bold text-primary">{{ total_count }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
-                    <span class="text-muted fw-semibold">Assigned Numbers</span>
-                    <span class="fs-4 fw-bold text-success">{{ assigned_count }}</span>
-                </div>
-            </div>
-        </div>
+    <!-- Category-Wise Chest Number Distribution Card (No Print) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white no-print">
+        <div class="card-body p-4">
+            <ul class="nav nav-pills mb-3" id="distributeTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="single-cat-tab" data-bs-toggle="tab" data-bs-target="#single-cat-pane" type="button" role="tab">
+                        <i class="fas fa-layer-group me-2"></i>Category-Wise Auto Assign
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="all-cats-tab" data-bs-toggle="tab" data-bs-target="#all-cats-pane" type="button" role="tab">
+                        <i class="fas fa-sliders-h me-2"></i>Set All Category Starting #s
+                    </button>
+                </li>
+            </ul>
 
-        <div class="col-12 col-md-7 col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
-                <h5 class="fw-bold text-dark mb-2"><i class="fas fa-magic me-2 text-warning"></i>Auto-Distribute / Re-assign Chest Numbers</h5>
-                <p class="text-muted small mb-3">Automatically assign sequential chest numbers to all contestants based on your chosen sorting order.</p>
+            <div class="tab-content" id="distributeTabsContent">
+                <!-- Single Category Auto Assign -->
+                <div class="tab-pane fade show active" id="single-cat-pane" role="tabpanel">
+                    <form method="post" action="{% url 'chest_number' %}" class="row g-3 align-items-end">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="distribute_category">
+                        
+                        <div class="col-12 col-md-5">
+                            <label class="form-label fw-semibold small text-muted">Select Target Category</label>
+                            <select name="category_id" class="form-select rounded-3" required>
+                                <option value="">-- Choose Category --</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                <form method="post" action="{% url 'chest_number' %}" class="row g-3 align-items-end">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="distribute">
-                    
-                    <div class="col-12 col-sm-4">
-                        <label class="form-label fw-semibold small text-muted">Starting Chest #</label>
-                        <input type="number" name="start_no" value="101" class="form-control rounded-3" min="1" required>
-                    </div>
-                    
-                    <div class="col-12 col-sm-4">
-                        <label class="form-label fw-semibold small text-muted">Sort / Group By</label>
-                        <select name="order_by" class="form-select rounded-3">
-                            <option value="category">Category then Name</option>
-                            <option value="team">Team then Name</option>
-                            <option value="name">Alphabetical Name</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-12 col-sm-4">
-                        <button type="submit" class="btn btn-warning w-100 fw-bold rounded-3 shadow-sm" onclick="return confirm('Assign sequential chest numbers to all contestants?');">
-                            <i class="fas fa-bolt me-1"></i> Auto-Assign Numbers
-                        </button>
-                    </div>
-                </form>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Starting Chest # for this Category</label>
+                            <input type="number" name="start_no" value="101" class="form-control rounded-3" min="1" placeholder="e.g. 101, 201, 301" required>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <button type="submit" class="btn btn-primary w-100 fw-bold rounded-3 shadow-sm" onclick="return confirm('Assign chest numbers for selected category?');">
+                                <i class="fas fa-magic me-1"></i> Assign Category #s
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- All Categories Batch Starting Numbers -->
+                <div class="tab-pane fade" id="all-cats-pane" role="tabpanel">
+                    <form method="post" action="{% url 'chest_number' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="distribute_all_categories">
+                        <p class="text-muted small mb-3">Set starting chest numbers for each category and click save to resequence all categories together.</p>
+
+                        <div class="row g-3">
+                            {% for cat in categories %}
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="p-3 border rounded-3 bg-light">
+                                    <label class="form-label fw-bold text-dark small mb-1">{{ cat.name }}</label>
+                                    <input type="number" name="cat_start_{{ cat.id }}" class="form-control form-control-sm rounded-2" placeholder="Start # (e.g. {% if forloop.counter == 1 %}101{% elif forloop.counter == 2 %}201{% elif forloop.counter == 3 %}301{% else %}401{% endif %})">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-success fw-bold rounded-3 px-4 shadow-sm" onclick="return confirm('Apply starting numbers to all filled categories?');">
+                                <i class="fas fa-check-circle me-1"></i> Save All Category Series
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Search & Filter Controls -->
-    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+    <!-- Search & Filter Controls (No Print) -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white no-print">
         <form method="get" class="row g-2 align-items-center">
             <div class="col-12 col-md-4">
                 <div class="input-group">
@@ -107,18 +176,48 @@
         </form>
     </div>
 
-    <!-- Chest Cards Grid -->
-    <div class="row g-3">
+    <!-- Chest Cards Printable Grid -->
+    <div class="row g-3 print-grid">
         {% for c in contestant %}
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div class="card border-2 shadow-sm rounded-4 text-center p-3 h-100 bg-white" style="border-color: #033067 !important;">
+            <div class="card border-2 shadow-sm rounded-4 text-center p-3 h-100 bg-white chest-card-print" style="border-color: #033067 !important;">
                 <div class="small fw-bold text-muted text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ institution_name }}</div>
                 <div class="fw-extrabold text-primary mb-2 text-uppercase" style="font-size: 0.85rem;">{{ fest_name }}</div>
                 <div class="border-top border-bottom py-2 my-2">
                     <h5 class="fw-bold text-dark mb-0">{{ c.name|upper }}</h5>
                     <small class="text-muted">{{ c.team.name|default:"No Team" }} • {{ c.category.name|default:"General" }}</small>
                 </div>
-                <div class="display-6 fw-bold text-danger mt-1">#{{ c.chest_no|default:"--" }}</div>
+                <div class="display-6 fw-bold text-danger mt-1 chest-no">#{{ c.chest_no|default:"--" }}</div>
+                
+                <!-- Quick Edit Button (No Print) -->
+                <button class="btn btn-sm btn-link text-muted no-print mt-2" data-bs-toggle="modal" data-bs-target="#editModal{{ c.id }}">
+                    <i class="fas fa-edit me-1"></i>Edit No
+                </button>
+            </div>
+        </div>
+
+        <!-- Edit Modal for Individual Contestant (No Print) -->
+        <div class="modal fade no-print" id="editModal{{ c.id }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content rounded-4 border-0 shadow">
+                    <form method="post" action="{% url 'chest_number' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_single">
+                        <input type="hidden" name="contestant_id" value="{{ c.id }}">
+                        
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold">Edit Chest No: {{ c.name }}</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="form-label small text-muted fw-semibold">Chest Number</label>
+                            <input type="number" name="chest_no" value="{{ c.chest_no }}" class="form-control rounded-3" required>
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold rounded-3 w-100">Save Chest No</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         {% empty %}

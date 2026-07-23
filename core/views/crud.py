@@ -880,6 +880,57 @@ def chest_number(request):
             messages.success(request, f"Chest numbers successfully assigned to {contestants.count()} contestants starting from #{start_no}.")
             return redirect('chest_number')
 
+        elif action == 'distribute_category':
+            category_id = request.POST.get('category_id')
+            try:
+                start_no = int(request.POST.get('start_no', 101))
+            except ValueError:
+                start_no = 101
+
+            if category_id:
+                category = get_object_or_404(Category, id=category_id)
+                contestants = Contestant.objects.filter(category=category).order_by('name')
+                current_no = start_no
+                for c in contestants:
+                    c.chest_no = current_no
+                    c.save()
+                    current_no += 1
+                messages.success(request, f"Chest numbers updated for category '{category.name}' starting from #{start_no}.")
+            return redirect('chest_number')
+
+        elif action == 'distribute_all_categories':
+            categories = Category.objects.all()
+            total_updated = 0
+            for cat in categories:
+                param_name = f"cat_start_{cat.id}"
+                if param_name in request.POST and request.POST[param_name].strip():
+                    try:
+                        start_no = int(request.POST[param_name])
+                        cat_contestants = Contestant.objects.filter(category=cat).order_by('name')
+                        curr = start_no
+                        for c in cat_contestants:
+                            c.chest_no = curr
+                            c.save()
+                            curr += 1
+                            total_updated += 1
+                    except ValueError:
+                        continue
+            messages.success(request, f"Category-wise chest numbers updated for {total_updated} contestants.")
+            return redirect('chest_number')
+
+        elif action == 'update_single':
+            contestant_id = request.POST.get('contestant_id')
+            try:
+                new_no = int(request.POST.get('chest_no'))
+                c = get_object_or_404(Contestant, id=contestant_id)
+                c.chest_no = new_no
+                c.save()
+                messages.success(request, f"Chest number updated for {c.name} to #{new_no}.")
+            except (ValueError, TypeError):
+                messages.error(request, "Invalid chest number.")
+            return redirect('chest_number')
+
+
     category_id = request.GET.get('category')
     team_id = request.GET.get('team')
     query = request.GET.get('q', '').strip()
