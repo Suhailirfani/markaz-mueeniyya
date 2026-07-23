@@ -10,9 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="program",
-            name="members_count",
-            field=models.PositiveIntegerField(blank=True, default=1, null=True),
-        ),
     ]

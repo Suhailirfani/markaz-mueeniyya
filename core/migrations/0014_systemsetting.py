@@ -10,12 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='SystemSetting',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(max_length=100, unique=True)),
-                ('value', models.CharField(max_length=255)),
-            ],
-        ),
     ]

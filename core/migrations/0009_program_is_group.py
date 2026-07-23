@@ -10,9 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="program",
-            name="is_group",
-            field=models.BooleanField(default=False, null=True),
-        ),
     ]

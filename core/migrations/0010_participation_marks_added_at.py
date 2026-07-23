@@ -11,11 +11,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="participation",
-            name="marks_added_at",
-            field=models.DateTimeField(
-                blank=True, default=django.utils.timezone.now, null=True
-            ),
-        ),
     ]

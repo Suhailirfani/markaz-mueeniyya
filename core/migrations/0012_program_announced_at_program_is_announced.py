@@ -10,14 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="program",
-            name="announced_at",
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name="program",
-            name="is_announced",
-            field=models.BooleanField(default=False, help_text="Make results public"),
-        ),
     ]
