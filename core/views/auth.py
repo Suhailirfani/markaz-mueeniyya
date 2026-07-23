@@ -46,7 +46,7 @@ def custom_login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if not user.is_approved:
+            if not user.is_approved and not (user.is_superuser or user.is_staff or user.role == 'admin'):
                 messages.error(request, 'Account pending approval by admin.')
                 return redirect('login')
 
@@ -94,7 +94,7 @@ def custom_logout_view(request):
 @login_required
 @user_passes_test(is_admin)
 def pending_users(request):
-    users = User.objects.filter(is_approved=False)
+    users = User.objects.filter(is_approved=False, is_superuser=False).exclude(role='admin')
     return render(request, 'pending_users.html', {'users': users})
 
 @login_required
@@ -120,7 +120,7 @@ def view_users(request):
     total_users_count = User.objects.count()
     admin_count = User.objects.filter(role='admin').count()
     team_count = User.objects.filter(Q(role='team') | Q(role='off_campus')).count()
-    pending_count = User.objects.filter(is_approved=False).count()
+    pending_count = User.objects.filter(is_approved=False, is_superuser=False).exclude(role='admin').count()
 
     users = User.objects.all().select_related('team').order_by('-id')
 

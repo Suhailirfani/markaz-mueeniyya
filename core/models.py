@@ -14,6 +14,11 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     is_approved = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if self.is_superuser or self.is_staff or self.role == 'admin':
+            self.is_approved = True
+        super().save(*args, **kwargs)
+
 # ----------------- Admin Profile -----------------
 class AdminProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

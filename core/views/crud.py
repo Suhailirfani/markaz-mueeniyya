@@ -25,7 +25,7 @@ def dashboard_admin(request):
     teams = Team.objects.all()
     from django.contrib.auth import get_user_model
     User = get_user_model()
-    pending_users = User.objects.filter(is_approved=False)
+    pending_users = User.objects.filter(is_approved=False, is_superuser=False).exclude(role='admin')
     from ..models import SystemSetting
     from .scoring import get_top_5_balancing_announcement_suggestions
     group_point_system = SystemSetting.get_setting('group_point_system', 'member_count')
