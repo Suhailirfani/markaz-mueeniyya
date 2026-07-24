@@ -362,6 +362,22 @@
             </button>
             
             {% if user.is_authenticated %}
+                {% if user.is_superuser or user.is_staff or user.role == 'admin' %}
+                    <a href="{% url 'dashboard_admin' %}" class="tab-item text-info">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                {% elif user.role == 'team' %}
+                    <a href="{% url 'dashboard_team' %}" class="tab-item text-info">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                {% else %}
+                    <a href="/" class="tab-item text-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Dashboard</span>
+                    </a>
+                {% endif %}
                 <a href="{% url 'logout' %}" class="tab-item text-danger">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
