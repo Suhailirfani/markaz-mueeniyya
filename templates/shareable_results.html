@@ -178,14 +178,27 @@
         /* Background Texture Motif Overlay */
         .card-texture-motif {
             position: absolute;
-            right: -15px;
-            bottom: -15px;
-            font-size: 9rem;
-            opacity: 0.06;
+            right: -10px;
+            bottom: -10px;
+            font-size: 11.5rem;
+            opacity: 0.22;
             pointer-events: none;
             z-index: 1;
             transform: rotate(-10deg);
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+            transition: all 0.3s;
         }
+
+        .theme-1 .card-texture-motif { color: #fbbf24; opacity: 0.25; }
+        .theme-2 .card-texture-motif { color: #34d399; opacity: 0.25; }
+        .theme-3 .card-texture-motif { color: #fb7185; opacity: 0.25; }
+        .theme-4 .card-texture-motif { color: #38bdf8; opacity: 0.22; }
+        .theme-5 .card-texture-motif { color: #b45309; opacity: 0.18; }
+        .theme-6 .card-texture-motif { color: #34d399; opacity: 0.22; }
+        .theme-7 .card-texture-motif { color: #fde047; opacity: 0.25; }
+        .theme-8 .card-texture-motif { color: #f59e0b; opacity: 0.25; }
+        .theme-9 .card-texture-motif { color: #2dd4bf; opacity: 0.25; }
+        .theme-10 .card-texture-motif { color: #f59e0b; opacity: 0.22; }
 
         /* Glossy Shine Lens Overlay */
         .glossy-shine {
