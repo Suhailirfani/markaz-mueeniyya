@@ -146,4 +146,6 @@ urlpatterns = [
     path('program_list/', views.program_list, name='program_list'),
     path('results/winner-cards/', views.shareable_results_view, name='shareable_results'),
     path('system-config/', views.system_config, name='system_config'),
+    path('brochure/', views.brochure_view, name='brochure'),
+    path('download/brochure-pdf/', views.download_brochure_pdf, name='download_brochure_pdf'),
 ]

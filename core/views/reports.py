@@ -845,3 +845,38 @@ def download_chest_cards_pdf(request):
     return response
 
 
+def brochure_view(request):
+    """Product Portfolio & Features Brochure Page in Malayalam"""
+    fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
+    institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
+    return render(request, 'brochure.html', {
+        'fest_name': fest_name,
+        'institution_name': institution_name,
+    })
+
+
+def download_brochure_pdf(request):
+    """Download Product Brochure PDF in Malayalam"""
+    fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
+    institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
+
+    template_path = 'brochure_pdf.html'
+    context = {
+        'fest_name': fest_name,
+        'institution_name': institution_name,
+        'date': timezone.now().strftime("%d-%m-%Y"),
+    }
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="CompetePro_Product_Brochure.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating Brochure PDF <pre>' + html + '</pre>')
+    return response
+
+
+

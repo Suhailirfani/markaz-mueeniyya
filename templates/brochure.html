@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CompetePro - ഫീച്ചേഴ്സ് & ബ്രോഷർ | Features & Portfolio{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <!-- HERO BROCHURE BANNER -->
+    <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 mb-5 text-white position-relative overflow-hidden"
+         style="background: linear-gradient(135deg, #033067 0%, #0d5cbe 50%, #1e3a8a 100%);">
+        <div class="row align-items-center relative-zinc">
+            <div class="col-12 col-lg-8">
+                <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+                    <i class="fas fa-star me-1"></i> കേരളത്തിലെ മികച്ച ഫെസ്റ്റ് മാനേജ്മെന്റ് പോർട്ടൽ
+                </span>
+                <h1 class="display-5 fw-extrabold text-white mb-2">CompetePro ഫീച്ചേഴ്സ് & പോർട്ട്ഫോളിയോ</h1>
+                <p class="fs-5 text-light opacity-90 mb-4">
+                    ആർട്സ് ഫെസ്റ്റിവലുകൾ, മീലാദ് ഫെസ്റ്റുകൾ, സ്കൂൾ/കോളേജ് മത്സരങ്ങൾ എന്നിവ തടസ്സമില്ലാതെ കൈകാര്യം ചെയ്യാനുള്ള സമ്പൂർണ്ണ ഡിജിറ്റൽ സൊല്യൂഷൻ.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'download_brochure_pdf' %}" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold text-dark shadow">
+                        <i class="fas fa-file-pdf me-2"></i> ബ്രോഷർ PDF ഡൗൺലോഡ് ചെയ്യുക
+                    </a>
+                    <a href="{% url 'face_page' %}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
+                        <i class="fas fa-eye me-2"></i> ലൈവ് ഡെമോ കാണുക
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="p-4 rounded-4 bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 shadow-sm">
+                    <i class="fas fa-trophy text-warning display-1 mb-2"></i>
+                    <h4 class="fw-bold text-white mb-1">CompetePro Fest Portal</h4>
+                    <p class="small text-light opacity-75 mb-0">Fast • Reliable • Multi-Device</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN FEATURES GRID (Malayalam Transliterated) -->
+    <div class="text-center mb-5">
+        <h2 class="fw-extrabold text-primary display-6 mb-2">പ്രധാന ഫീച്ചറുകൾ (Key Features)</h2>
+        <p class="text-muted fs-6">മത്സരങ്ങൾ എളുപ്പത്തിലും സുതാര്യമായും പൂർത്തിയാക്കാൻ കമ്പീറ്റ് പ്രോയിൽ ഒരുക്കിയിരിക്കുന്ന സവിശേഷതകൾ</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+
+        <!-- Feature 1 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-primary mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-chart-line fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">1. ലൈവ് ലീഡർബോർഡും പോയിന്റ് ടേബിളും</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    മത്സര ഫലങ്ങൾ പ്രഖ്യാപിക്കുന്ന നിമിഷം തത്സമയം അപ്‌ഡേറ്റാകുന്ന <strong>Live Leaderboard & Point Table</strong>. ടീമുകളുടെയും മത്സരാർത്ഥികളുടെയും പോയിന്റുകൾ കളർഫുൾ ഡിസ്‌പ്ലേയിൽ ഒഫീഷ്യൽ പോർട്ടലിൽ കാണാം.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-success mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-id-badge fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">2. ചെസ്റ്റ് നമ്പർ ഓട്ടോ ഡിസ്ട്രിബ്യൂഷൻ</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    കാറ്റഗറി തിരിച്ചോ (Category-wise) ടീം തിരിച്ചോ ഒരൊറ്റ ക്ലിക്കിൽ <strong>Chest Number Auto Assignment</strong>. പെട്ടെന്ന് പ്രിന്റ് ചെയ്ത് നൽകാൻ പാകത്തിലുള്ള Chest Cards PDF ജനറേഷൻ.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-warning mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-calendar-alt fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">3. സ്മാർട്ട് ഷെഡ്യൂളിംഗ് & ക്ലാഷ് ഡിറ്റക്ടർ</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    സ്റ്റേജുകളുടെയും ഫെസ്റ്റ് ദിവസങ്ങളുടെയും <strong>Stage Timetable Scheduler</strong>. ഒരേ മത്സരാർത്ഥിക്ക് രണ്ടു സ്റ്റേജിൽ സമയം ഒത്തു വരുന്ന പ്രശ്നങ്ങൾ (Clashes) സിസ്റ്റം സ്വയം കണ്ടെത്തി മുന്നറിയിപ്പ് നൽകും.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-danger bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-danger mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-image fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">4. 10+ വിന്നർ കാർഡ് ഡിസൈനുകൾ</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    വിജയികളുടെ വിവരങ്ങൾ വാട്സാപ്പിലും (WhatsApp) സോഷ്യൽ മീഡിയയിലും ഷെയർ ചെയ്യാൻ <strong>10 വെവ്വേറെ HD Winner Graphics Cards</strong>. 1-ക്ലിക്കിൽ ഹൈ-ക്വാളിറ്റി JPEG ആയി ഡൗൺലോഡ് ചെയ്യാം.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-info mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-print fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">5. പിഡിഎഫ് & എക്സൽ മാസ്റ്റർ റിപ്പോർട്ടുകൾ</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    ജഡ്ജസ്‌മാർക്കുള്ള <strong>Valuation Sheets</strong>, സ്റ്റേജ് കോൾ ലിസ്റ്റുകൾ (Call Lists), ഗ്രീൻ റൂം ഷീറ്റുകൾ, ഒഫീഷ്യൽ ടാബുലേഷൻ റിപ്പോർട്ടുകൾ എന്നിവ ക്ലിയർ PDF & Excel ഫോർമാറ്റിൽ പ്രിന്റ് ചെയ്യാം.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white hover-up transition">
+                <div class="rounded-circle bg-purple bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center text-purple mb-3" style="width: 56px; height: 56px;">
+                    <i class="fas fa-mobile-screen-button fs-4"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">6. മൊബൈൽ പിഡബ്ല്യുഎ ആപ്പ് (Mobile PWA)</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    പ്രത്യേകം ആപ്പ് സ്റ്റോറുകൾ ഇല്ലാതെ തന്നെ മൊബൈലിലും ടാബ്ലറ്റിലും ഒഫീഷ്യൽ ആപ്പ് പോലെ ഇൻസ്റ്റാൾ ചെയ്യാം. ഓൺ-ദി-ഗോ മാർക്ക് എൻട്രിക്കും റിസൾട്ട് ചെക്കിംഗിനും അനുയോജ്യം.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PRICING PACKAGES (KERALA MARKET) -->
+    <div class="bg-white rounded-4 p-4 p-md-5 shadow-sm border border-light mb-5">
+        <div class="text-center mb-4">
+            <h3 class="fw-extrabold text-primary mb-2">പാക്കേജ് പ്ലാനുകൾ (Pricing Options)</h3>
+            <p class="text-muted">കേരളത്തിലെ സ്കൂളുകൾ, മദ്രസകൾ, കോളേജുകൾ എന്നിവയ്ക്കായുള്ള ആനുകൂല്യ പാക്കേജുകൾ</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Basic Plan -->
+            <div class="col-12 col-md-4">
+                <div class="card border rounded-4 h-100 p-4 text-center hover-up">
+                    <h5 class="fw-bold text-muted mb-2">Basic Event Package</h5>
+                    <h2 class="fw-extrabold text-primary mb-3">₹6,000 – ₹8,500 <small class="fs-6 text-muted">/fest</small></h2>
+                    <ul class="list-unstyled text-start small mb-4 space-y-2">
+                        <li><i class="fas fa-check text-success me-2"></i>ഫുൾ വെബ് പോർട്ടൽ ആക്സസ്</li>
+                        <li><i class="fas fa-check text-success me-2"></i>ഡയനാമിക് ചെസ്റ്റ് കാർഡ് PDF</li>
+                        <li><i class="fas fa-check text-success me-2"></i>ലൈവ് റിസൾട്ട് & ലീഡർബോർഡ്</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Standard Plan (Popular) -->
+            <div class="col-12 col-md-4">
+                <div class="card border border-2 border-primary rounded-4 h-100 p-4 text-center hover-up shadow-sm position-relative">
+                    <span class="position-absolute top-0 start-50 translate-middle badge bg-primary px-3 py-2 rounded-pill">Most Popular</span>
+                    <h5 class="fw-bold text-primary mb-2 mt-2">Standard Package</h5>
+                    <h2 class="fw-extrabold text-primary mb-3">₹10,000 – ₹15,000 <small class="fs-6 text-muted">/fest</small></h2>
+                    <ul class="list-unstyled text-start small mb-4 space-y-2">
+                        <li><i class="fas fa-check text-success me-2"></i>എല്ലാ ബേസിക് ഫീച്ചറുകളും</li>
+                        <li><i class="fas fa-check text-success me-2"></i><strong>10 Winner Graphics Card Designs</strong></li>
+                        <li><i class="fas fa-check text-success me-2"></i>സ്മാർട്ട് ഷെഡ്യൂളിംഗ് & ക്ലാഷ് ചെക്കർ</li>
+                        <li><i class="fas fa-check text-success me-2"></i>PDF & Excel റിപ്പോർട്ട് പ്രിന്റിംഗ്</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="col-12 col-md-4">
+                <div class="card border rounded-4 h-100 p-4 text-center hover-up">
+                    <h5 class="fw-bold text-muted mb-2">Managed Enterprise</h5>
+                    <h2 class="fw-extrabold text-primary mb-3">₹18,000 – ₹30,000 <small class="fs-6 text-muted">/fest</small></h2>
+                    <ul class="list-unstyled text-start small mb-4 space-y-2">
+                        <li><i class="fas fa-check text-success me-2"></i>എല്ലാ സ്റ്റാൻഡേർഡ് ഫീച്ചറുകളും</li>
+                        <li><i class="fas fa-check text-success me-2"></i>കസ്റ്റം ഡൊമെയ്ൻ/സബ്‌ഡൊമെയ്ൻ സെറ്റപ്പ്</li>
+                        <li><i class="fas fa-check text-success me-2"></i>ലൈവ് ഓൺ-സൈറ്റ് / റിമോട്ട് സപ്പോർട്ട്</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOWNLOAD & CONTACT ACTION -->
+    <div class="text-center bg-light rounded-4 p-4 p-md-5">
+        <h3 class="fw-bold text-dark mb-2">നിങ്ങളുടെ ഫെസ്റ്റിനായി പോർട്ടൽ ബുക്ക് ചെയ്യാൻ</h3>
+        <p class="text-muted mb-4">കൂടുതൽ വിവരങ്ങൾക്കും കൊട്ടേഷനുമായി ഞങ്ങളെ ബന്ധപ്പെടുക</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'download_brochure_pdf' %}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm">
+                <i class="fas fa-download me-2"></i> ബ്രോഷർ PDF ഡൗൺലോഡ് ചെയ്യുക
+            </a>
+            <a href="{% url 'dashboard_admin' %}" class="btn btn-outline-dark btn-lg rounded-pill px-4 fw-bold">
+                <i class="fas fa-arrow-left me-2"></i> ഡാഷ്‌ബോർഡിലേക്ക് മടങ്ങുക
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
