@@ -716,22 +716,37 @@
                 </div>
             </div>
 
-            <!-- Video Tutorial Module -->
+            <!-- Video Tutorial / Walkthrough Module -->
             <div class="glass-panel module-card reveal-element reveal-from-right">
                 <div>
                     <div class="module-icon-badge bg-video">
                         <i class="fab fa-youtube"></i>
                     </div>
                     <h4 class="fw-bold text-white mb-1">Portal Walkthrough Guide</h4>
-                    <p class="text-slate-400 small mb-2">Watch quick tutorial video to learn how to navigate the portal features.</p>
-                    <div class="video-player-box">
+                    <p class="text-slate-400 small mb-3">Explore interactive guides and learn how to navigate the portal features.</p>
+                    
+                    {% if youtube_embed_url %}
+                    <div class="video-player-box mb-2">
                         <iframe 
-                            src="https://www.youtube.com/embed/XdQWQAhnF8o?si=om2yq8kH07e7ASXO" 
+                            src="{{ youtube_embed_url }}" 
                             title="Portal Walkthrough Guide" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            referrerpolicy="strict-origin-when-cross-origin"
                             allowfullscreen>
                         </iframe>
                     </div>
+                    {% else %}
+                    <div class="p-4 rounded-3 text-center" style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.15);">
+                        <div class="text-danger display-6 mb-2">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <h6 class="text-white fw-bold mb-1">Interactive Portal Features</h6>
+                        <p class="text-slate-400 small mb-3">Live scoreboards, team standings, 10 winner card themes, & downloadable PDF brochure.</p>
+                        <a href="{% url 'brochure' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                            <i class="fas fa-book-open me-1"></i> View Features Portfolio
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 

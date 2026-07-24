@@ -745,11 +745,20 @@ def system_config(request):
             setting.save()
             messages.success(request, f"Short name updated to: {short_name}")
 
+        # Handle youtube embed url
+        if 'youtube_embed_url' in request.POST:
+            youtube_embed_url = request.POST.get('youtube_embed_url', '').strip()
+            setting, _ = SystemSetting.objects.get_or_create(key='youtube_embed_url')
+            setting.value = youtube_embed_url
+            setting.save()
+            messages.success(request, "YouTube Video Embed URL updated successfully.")
+
     # Build context
     group_point_system = SystemSetting.get_setting('group_point_system', 'member_count')
     fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
     institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
     short_name = SystemSetting.get_setting('short_name', 'Fest Portal')
+    youtube_embed_url = SystemSetting.get_setting('youtube_embed_url', '')
     total_programs = Program.objects.count()
     announced_programs = Program.objects.filter(is_announced=True).count()
 
@@ -758,6 +767,7 @@ def system_config(request):
         'fest_name': fest_name,
         'institution_name': institution_name,
         'short_name': short_name,
+        'youtube_embed_url': youtube_embed_url,
         'total_programs': total_programs,
         'announced_programs': announced_programs,
         'total_teams': Team.objects.count(),
