@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winner Cards (10 Designs) – {{ fest_name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Manjari:wght@700&family=Outfit:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Winner Graphics Studio (10 Distinct Themes) – {{ fest_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=DM+Serif+Display&family=Manjari:wght@700&family=Montserrat:wght@600;800;900&family=Outfit:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- html2canvas for JPEG download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -51,7 +51,7 @@
 
         /* ── CONTROLS & THEME BAR ────────────────────────────────── */
         .controls-wrapper {
-            max-width: 1300px;
+            max-width: 1350px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -87,7 +87,7 @@
             background: #18181b;
             border: 1px solid #27272a;
             border-radius: 16px;
-            padding: 16px 20px;
+            padding: 18px 20px;
             margin-bottom: 25px;
         }
         .theme-selector-title {
@@ -96,7 +96,7 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: #fbbf24;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -109,20 +109,23 @@
         .theme-chip {
             padding: 8px 16px;
             border-radius: 30px;
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             border: 1px solid #3f3f46;
             background: #27272a;
             color: #a1a1aa;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .theme-chip:hover { color: #fff; border-color: #71717a; }
         .theme-chip.active {
             background: #f59e0b;
             color: #000;
             border-color: #fbbf24;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
         }
 
         /* ── SEARCH BAR ─────────────────────────────────────────── */
@@ -146,7 +149,7 @@
         /* ── CARDS GRID ─────────────────────────────────────────── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 28px;
             max-width: 1400px;
             margin: 0 auto;
@@ -159,22 +162,45 @@
             overflow: hidden;
             position: relative;
             transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
         }
         .winner-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
+            box-shadow: 0 22px 50px rgba(0,0,0,0.8);
         }
 
         .card-inner {
             padding: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Background Texture Motif Overlay */
+        .card-texture-motif {
+            position: absolute;
+            right: -15px;
+            bottom: -15px;
+            font-size: 9rem;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 1;
+            transform: rotate(-10deg);
+        }
+
+        /* Glossy Shine Lens Overlay */
+        .glossy-shine {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 60%);
+            pointer-events: none;
+            z-index: 2;
         }
 
         .card-top-branding {
             text-align: center;
             padding-bottom: 12px;
             margin-bottom: 14px;
-            border-bottom: 1px dashed rgba(255,255,255,0.15);
+            border-bottom: 1px dashed rgba(255,255,255,0.18);
         }
         .inst-title {
             font-size: 0.72rem;
@@ -184,7 +210,7 @@
             opacity: 0.85;
         }
         .fest-badge {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             font-weight: 900;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -280,20 +306,22 @@
         /* Card Actions Bar */
         .card-actions-bar {
             padding: 12px 18px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.35);
             border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 8px;
+            position: relative;
+            z-index: 5;
         }
         .card-theme-select {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
             color: #fff;
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 8px;
             outline: none;
             cursor: pointer;
@@ -313,134 +341,160 @@
         .btn-dl-card:hover { opacity: 0.9; }
 
         /* ══════════════════════════════════════════════════════════
-           10 THEMES STYLING SPECIFICATIONS
+           10 DISTINCT THEME DESIGNS & STYLES
            ══════════════════════════════════════════════════════════ */
 
-        /* --- THEME 1: Royal Velvet & Gold --- */
+        /* --- THEME 1: Royal Velvet & Gold (Glossy - Ranthal & Trophy) --- */
         .theme-1 {
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: linear-gradient(135deg, #1e1b4b 0%, #31103f 50%, #170b3b 100%);
             border: 2px solid #fbbf24;
             color: #fff;
+            font-family: 'Cinzel', serif;
         }
-        .theme-1 .fest-badge { color: #fbbf24; }
-        .theme-1 .cat-badge { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+        .theme-1 .card-top-branding { text-align: center; }
+        .theme-1 .fest-badge { color: #fbbf24; font-family: 'Cinzel', serif; }
+        .theme-1 .prog-name { color: #ffffff; font-family: 'Cinzel', serif; }
+        .theme-1 .cat-badge { background: rgba(251, 191, 36, 0.18); color: #fbbf24; border: 1px solid #fbbf24; }
         .theme-1 .type-badge { background: rgba(255,255,255,0.1); color: #e4e4e7; }
+        .theme-1 .rank-row { background: rgba(255,255,255,0.06); border-color: rgba(251, 191, 36, 0.25); }
         .theme-1 .rank-medal { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 10px rgba(245,158,11,0.4); }
 
-        /* --- THEME 2: Cyber Emerald & Neon Mint --- */
+        /* --- THEME 2: Cyber Emerald & Neon Mint (Glossy - Stage Mic & Waves) --- */
         .theme-2 {
-            background: linear-gradient(135deg, #061e14 0%, #0d3827 100%);
+            background: linear-gradient(135deg, #042014 0%, #0d3827 50%, #021a0f 100%);
             border: 2px solid #10b981;
             color: #ecfdf5;
+            font-family: 'Space Grotesk', sans-serif;
         }
-        .theme-2 .fest-badge { color: #34d399; }
+        .theme-2 .prog-header { text-align: left; }
+        .theme-2 .fest-badge { color: #34d399; font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; }
+        .theme-2 .prog-name { color: #a7f3d0; }
         .theme-2 .cat-badge { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
         .theme-2 .type-badge { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
         .theme-2 .rank-medal { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
-        .theme-2 .rank-row { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); }
+        .theme-2 .rank-row { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25); }
 
-        /* --- THEME 3: Sunset Crimson & Coral --- */
+        /* --- THEME 3: Sunset Crimson & Coral (Glossy - Duff & Music) --- */
         .theme-3 {
-            background: linear-gradient(135deg, #3b0712 0%, #611221 100%);
-            border: 2px solid #f43f5e;
+            background: linear-gradient(135deg, #4c0519 0%, #881337 50%, #58081c 100%);
+            border: 2px solid #fb7185;
             color: #fff1f2;
+            font-family: 'Outfit', sans-serif;
         }
-        .theme-3 .fest-badge { color: #fb7185; }
-        .theme-3 .cat-badge { background: rgba(244, 63, 94, 0.25); color: #fecdd3; border: 1px solid #f43f5e; }
-        .theme-3 .type-badge { background: rgba(251, 146, 60, 0.2); color: #fdba74; }
+        .theme-3 .fest-badge { color: #fecdd3; font-weight: 900; }
+        .theme-3 .prog-name { color: #ffffff; }
+        .theme-3 .cat-badge { background: rgba(244, 63, 94, 0.3); color: #ffe4e6; border: 1px solid #fb7185; }
+        .theme-3 .type-badge { background: rgba(251, 146, 60, 0.25); color: #fdba74; }
         .theme-3 .rank-medal { background: linear-gradient(135deg, #fb7185, #e11d48); color: #fff; }
+        .theme-3 .rank-row { background: rgba(255,255,255,0.08); border-color: rgba(251, 113, 133, 0.2); }
 
-        /* --- THEME 4: Regal Sapphire & Silver --- */
+        /* --- THEME 4: Regal Sapphire & Platinum (Matte - Open Book & Cap) --- */
         .theme-4 {
-            background: linear-gradient(135deg, #071938 0%, #0f3460 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             border: 2px solid #38bdf8;
             color: #f0f9ff;
+            font-family: 'Playfair Display', serif;
         }
-        .theme-4 .fest-badge { color: #38bdf8; }
+        .theme-4 .card-top-branding { border-bottom-color: rgba(56, 189, 248, 0.3); }
+        .theme-4 .fest-badge { color: #38bdf8; font-family: 'Playfair Display', serif; }
+        .theme-4 .prog-name { color: #ffffff; font-family: 'Playfair Display', serif; }
         .theme-4 .cat-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: 1px solid #38bdf8; }
-        .theme-4 .type-badge { background: rgba(147, 51, 234, 0.2); color: #c084fc; }
+        .theme-4 .type-badge { background: rgba(147, 51, 234, 0.25); color: #c084fc; }
         .theme-4 .rank-medal { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #000; }
+        .theme-4 .rank-row { background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2); font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* --- THEME 5: Clean Luxury White --- */
+        /* --- THEME 5: Clean Luxury Ivory White (Matte - Spectacles & Pen) --- */
         .theme-5 {
-            background: #ffffff;
-            border: 2px solid #d97706;
-            color: #0f172a;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            background: #fdfbf7;
+            border: 2px solid #b45309;
+            color: #1e293b;
+            font-family: 'DM Serif Display', serif;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
         }
-        .theme-5 .card-top-branding { border-bottom-color: #e2e8f0; }
+        .theme-5 .card-top-branding { border-bottom-color: #e2e8f0; text-align: center; }
         .theme-5 .inst-title { color: #64748b; }
-        .theme-5 .fest-badge { color: #d97706; }
-        .theme-5 .prog-name { color: #0f172a; }
-        .theme-5 .cat-badge { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .theme-5 .fest-badge { color: #b45309; font-family: 'DM Serif Display', serif; }
+        .theme-5 .prog-name { color: #0f172a; font-family: 'DM Serif Display', serif; }
+        .theme-5 .cat-badge { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .theme-5 .type-badge { background: #e2e8f0; color: #334155; }
-        .theme-5 .rank-row { background: #f8fafc; border-color: #e2e8f0; }
+        .theme-5 .rank-row { background: #ffffff; border-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; }
         .theme-5 .winner-name { color: #0f172a; }
         .theme-5 .team-name { color: #475569; }
-        .theme-5 .rank-medal { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; }
+        .theme-5 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
 
-        /* --- THEME 6: Cosmic Nebula & Violet --- */
+        /* --- THEME 6: Eco Earth & Forest Leaves (Matte - Leaves & Trees) --- */
         .theme-6 {
-            background: linear-gradient(135deg, #18072b 0%, #3b1154 100%);
-            border: 2px solid #a855f7;
-            color: #faf5ff;
+            background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+            border: 2px solid #34d399;
+            color: #ecfdf5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .theme-6 .fest-badge { color: #c084fc; }
-        .theme-6 .cat-badge { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid #a855f7; }
-        .theme-6 .type-badge { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
-        .theme-6 .rank-medal { background: linear-gradient(135deg, #c084fc, #9333ea); color: #fff; }
+        .theme-6 .fest-badge { color: #34d399; font-weight: 800; }
+        .theme-6 .prog-name { color: #ffffff; }
+        .theme-6 .cat-badge { background: rgba(52, 211, 153, 0.2); color: #a7f3d0; border: 1px solid #34d399; }
+        .theme-6 .type-badge { background: rgba(250, 204, 21, 0.2); color: #fef08a; }
+        .theme-6 .rank-medal { background: linear-gradient(135deg, #34d399, #059669); color: #000; }
+        .theme-6 .rank-row { background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.2); }
 
-        /* --- THEME 7: Traditional Heritage Gold --- */
+        /* --- THEME 7: Heritage Kerala Maroon (Matte - Ranthal & Minaret) --- */
         .theme-7 {
-            background: #fffdfa;
-            border: 3px double #780016;
-            color: #3b0007;
-            font-family: 'Cinzel', serif, sans-serif;
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            border: 3px double #fef08a;
+            color: #fef2f2;
+            font-family: 'Cinzel', serif;
         }
-        .theme-7 .card-top-branding { border-bottom-color: #f3e8d2; }
-        .theme-7 .inst-title { color: #780016; letter-spacing: 2px; }
-        .theme-7 .fest-badge { color: #9a031e; font-size: 1rem; }
-        .theme-7 .prog-name { color: #4a0404; font-family: 'Cinzel', serif; }
-        .theme-7 .cat-badge { background: #780016; color: #fffdfa; }
-        .theme-7 .type-badge { background: #e6ccb2; color: #582f0e; }
-        .theme-7 .rank-row { background: #fdf8ed; border-color: #ede0d4; }
-        .theme-7 .winner-name { color: #2c0005; font-family: 'Cinzel', serif; }
-        .theme-7 .team-name { color: #6c584c; }
-        .theme-7 .rank-medal { background: #9a031e; color: #fffdfa; }
+        .theme-7 .card-top-branding { border-bottom-color: rgba(254, 240, 138, 0.4); text-align: center; }
+        .theme-7 .inst-title { color: #fef08a; letter-spacing: 2px; }
+        .theme-7 .fest-badge { color: #fde047; font-family: 'Cinzel', serif; }
+        .theme-7 .prog-name { color: #ffffff; font-family: 'Cinzel', serif; }
+        .theme-7 .cat-badge { background: #fef08a; color: #450a0a; font-weight: 900; }
+        .theme-7 .type-badge { background: rgba(255, 255, 255, 0.15); color: #fff; }
+        .theme-7 .rank-row { background: rgba(0, 0, 0, 0.25); border-color: rgba(254, 240, 138, 0.2); font-family: 'Manjari', sans-serif; }
+        .theme-7 .winner-name { font-family: 'Cinzel', serif; }
+        .theme-7 .rank-medal { background: #fde047; color: #450a0a; }
 
-        /* --- THEME 8: Midnight Onyx & Amber --- */
+        /* --- THEME 8: Midnight Obsidian & Amber (Glossy - Quill & Pen) --- */
         .theme-8 {
             background: #09090b;
             border: 2px solid #f59e0b;
             color: #f4f4f5;
+            font-family: 'Montserrat', sans-serif;
         }
-        .theme-8 .fest-badge { color: #f59e0b; }
+        .theme-8 .fest-badge { color: #f59e0b; font-weight: 900; }
+        .theme-8 .prog-name { color: #ffffff; }
         .theme-8 .cat-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
         .theme-8 .type-badge { background: #27272a; color: #a1a1aa; }
         .theme-8 .rank-medal { background: #f59e0b; color: #000; }
         .theme-8 .rank-row { background: #18181b; border-color: #27272a; }
 
-        /* --- THEME 9: Tropical Ocean Teal --- */
+        /* --- THEME 9: Tropical Ocean Turquoise (Glossy - Waves & Environment) --- */
         .theme-9 {
             background: linear-gradient(135deg, #042f2e 0%, #0f766e 100%);
             border: 2px solid #14b8a6;
             color: #ccfbf1;
+            font-family: 'Outfit', sans-serif;
         }
-        .theme-9 .fest-badge { color: #2dd4bf; }
+        .theme-9 .fest-badge { color: #2dd4bf; font-weight: 900; }
+        .theme-9 .prog-name { color: #ffffff; }
         .theme-9 .cat-badge { background: rgba(20, 184, 166, 0.25); color: #99f6e4; border: 1px solid #14b8a6; }
         .theme-9 .type-badge { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
         .theme-9 .rank-medal { background: linear-gradient(135deg, #2dd4bf, #0d9488); color: #000; }
+        .theme-9 .rank-row { background: rgba(20, 184, 166, 0.1); border-color: rgba(20, 184, 166, 0.25); }
 
-        /* --- THEME 10: Champion Metallic Luxury --- */
+        /* --- THEME 10: Marble Stone & Champion Bronze (Matte - Rock & Shield) --- */
         .theme-10 {
-            background: linear-gradient(135deg, #1f1810 0%, #3d2d1d 100%);
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
             border: 2px solid #d97706;
             color: #fef3c7;
+            font-family: 'Playfair Display', serif;
         }
-        .theme-10 .fest-badge { color: #fbbf24; }
+        .theme-10 .card-top-branding { border-bottom-color: rgba(217, 119, 6, 0.3); text-align: center; }
+        .theme-10 .fest-badge { color: #fbbf24; font-family: 'Playfair Display', serif; }
+        .theme-10 .prog-name { color: #ffffff; font-family: 'Playfair Display', serif; }
         .theme-10 .cat-badge { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid #d97706; }
         .theme-10 .type-badge { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; }
         .theme-10 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
+        .theme-10 .rank-row { background: rgba(255, 255, 255, 0.05); border-color: rgba(217, 119, 6, 0.2); font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* Overlay Spinner */
         #dl-overlay {
@@ -468,8 +522,8 @@
 <!-- ═══ HEADER ═══════════════════════════════════════════════════ -->
 <div class="page-header">
     <p class="fest-title">{{ fest_name }}</p>
-    <h1>🏆 Winner Graphics Studio</h1>
-    <p class="subtitle">Select from 10 premium themes to export and share winner announcement cards</p>
+    <h1>🏆 Winner Graphics Studio (10 Themes)</h1>
+    <p class="subtitle">Select from 10 distinct, formal, and artistic winner card designs with custom background textures & finishes</p>
 </div>
 
 <div class="controls-wrapper">
@@ -481,27 +535,50 @@
         <a href="{% url 'view_results' %}" class="btn btn-outline">
             <i class="fas fa-trophy"></i> Results Dashboard
         </a>
+        <a href="{% url 'brochure' %}" class="btn btn-outline">
+            <i class="fas fa-book-open"></i> Brochure & Portfolio
+        </a>
         <a href="{% url 'dashboard_admin' %}" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Admin Dashboard
         </a>
     </div>
 
-    <!-- ═══ 10 THEME SELECTOR BAR ════════════════════════════════════ -->
+    <!-- ═══ 10 THEME SELECTOR BAR ──────────────────────────────────── -->
     <div class="theme-selector-wrap">
         <div class="theme-selector-title">
-            <i class="fas fa-palette"></i> Choose Global Card Design Theme (10 Designs):
+            <i class="fas fa-palette"></i> Select Global Theme (10 Distinct Styles & Motifs):
         </div>
         <div class="theme-chips">
-            <div class="theme-chip active" onclick="setGlobalTheme('theme-1', this)">1. Royal Gold & Velvet</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-2', this)">2. Cyber Emerald</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-3', this)">3. Sunset Crimson</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-4', this)">4. Regal Sapphire</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-5', this)">5. Luxury White</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-6', this)">6. Cosmic Nebula</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-7', this)">7. Heritage Gold</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-8', this)">8. Midnight Onyx</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-9', this)">9. Ocean Teal</div>
-            <div class="theme-chip" onclick="setGlobalTheme('theme-10', this)">10. Champion Metal</div>
+            <div class="theme-chip active" onclick="setGlobalTheme('theme-1', this, 'fa-lightbulb')">
+                <i class="fas fa-lightbulb text-warning me-1"></i> 1. Royal Gold (Glossy • Ranthal)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-2', this, 'fa-microphone-alt')">
+                <i class="fas fa-microphone-alt text-info me-1"></i> 2. Cyber Emerald (Glossy • Mic)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-3', this, 'fa-drum')">
+                <i class="fas fa-drum text-danger me-1"></i> 3. Sunset Crimson (Glossy • Duff)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-4', this, 'fa-book-open')">
+                <i class="fas fa-book-open text-primary me-1"></i> 4. Regal Sapphire (Matte • Book)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-5', this, 'fa-glasses')">
+                <i class="fas fa-glasses me-1" style="color:#b45309"></i> 5. Luxury White (Matte • Spectacles)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-6', this, 'fa-leaf')">
+                <i class="fas fa-leaf text-success me-1"></i> 6. Eco Leaves (Matte • Nature)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-7', this, 'fa-archway')">
+                <i class="fas fa-archway text-warning me-1"></i> 7. Heritage Kerala (Matte • Arch/Home)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-8', this, 'fa-pen-fancy')">
+                <i class="fas fa-pen-fancy text-warning me-1"></i> 8. Midnight Obsidian (Glossy • Pen)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-9', this, 'fa-water')">
+                <i class="fas fa-water text-info me-1"></i> 9. Ocean Waves (Glossy • Ocean)
+            </div>
+            <div class="theme-chip" onclick="setGlobalTheme('theme-10', this, 'fa-mountain')">
+                <i class="fas fa-mountain me-1" style="color:#d97706"></i> 10. Champion Bronze (Matte • Rock/Marble)
+            </div>
         </div>
     </div>
 
@@ -517,6 +594,14 @@
     {% for item in cards_data %}
     {% with prog=item.program %}
     <div class="winner-card theme-1" data-prog="{{ prog.name|lower }}">
+        <!-- Glossy Shine Overlay -->
+        <div class="glossy-shine"></div>
+
+        <!-- Background Watermark Texture Motif -->
+        <div class="card-texture-motif">
+            <i class="fas fa-lightbulb"></i>
+        </div>
+
         <div class="card-inner">
             <!-- Top Branding -->
             <div class="card-top-branding">
@@ -558,16 +643,16 @@
         <!-- Card Bottom Bar (Theme switch per card & Download) -->
         <div class="card-actions-bar">
             <select class="card-theme-select" onchange="changeSingleCardTheme(this)">
-                <option value="theme-1" selected>Theme 1: Royal Gold</option>
-                <option value="theme-2">Theme 2: Cyber Emerald</option>
-                <option value="theme-3">Theme 3: Sunset Crimson</option>
-                <option value="theme-4">Theme 4: Regal Sapphire</option>
-                <option value="theme-5">Theme 5: Luxury White</option>
-                <option value="theme-6">Theme 6: Cosmic Nebula</option>
-                <option value="theme-7">Theme 7: Heritage Gold</option>
-                <option value="theme-8">Theme 8: Midnight Onyx</option>
-                <option value="theme-9">Theme 9: Ocean Teal</option>
-                <option value="theme-10">Theme 10: Champion Metal</option>
+                <option value="theme-1|fa-lightbulb" selected>1. Royal Gold (Ranthal Light)</option>
+                <option value="theme-2|fa-microphone-alt">2. Cyber Emerald (Mic/Stage)</option>
+                <option value="theme-3|fa-drum">3. Sunset Crimson (Duff/Music)</option>
+                <option value="theme-4|fa-book-open">4. Regal Sapphire (Open Book)</option>
+                <option value="theme-5|fa-glasses">5. Luxury White (Spectacles)</option>
+                <option value="theme-6|fa-leaf">6. Eco Leaves (Nature/Trees)</option>
+                <option value="theme-7|fa-archway">7. Heritage Kerala (Arch/Home)</option>
+                <option value="theme-8|fa-pen-fancy">8. Midnight Obsidian (Pen/Quill)</option>
+                <option value="theme-9|fa-water">9. Ocean Waves (Ocean/Sun)</option>
+                <option value="theme-10|fa-mountain">10. Champion Bronze (Rock/Marble)</option>
             </select>
             <button class="btn-dl-card" onclick="downloadCard(this, '{{ prog.name|escapejs }}')">
                 <i class="fas fa-download me-1"></i> Save JPEG
@@ -586,8 +671,21 @@
 {% endif %}
 
 <script>
+    const themeIconMap = {
+        'theme-1': 'fa-lightbulb',
+        'theme-2': 'fa-microphone-alt',
+        'theme-3': 'fa-drum',
+        'theme-4': 'fa-book-open',
+        'theme-5': 'fa-glasses',
+        'theme-6': 'fa-leaf',
+        'theme-7': 'fa-archway',
+        'theme-8': 'fa-pen-fancy',
+        'theme-9': 'fa-water',
+        'theme-10': 'fa-mountain'
+    };
+
     /* ── GLOBAL THEME SELECTOR ───────────────────────────────────── */
-    function setGlobalTheme(themeClass, chipEl) {
+    function setGlobalTheme(themeClass, chipEl, iconClass) {
         document.querySelectorAll('.theme-chip').forEach(c => c.classList.remove('active'));
         chipEl.classList.add('active');
 
@@ -596,18 +694,32 @@
             card.className = card.className.replace(/\btheme-\d+\b/g, '').trim();
             card.classList.add(themeClass);
 
+            // Update texture motif icon
+            const motif = card.querySelector('.card-texture-motif i');
+            if (motif) {
+                motif.className = 'fas ' + iconClass;
+            }
+
             // Update select dropdown inside card
             const sel = card.querySelector('.card-theme-select');
-            if (sel) sel.value = themeClass;
+            if (sel) {
+                sel.value = themeClass + '|' + iconClass;
+            }
         });
     }
 
     /* ── SINGLE CARD THEME SWITCHER ────────────────────────────── */
     function changeSingleCardTheme(selectEl) {
         const card = selectEl.closest('.winner-card');
-        const chosenTheme = selectEl.value;
+        const [chosenTheme, iconClass] = selectEl.value.split('|');
+        
         card.className = card.className.replace(/\btheme-\d+\b/g, '').trim();
         card.classList.add(chosenTheme);
+
+        const motif = card.querySelector('.card-texture-motif i');
+        if (motif) {
+            motif.className = 'fas ' + iconClass;
+        }
     }
 
     /* ── SEARCH FILTER ───────────────────────────────────────────── */
@@ -623,7 +735,6 @@
         const card = btn.closest('.winner-card');
         const actionsBar = card.querySelector('.card-actions-bar');
         
-        // Hide actions bar during image capture
         actionsBar.style.display = 'none';
         showOverlay();
 
