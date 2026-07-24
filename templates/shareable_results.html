@@ -159,6 +159,7 @@
         /* ── BASE WINNER CARD ────────────────────────────────────── */
         .winner-card {
             border-radius: 0px;
+            border: none !important;
             overflow: hidden;
             position: relative;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -213,7 +214,7 @@
             text-align: center;
             padding-bottom: 12px;
             margin-bottom: 14px;
-            border-bottom: 1px dashed rgba(255,255,255,0.18);
+            border-bottom: none;
         }
         .inst-title {
             font-size: 0.72rem;
@@ -249,6 +250,7 @@
             text-transform: uppercase;
             padding: 3px 10px;
             border-radius: 0px;
+            border: none;
             margin-top: 4px;
         }
         .type-badge {
@@ -256,6 +258,7 @@
             font-weight: 800;
             padding: 3px 10px;
             border-radius: 0px;
+            border: none;
             text-transform: uppercase;
         }
 
@@ -272,7 +275,7 @@
             padding: 10px 14px;
             border-radius: 0px;
             background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
+            border: none;
         }
 
         .rank-medal {
@@ -285,6 +288,7 @@
             font-size: 1.1rem;
             font-weight: 900;
             flex-shrink: 0;
+            border: none;
         }
 
         .rank-info { flex: 1; min-width: 0; }
@@ -313,6 +317,7 @@
             font-weight: 800;
             padding: 2px 8px;
             border-radius: 0px;
+            border: none;
             flex-shrink: 0;
         }
 
@@ -320,7 +325,7 @@
         .card-actions-bar {
             padding: 12px 18px;
             background: rgba(0,0,0,0.35);
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -330,12 +335,12 @@
         }
         .card-theme-select {
             background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.25);
+            border: none;
             color: #fff;
             font-size: 0.75rem;
             font-weight: 700;
             padding: 5px 10px;
-            border-radius: 8px;
+            border-radius: 0px;
             outline: none;
             cursor: pointer;
         }
@@ -345,7 +350,7 @@
             color: #000;
             border: none;
             padding: 6px 14px;
-            border-radius: 8px;
+            border-radius: 0px;
             font-size: 0.78rem;
             font-weight: 800;
             cursor: pointer;
@@ -354,83 +359,83 @@
         .btn-dl-card:hover { opacity: 0.9; }
 
         /* ══════════════════════════════════════════════════════════
-           10 DISTINCT THEME DESIGNS & STYLES
+           10 DISTINCT THEME DESIGNS & STYLES (NO BORDER LINES)
            ══════════════════════════════════════════════════════════ */
 
         /* --- THEME 1: Royal Velvet & Gold (Glossy - Ranthal & Trophy) --- */
         .theme-1 {
             background: linear-gradient(135deg, #1e1b4b 0%, #31103f 50%, #170b3b 100%);
-            border: 2px solid #fbbf24;
+            border: none !important;
             color: #fff;
             font-family: 'Cinzel', serif;
         }
         .theme-1 .card-top-branding { text-align: center; }
         .theme-1 .fest-badge { color: #fbbf24; font-family: 'Cinzel', serif; }
         .theme-1 .prog-name { color: #ffffff; font-family: 'Cinzel', serif; }
-        .theme-1 .cat-badge { background: rgba(251, 191, 36, 0.18); color: #fbbf24; border: 1px solid #fbbf24; }
+        .theme-1 .cat-badge { background: rgba(251, 191, 36, 0.18); color: #fbbf24; border: none; }
         .theme-1 .type-badge { background: rgba(255,255,255,0.1); color: #e4e4e7; }
-        .theme-1 .rank-row { background: rgba(255,255,255,0.06); border-color: rgba(251, 191, 36, 0.25); }
+        .theme-1 .rank-row { background: rgba(255,255,255,0.06); border: none; }
         .theme-1 .rank-medal { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 10px rgba(245,158,11,0.4); }
 
         /* --- THEME 2: Cyber Emerald & Neon Mint (Glossy - Stage Mic & Waves) --- */
         .theme-2 {
             background: linear-gradient(135deg, #042014 0%, #0d3827 50%, #021a0f 100%);
-            border: 2px solid #10b981;
+            border: none !important;
             color: #ecfdf5;
             font-family: 'Space Grotesk', sans-serif;
         }
         .theme-2 .prog-header { text-align: left; }
         .theme-2 .fest-badge { color: #34d399; font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; }
         .theme-2 .prog-name { color: #a7f3d0; }
-        .theme-2 .cat-badge { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .theme-2 .cat-badge { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: none; }
         .theme-2 .type-badge { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
         .theme-2 .rank-medal { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
-        .theme-2 .rank-row { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25); }
+        .theme-2 .rank-row { background: rgba(16, 185, 129, 0.08); border: none; }
 
         /* --- THEME 3: Sunset Crimson & Coral (Glossy - Duff & Music) --- */
         .theme-3 {
             background: linear-gradient(135deg, #4c0519 0%, #881337 50%, #58081c 100%);
-            border: 2px solid #fb7185;
+            border: none !important;
             color: #fff1f2;
             font-family: 'Outfit', sans-serif;
         }
         .theme-3 .fest-badge { color: #fecdd3; font-weight: 900; }
         .theme-3 .prog-name { color: #ffffff; }
-        .theme-3 .cat-badge { background: rgba(244, 63, 94, 0.3); color: #ffe4e6; border: 1px solid #fb7185; }
+        .theme-3 .cat-badge { background: rgba(244, 63, 94, 0.3); color: #ffe4e6; border: none; }
         .theme-3 .type-badge { background: rgba(251, 146, 60, 0.25); color: #fdba74; }
         .theme-3 .rank-medal { background: linear-gradient(135deg, #fb7185, #e11d48); color: #fff; }
-        .theme-3 .rank-row { background: rgba(255,255,255,0.08); border-color: rgba(251, 113, 133, 0.2); }
+        .theme-3 .rank-row { background: rgba(255,255,255,0.08); border: none; }
 
         /* --- THEME 4: Regal Sapphire & Platinum (Matte - Open Book & Cap) --- */
         .theme-4 {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border: 2px solid #38bdf8;
+            border: none !important;
             color: #f0f9ff;
             font-family: 'Playfair Display', serif;
         }
-        .theme-4 .card-top-branding { border-bottom-color: rgba(56, 189, 248, 0.3); }
+        .theme-4 .card-top-branding { border-bottom: none; }
         .theme-4 .fest-badge { color: #38bdf8; font-family: 'Playfair Display', serif; }
         .theme-4 .prog-name { color: #ffffff; font-family: 'Playfair Display', serif; }
-        .theme-4 .cat-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: 1px solid #38bdf8; }
+        .theme-4 .cat-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: none; }
         .theme-4 .type-badge { background: rgba(147, 51, 234, 0.25); color: #c084fc; }
         .theme-4 .rank-medal { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #000; }
-        .theme-4 .rank-row { background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .theme-4 .rank-row { background: rgba(56, 189, 248, 0.05); border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* --- THEME 5: Clean Luxury Ivory White (Matte - Spectacles & Pen) --- */
         .theme-5 {
             background: #fdfbf7;
-            border: 2px solid #b45309;
+            border: none !important;
             color: #1e293b;
             font-family: 'DM Serif Display', serif;
             box-shadow: 0 10px 25px rgba(0,0,0,0.12);
         }
-        .theme-5 .card-top-branding { border-bottom-color: #e2e8f0; text-align: center; }
+        .theme-5 .card-top-branding { border-bottom: none; text-align: center; }
         .theme-5 .inst-title { color: #64748b; }
         .theme-5 .fest-badge { color: #b45309; font-family: 'DM Serif Display', serif; }
         .theme-5 .prog-name { color: #0f172a; font-family: 'DM Serif Display', serif; }
-        .theme-5 .cat-badge { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .theme-5 .cat-badge { background: #fef3c7; color: #92400e; border: none; }
         .theme-5 .type-badge { background: #e2e8f0; color: #334155; }
-        .theme-5 .rank-row { background: #ffffff; border-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .theme-5 .rank-row { background: #ffffff; border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
         .theme-5 .winner-name { color: #0f172a; }
         .theme-5 .team-name { color: #475569; }
         .theme-5 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
@@ -438,76 +443,76 @@
         /* --- THEME 6: Eco Earth & Forest Leaves (Matte - Leaves & Trees) --- */
         .theme-6 {
             background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
-            border: 2px solid #34d399;
+            border: none !important;
             color: #ecfdf5;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .theme-6 .fest-badge { color: #34d399; font-weight: 800; }
         .theme-6 .prog-name { color: #ffffff; }
-        .theme-6 .cat-badge { background: rgba(52, 211, 153, 0.2); color: #a7f3d0; border: 1px solid #34d399; }
+        .theme-6 .cat-badge { background: rgba(52, 211, 153, 0.2); color: #a7f3d0; border: none; }
         .theme-6 .type-badge { background: rgba(250, 204, 21, 0.2); color: #fef08a; }
         .theme-6 .rank-medal { background: linear-gradient(135deg, #34d399, #059669); color: #000; }
-        .theme-6 .rank-row { background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.2); }
+        .theme-6 .rank-row { background: rgba(52, 211, 153, 0.08); border: none; }
 
         /* --- THEME 7: Heritage Kerala Maroon (Matte - Ranthal & Minaret) --- */
         .theme-7 {
             background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
-            border: 3px double #fef08a;
+            border: none !important;
             color: #fef2f2;
             font-family: 'Cinzel', serif;
         }
-        .theme-7 .card-top-branding { border-bottom-color: rgba(254, 240, 138, 0.4); text-align: center; }
+        .theme-7 .card-top-branding { border-bottom: none; text-align: center; }
         .theme-7 .inst-title { color: #fef08a; letter-spacing: 2px; }
         .theme-7 .fest-badge { color: #fde047; font-family: 'Cinzel', serif; }
         .theme-7 .prog-name { color: #ffffff; font-family: 'Cinzel', serif; }
-        .theme-7 .cat-badge { background: #fef08a; color: #450a0a; font-weight: 900; }
+        .theme-7 .cat-badge { background: #fef08a; color: #450a0a; font-weight: 900; border: none; }
         .theme-7 .type-badge { background: rgba(255, 255, 255, 0.15); color: #fff; }
-        .theme-7 .rank-row { background: rgba(0, 0, 0, 0.25); border-color: rgba(254, 240, 138, 0.2); font-family: 'Manjari', sans-serif; }
+        .theme-7 .rank-row { background: rgba(0, 0, 0, 0.25); border: none; font-family: 'Manjari', sans-serif; }
         .theme-7 .winner-name { font-family: 'Cinzel', serif; }
         .theme-7 .rank-medal { background: #fde047; color: #450a0a; }
 
         /* --- THEME 8: Midnight Obsidian & Amber (Glossy - Quill & Pen) --- */
         .theme-8 {
             background: #09090b;
-            border: 2px solid #f59e0b;
+            border: none !important;
             color: #f4f4f5;
             font-family: 'Montserrat', sans-serif;
         }
         .theme-8 .fest-badge { color: #f59e0b; font-weight: 900; }
         .theme-8 .prog-name { color: #ffffff; }
-        .theme-8 .cat-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .theme-8 .cat-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: none; }
         .theme-8 .type-badge { background: #27272a; color: #a1a1aa; }
         .theme-8 .rank-medal { background: #f59e0b; color: #000; }
-        .theme-8 .rank-row { background: #18181b; border-color: #27272a; }
+        .theme-8 .rank-row { background: #18181b; border: none; }
 
         /* --- THEME 9: Tropical Ocean Turquoise (Glossy - Waves & Environment) --- */
         .theme-9 {
             background: linear-gradient(135deg, #042f2e 0%, #0f766e 100%);
-            border: 2px solid #14b8a6;
+            border: none !important;
             color: #ccfbf1;
             font-family: 'Outfit', sans-serif;
         }
         .theme-9 .fest-badge { color: #2dd4bf; font-weight: 900; }
         .theme-9 .prog-name { color: #ffffff; }
-        .theme-9 .cat-badge { background: rgba(20, 184, 166, 0.25); color: #99f6e4; border: 1px solid #14b8a6; }
+        .theme-9 .cat-badge { background: rgba(20, 184, 166, 0.25); color: #99f6e4; border: none; }
         .theme-9 .type-badge { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
         .theme-9 .rank-medal { background: linear-gradient(135deg, #2dd4bf, #0d9488); color: #000; }
-        .theme-9 .rank-row { background: rgba(20, 184, 166, 0.1); border-color: rgba(20, 184, 166, 0.25); }
+        .theme-9 .rank-row { background: rgba(20, 184, 166, 0.1); border: none; }
 
         /* --- THEME 10: Marble Stone & Champion Bronze (Matte - Rock & Shield) --- */
         .theme-10 {
             background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
-            border: 2px solid #d97706;
+            border: none !important;
             color: #fef3c7;
             font-family: 'Playfair Display', serif;
         }
-        .theme-10 .card-top-branding { border-bottom-color: rgba(217, 119, 6, 0.3); text-align: center; }
+        .theme-10 .card-top-branding { border-bottom: none; text-align: center; }
         .theme-10 .fest-badge { color: #fbbf24; font-family: 'Playfair Display', serif; }
         .theme-10 .prog-name { color: #ffffff; font-family: 'Playfair Display', serif; }
-        .theme-10 .cat-badge { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid #d97706; }
+        .theme-10 .cat-badge { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: none; }
         .theme-10 .type-badge { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; }
         .theme-10 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
-        .theme-10 .rank-row { background: rgba(255, 255, 255, 0.05); border-color: rgba(217, 119, 6, 0.2); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .theme-10 .rank-row { background: rgba(255, 255, 255, 0.05); border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* Overlay Spinner */
         #dl-overlay {
