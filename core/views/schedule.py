@@ -13,7 +13,7 @@ from core.schedule_utils import (
 
 @login_required
 def manage_schedule(request):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, "Access denied. Admin privileges required.")
         return redirect('face_page')
 
@@ -69,7 +69,7 @@ def manage_schedule(request):
 
 @login_required
 def add_fest_day(request):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     day_number = request.POST.get('day_number')
@@ -106,7 +106,7 @@ def add_fest_day(request):
 
 @login_required
 def delete_fest_day(request, day_id):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     day = get_object_or_404(FestDay, id=day_id)
@@ -117,7 +117,7 @@ def delete_fest_day(request, day_id):
 
 @login_required
 def add_stage(request):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     name = request.POST.get('name', '').strip()
@@ -136,7 +136,7 @@ def add_stage(request):
 
 @login_required
 def delete_stage(request, stage_id):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     stage = get_object_or_404(Stage, id=stage_id)
@@ -147,7 +147,7 @@ def delete_stage(request, stage_id):
 
 @login_required
 def update_program_duration(request, program_id):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('is_ajax') == '1':
             return JsonResponse({'status': 'error', 'message': 'Access denied'}, status=403)
         return redirect('manage_schedule')
@@ -197,7 +197,7 @@ def update_program_duration(request, program_id):
 
 @login_required
 def save_program_schedule(request):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('is_ajax') == '1':
             return JsonResponse({'status': 'error', 'message': 'Access denied'}, status=403)
         return redirect('manage_schedule')
@@ -260,7 +260,7 @@ def save_program_schedule(request):
 
 @login_required
 def delete_program_schedule(request, schedule_id):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('is_ajax') == '1':
             return JsonResponse({'status': 'error', 'message': 'Access denied'}, status=403)
         return redirect('manage_schedule')
@@ -284,7 +284,7 @@ def delete_program_schedule(request, schedule_id):
 
 @login_required
 def run_auto_scheduler(request):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     res = generate_smart_auto_schedule()
@@ -313,7 +313,7 @@ def run_auto_scheduler(request):
 
 @login_required
 def clear_all_schedules(request):
-    if request.user.role != 'admin' or request.method != 'POST':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin') or request.method != 'POST':
         return redirect('manage_schedule')
 
     count = ProgramSchedule.objects.count()
@@ -323,7 +323,7 @@ def clear_all_schedules(request):
 
 @login_required
 def view_clashes(request):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, "Access denied. Admin privileges required.")
         return redirect('face_page')
 

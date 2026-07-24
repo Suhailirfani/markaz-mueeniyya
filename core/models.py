@@ -17,6 +17,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if self.is_superuser or self.is_staff or self.role == 'admin':
             self.is_approved = True
+            if (self.is_superuser or self.is_staff) and self.role != 'admin':
+                self.role = 'admin'
         super().save(*args, **kwargs)
 
 # ----------------- Admin Profile -----------------

@@ -20,7 +20,7 @@ from .scoring import calculate_points, get_members_count_for_program
 
 @login_required
 def export_excel(request):
-    is_admin = request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
 
     participations = Participation.objects.filter(marks__isnull=False)
     if not is_admin:
@@ -506,7 +506,7 @@ def render_to_pdf(template_src, context_dict={}):
     return response
 
 def results_pdf(request):
-    is_admin = request.user.is_authenticated and request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -549,7 +549,7 @@ def program_result_pdf(request, program_id):
     program = get_object_or_404(Program, id=program_id)
 
     # Restrict unannounced program PDFs to admin users only
-    is_admin = request.user.is_authenticated and request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     if not program.is_announced and not is_admin:
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("Results for this program are not yet announced.")

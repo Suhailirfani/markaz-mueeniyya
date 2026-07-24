@@ -124,7 +124,7 @@ def recalculate_team_points(team, announced_only=False):
 @login_required
 def enter_marks_summary(request):
     """Admin view to see marks summary and award points"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         return redirect('dashboard_team')
 
     program_id = request.GET.get('program')
@@ -226,7 +226,7 @@ def team_marks_summary(request):
 @login_required
 def results_view(request):
     """View all results"""
-    is_admin = request.user.is_authenticated and request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -245,7 +245,7 @@ def results_view(request):
 
 def leaderboard(request):
     """Public leaderboard view with accurate recalculated points"""
-    is_admin = request.user.is_authenticated and request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -294,7 +294,7 @@ def leaderboard(request):
 @login_required
 def add_marks(request):
     """Add or edit marks for participants or group entries"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard_team')
 
@@ -388,7 +388,7 @@ def add_marks(request):
 @login_required
 def undo_points(request, participation_id):
     """Undo points for a participation"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'You do not have permission to perform this action.')
         return redirect('dashboard_team')
 
@@ -434,7 +434,7 @@ def undo_points(request, participation_id):
 @login_required
 def recalculate_all_rankings(request):
     """Recalculate rankings for all programs - fixes zero marks issue"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'You do not have permission.')
         return redirect('dashboard_team')
 
@@ -462,7 +462,7 @@ def get_programs_by_category(request):
 @login_required
 def team_leaderboard(request):
     """Display team leaderboard with accurate points"""
-    is_admin = request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -520,7 +520,7 @@ def team_detail(request, team_id):
     """Detailed view of a team's performance"""
     team = get_object_or_404(Team, id=team_id)
 
-    is_admin = request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -560,7 +560,7 @@ def team_detail(request, team_id):
 
 def view_results(request):
     """Public view of all program results"""
-    is_admin = request.user.is_authenticated and request.user.role == 'admin'
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin')
     view_mode = request.GET.get('view', 'announced') if is_admin else 'announced'
     announced_only = (view_mode == 'announced')
 
@@ -684,7 +684,7 @@ def update_settings(request):
 @login_required
 def system_config(request):
     """Dedicated General System Configuration page (admin only)"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 
@@ -1202,7 +1202,7 @@ def results_page(request):
 
 @login_required
 def enter_marks_summary_cat(request):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         return redirect('dashboard_team')
 
     # Get filter parameters
@@ -1310,7 +1310,7 @@ def get_top_5_balancing_announcement_suggestions():
 @login_required
 def toggle_program_announcement(request, program_id):
     """Toggle announcement status for a program and update timestamp"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 
@@ -1332,7 +1332,7 @@ def toggle_program_announcement(request, program_id):
 @login_required
 def manage_announcements(request):
     """Admin page for managing result announcements with smart balancing suggestions"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 
@@ -1360,7 +1360,7 @@ def manage_announcements(request):
 @login_required
 def bulk_announce_programs(request):
     """Bulk announce or hide selected programs"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 
@@ -1392,7 +1392,7 @@ def bulk_announce_programs(request):
 @login_required
 def announcement_balancer(request):
     """Dedicated Admin Assistant page for recommending Top 5 team-balancing announcements"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 

@@ -222,7 +222,7 @@ def add_program(request):
 
 @login_required
 def edit_program(request, program_id):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         return redirect('dashboard_team')
 
     program = get_object_or_404(Program, id=program_id)
@@ -267,7 +267,7 @@ def edit_program(request, program_id):
 
 @login_required
 def delete_program(request, program_id):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         return redirect('dashboard_team')
 
     program = get_object_or_404(Program, id=program_id)
@@ -277,7 +277,7 @@ def delete_program(request, program_id):
 
 @login_required
 def bulk_delete_programs(request):
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         return redirect('dashboard_team')
 
     if request.method == "POST":
@@ -850,7 +850,7 @@ def get_participants_by_category(request):
 @login_required
 def chest_number(request):
     """View, manage, and auto-distribute chest numbers for contestants"""
-    if request.user.role != 'admin':
+    if not (request.user.is_superuser or request.user.is_staff or request.user.role == 'admin'):
         messages.error(request, 'Permission denied.')
         return redirect('dashboard_admin')
 
