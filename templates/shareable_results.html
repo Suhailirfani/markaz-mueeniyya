@@ -149,11 +149,22 @@
         /* ── CARDS GRID ─────────────────────────────────────────── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 28px;
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr !important;
+                padding: 0 10px !important;
+                gap: 20px !important;
+            }
+            .winner-card {
+                width: 100% !important;
+            }
         }
 
         /* ── BASE WINNER CARD ────────────────────────────────────── */

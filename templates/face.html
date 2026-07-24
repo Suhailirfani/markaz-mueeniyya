@@ -569,6 +569,26 @@
             border-color: rgba(56, 189, 248, 0.4);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        /* Mobile Layout & Card Safety Overrides */
+        @media (max-width: 768px) {
+            .modules-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.25rem !important;
+            }
+            .stat-grid-innovative {
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+            .reveal-element {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .modules-section {
+                padding: 0 1rem !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -787,25 +807,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // IntersectionObserver for Scroll Reveal Launch Animations
+        // IntersectionObserver for Scroll Reveal Launch Animations with Mobile Fallback Safety
         document.addEventListener("DOMContentLoaded", function () {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: "0px 0px -40px 0px"
-            };
+            const isMobile = window.innerWidth <= 768 || !("IntersectionObserver" in window);
+            if (isMobile) {
+                document.querySelectorAll(".reveal-element").forEach(el => el.classList.add("is-visible"));
+            } else {
+                const observerOptions = {
+                    threshold: 0.05,
+                    rootMargin: "0px 0px 50px 0px"
+                };
 
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach((entry, idx) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.classList.add("is-visible");
-                        }, idx * 100);
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach((entry, idx) => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.classList.add("is-visible");
+                            }, idx * 60);
+                            obs.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
 
-            document.querySelectorAll(".reveal-element").forEach(el => observer.observe(el));
+                document.querySelectorAll(".reveal-element").forEach(el => observer.observe(el));
+            }
         });
 
         // Service Worker Registration for PWA Capability
