@@ -1,5 +1,7 @@
 import io
+import os
 import xlwt
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -10,6 +12,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 from ..models import Program, Category, Team, Contestant, Participation, SystemSetting
 from .scoring import calculate_points, get_members_count_for_program
@@ -856,9 +860,17 @@ def brochure_view(request):
 
 
 def download_brochure_pdf(request):
-    """Download Product Brochure PDF in Malayalam"""
+    """Download Product Brochure PDF in Malayalam with Gayathri TTF font support"""
     fest_name = SystemSetting.get_setting('fest_name', 'Arts Fest')
     institution_name = SystemSetting.get_setting('institution_name', 'Campus / Institution')
+
+    # Register Gayathri Malayalam TTF font for ReportLab / xhtml2pdf
+    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'Gayathri-Regular.ttf')
+    if os.path.exists(font_path):
+        try:
+            pdfmetrics.registerFont(TTFont('Gayathri', font_path))
+        except Exception:
+            pass
 
     template_path = 'brochure_pdf.html'
     context = {

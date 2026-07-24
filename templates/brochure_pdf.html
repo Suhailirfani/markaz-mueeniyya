@@ -6,60 +6,61 @@
     <style>
         @page {
             size: A4;
-            margin: 15mm;
+            margin: 12mm;
         }
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            color: #1e293b;
+            font-family: 'Gayathri', 'Helvetica', sans-serif;
+            color: #0f172a;
             font-size: 10pt;
             line-height: 1.5;
         }
         .header-table {
             width: 100%;
             border-bottom: 2px solid #033067;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
         .header-title {
-            font-size: 20pt;
+            font-size: 18pt;
             font-weight: bold;
             color: #033067;
         }
         .header-sub {
-            font-size: 10pt;
-            color: #f59e0b;
+            font-size: 9.5pt;
+            color: #d97706;
             font-weight: bold;
         }
         .section-title {
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #033067;
             background-color: #f1f5f9;
-            padding: 6px 10px;
-            margin-top: 15px;
-            margin-bottom: 10px;
+            padding: 5px 8px;
+            margin-top: 12px;
+            margin-bottom: 8px;
             border-left: 4px solid #033067;
         }
         .feature-box {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding: 8px;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
+            background-color: #ffffff;
         }
         .feature-name {
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: bold;
-            color: #0f172a;
+            color: #033067;
         }
         .feature-desc {
-            font-size: 9pt;
-            color: #475569;
+            font-size: 8.5pt;
+            color: #334155;
             margin-top: 3px;
         }
         .package-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .package-table th {
             background-color: #033067;
@@ -74,12 +75,12 @@
             font-size: 8.5pt;
         }
         .footer-note {
-            margin-top: 20px;
+            margin-top: 15px;
             text-align: center;
-            font-size: 8.5pt;
+            font-size: 8pt;
             color: #64748b;
             border-top: 1px solid #e2e8f0;
-            padding-top: 10px;
+            padding-top: 8px;
         }
     </style>
 </head>
@@ -89,48 +90,48 @@
         <tr>
             <td>
                 <div class="header-title">CompetePro Fest Portal</div>
-                <div class="header-sub">Official Competition Management & Results System</div>
+                <div class="header-sub">കേരളത്തിലെ മികച്ച ഫെസ്റ്റ് മാനേജ്മെന്റ് പോർട്ടൽ (Product Brochure)</div>
             </td>
             <td style="text-align: right;">
-                <div style="font-size: 9pt; color: #64748b;">Product Portfolio Brochure</div>
+                <div style="font-size: 8.5pt; color: #64748b;">Official Features Brochure</div>
                 <div style="font-size: 9pt; font-weight: bold; color: #033067;">Date: {{ date }}</div>
             </td>
         </tr>
     </table>
 
-    <div class="section-title">KEY FEATURES & HIGHLIGHTS</div>
+    <div class="section-title">പ്രധാന ഫീച്ചറുകൾ (KEY FEATURES & HIGHLIGHTS)</div>
 
     <div class="feature-box">
-        <div class="feature-name">1. Live Leaderboard & Real-Time Scoring (ലൈവ് ലീഡർബോർഡ്)</div>
-        <div class="feature-desc">Real-time team point calculation, contestant rankings, and category standings updated instantly upon result publication.</div>
+        <div class="feature-name">1. ലൈവ് ലീഡർബോർഡും പോയിന്റ് ടേബിളും (Live Leaderboard & Scoring)</div>
+        <div class="feature-desc">മത്സര ഫലങ്ങൾ പ്രഖ്യാപിക്കുന്ന നിമിഷം തത്സമയം അപ്‌ഡേറ്റാകുന്ന ഡിജിറ്റൽ ലീഡർബോർഡ്. ടീമുകളുടെയും മത്സരാർത്ഥികളുടെയും പോയിന്റുകൾ കളർഫുൾ ഡിസ്‌പ്ലേയിൽ കാണാം.</div>
     </div>
 
     <div class="feature-box">
-        <div class="feature-name">2. Automatic Chest Number Distribution (ചെസ്റ്റ് നമ്പർ സിസ്റ്റം)</div>
-        <div class="feature-desc">Category-wise auto-numbering, custom range assignment, and single-click printable PDF chest cards.</div>
+        <div class="feature-name">2. ചെസ്റ്റ് നമ്പർ ഓട്ടോ ഡിസ്ട്രിബ്യൂഷൻ (Automatic Chest Number System)</div>
+        <div class="feature-desc">കാറ്റഗറി തിരിച്ചോ (Category-wise) ടീം തിരിച്ചോ ഒരൊറ്റ ക്ലിക്കിൽ ചെസ്റ്റ് നമ്പറുകൾ അസൈൻ ചെയ്യാം. പ്രിന്റബിൾ Chest Cards PDF സ്വയം ജനറേറ്റ് ചെയ്യാം.</div>
     </div>
 
     <div class="feature-box">
-        <div class="feature-name">3. Smart Fest Scheduler & Clash Detection (സ്മാർട്ട് ഷെഡ്യൂളിംഗ്)</div>
-        <div class="feature-desc">Automated timetable generator preventing contestant double-booking across multiple stage venues.</div>
+        <div class="feature-name">3. സ്മാർട്ട് ഷെഡ്യൂളിംഗ് & ക്ലാഷ് ഡിറ്റക്ടർ (Smart Fest Scheduler & Clash Prevention)</div>
+        <div class="feature-desc">സ്റ്റേജുകളുടെയും ഫെസ്റ്റ് ദിവസങ്ങളുടെയും ടൈംടേബിൾ. ഒരേ മത്സരാർത്ഥിക്ക് രണ്ടു സ്റ്റേജിൽ സമയം ഒത്തു വരുന്ന പ്രോബ്ലംസ് (Clashes) സിസ്റ്റം സ്വയം കണ്ടെത്തും.</div>
     </div>
 
     <div class="feature-box">
-        <div class="feature-name">4. 10+ Winner Cards HD Design Studio (10 വിന്നർ പോസ്റ്റർ ഡിസൈനുകൾ)</div>
-        <div class="feature-desc">Instant 1-click JPEG generation with 10 customizable visual themes for WhatsApp and social media sharing.</div>
+        <div class="feature-name">4. 10+ വിന്നർ പോസ്റ്റർ ഡിസൈനുകൾ (10+ Winner Cards Design Studio)</div>
+        <div class="feature-desc">വിജയികളുടെ വിവരങ്ങൾ വാട്സാപ്പിലും (WhatsApp) സോഷ്യൽ മീഡിയയിലും ഷെയർ ചെയ്യാൻ 10 വെവ്വേറെ HD Winner Graphics Cards. 1-ക്ലിക്കിൽ High-Res JPEG ആയി ഡൗൺലോഡ് ചെയ്യാം.</div>
     </div>
 
     <div class="feature-box">
-        <div class="feature-name">5. Instant PDF & Excel Master Reports (പിഡിഎഫ് & എക്സൽ റിപ്പോർട്ടുകൾ)</div>
-        <div class="feature-desc">Print-ready Valuation Forms, Stage Call Lists, Green Room Lists, and Master Tabulation sheets.</div>
+        <div class="feature-name">5. പിഡിഎഫ് & എക്സൽ മാസ്റ്റർ റിപ്പോർട്ടുകൾ (Instant PDF & Excel Reports)</div>
+        <div class="feature-desc">ജഡ്ജസ്‌മാർക്കുള്ള Valuation Sheets, സ്റ്റേജ് Call Lists, ഗ്രീൻ റൂം ഷീറ്റുകൾ, ഒഫീഷ്യൽ ടാബുലേഷൻ മാസ്റ്റർ റിപ്പോർട്ടുകൾ പ്രിന്റ് ചെയ്യാം.</div>
     </div>
 
     <div class="feature-box">
-        <div class="feature-name">6. Mobile PWA App & 1-Click Multi-Client Reset (മൊബൈൽ പിഡബ്ല്യുഎ)</div>
-        <div class="feature-desc">Standalone PWA app experience on phones/tablets and 1-click database reset for new client setups.</div>
+        <div class="feature-name">6. മൊബൈൽ പിഡബ്ല്യുഎ ആപ്പ് & 1-ക്ലിക്ക് റീസെറ്റ് (Mobile PWA App & Multi-Client Reset)</div>
+        <div class="feature-desc">മൊബൈലിലും ടാബ്ലറ്റിലും ഫോൺ ആപ്പ് പോലെ ഇൻസ്റ്റാൾ ചെയ്ത് ഉപയോഗിക്കാം. ഏത് ഫെസ്റ്റിവലിനും ഒരൊറ്റ ക്ലിക്കിൽ റീസെറ്റ് ചെയ്ത് ഉപയോഗിക്കാൻ സാധിക്കും.</div>
     </div>
 
-    <div class="section-title">PRICING PACKAGES (KERALA MARKET)</div>
+    <div class="section-title">പാക്കേജ് പ്ലാനുകൾ (PRICING PACKAGES - KERALA MARKET)</div>
 
     <table class="package-table">
         <thead>
@@ -161,7 +162,7 @@
 
     <div class="footer-note">
         CompetePro Competition Management System • Designed for Schools, Colleges & Madrasa Arts Festivals<br>
-        For Quotation & Booking: Contact Support Team
+        For Quotations & Booking Support: Contact Support Team
     </div>
 
 </body>
