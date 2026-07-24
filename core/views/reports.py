@@ -1,6 +1,6 @@
 import io
 import xlwt
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.utils import timezone
