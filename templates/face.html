@@ -596,7 +596,7 @@
             </button>
 
             {% if user.is_authenticated %}
-                {% if user.role == 'admin' %}
+                {% if user.is_superuser or user.is_staff or user.role == 'admin' %}
                     <a href="{% url 'dashboard_admin' %}" class="nav-btn nav-btn-highlight">
                         <i class="fas fa-chart-line"></i> Dashboard
                     </a>
@@ -605,6 +605,9 @@
                         <i class="fas fa-home"></i> Dashboard
                     </a>
                 {% endif %}
+                <a href="{% url 'login' %}" class="nav-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
             {% else %}
                 <a href="{% url 'login' %}" class="nav-btn nav-btn-highlight">
                     <i class="fas fa-sign-in-alt"></i> Login
@@ -625,20 +628,19 @@
         </div>
 
         <div class="hero-action-group">
+            <a href="{% url 'login' %}" class="action-btn-main btn-glow-primary">
+                <i class="fas fa-sign-in-alt"></i> Portal Login
+            </a>
             {% if user.is_authenticated %}
-                {% if user.role == 'admin' %}
-                    <a href="{% url 'dashboard_admin' %}" class="action-btn-main btn-glow-primary">
+                {% if user.is_superuser or user.is_staff or user.role == 'admin' %}
+                    <a href="{% url 'dashboard_admin' %}" class="action-btn-main btn-glow-outline">
                         <i class="fas fa-chart-line"></i> Admin Dashboard
                     </a>
                 {% elif user.role == 'team' %}
-                    <a href="{% url 'dashboard_team' %}" class="action-btn-main btn-glow-primary">
+                    <a href="{% url 'dashboard_team' %}" class="action-btn-main btn-glow-outline">
                         <i class="fas fa-home"></i> Team Dashboard
                     </a>
                 {% endif %}
-            {% else %}
-                <a href="{% url 'login' %}" class="action-btn-main btn-glow-primary">
-                    <i class="fas fa-sign-in-alt"></i> Portal Login
-                </a>
             {% endif %}
 
             <a href="{% url 'view_results' %}" class="action-btn-main btn-glow-outline">

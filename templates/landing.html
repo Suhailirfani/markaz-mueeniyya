@@ -10,17 +10,29 @@
                 Welcome to the Competition Management & Results Portal. Sign in to access your dashboard or view public standings.
             </p>
 
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <div class="d-flex justify-content-center gap-3 flex-wrap align-items-center">
                 {% if user.is_authenticated %}
-                    {% if user.role == 'admin' %}
+                    {% if user.is_superuser or user.is_staff or user.role == 'admin' %}
                         <a href="{% url 'dashboard_admin' %}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold">
-                            <i class="fas fa-chart-line me-2"></i> Go to Dashboard
+                            <i class="fas fa-chart-line me-2"></i> Admin Dashboard
                         </a>
                     {% elif user.role == 'team' %}
                         <a href="{% url 'dashboard_team' %}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold">
-                            <i class="fas fa-home me-2"></i> Go to Dashboard
+                            <i class="fas fa-home me-2"></i> Team Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'view_results' %}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold">
+                            <i class="fas fa-user-circle me-2"></i> Dashboard
                         </a>
                     {% endif %}
+                    
+                    <a href="{% url 'login' %}" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login to Account
+                    </a>
+                    
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg rounded-pill px-4 fw-bold">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm">
                         <i class="fas fa-sign-in-alt me-2"></i> Login to Account
