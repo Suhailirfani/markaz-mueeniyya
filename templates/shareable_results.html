@@ -217,23 +217,49 @@
             border: 0 !important;
         }
 
+        /* Branding Layout Positions */
         .card-top-branding {
             text-align: center;
             padding-bottom: 12px;
             margin-bottom: 14px;
             border-bottom: none;
         }
-        .inst-title {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
+        .card-bottom-branding {
+            display: none;
+            text-align: center;
+            padding-top: 14px;
+            margin-top: 14px;
+            border-top: 1px dashed rgba(255,255,255,0.15);
+        }
+        .card-side-branding {
+            display: none;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            padding: 15px 10px;
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
-            opacity: 0.85;
+            z-index: 4;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            pointer-events: none;
+        }
+
+        .inst-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            opacity: 0.9;
         }
         .fest-badge {
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             font-weight: 900;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             margin-top: 2px;
         }
@@ -244,10 +270,14 @@
             align-items: flex-start;
             margin-bottom: 16px;
         }
+        /* BIG Program Name Title */
         .prog-name {
-            font-size: 1.15rem;
+            font-size: clamp(1.45rem, 3vw, 1.85rem);
             font-weight: 900;
-            line-height: 1.25;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            word-break: break-word;
         }
         .cat-badge {
             display: inline-block;
@@ -521,6 +551,29 @@
         .theme-10 .rank-medal { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
         .theme-10 .rank-row { background: rgba(255, 255, 255, 0.05); border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
 
+        /* THEME-SPECIFIC BRANDING LAYOUT OVERRIDES */
+        
+        /* Themes 2 & 10: Right Vertical Sidebar Branding */
+        .theme-2 .card-top-branding, .theme-10 .card-top-branding { display: none; }
+        .theme-2 .card-bottom-branding, .theme-10 .card-bottom-branding { display: none; }
+        .theme-2 .card-side-branding, .theme-10 .card-side-branding { display: flex; right: 0; left: auto; background: rgba(0,0,0,0.28); color: #34d399; transform: rotate(180deg); }
+        .theme-10 .card-side-branding { color: #fbbf24; }
+        .theme-2 .card-inner, .theme-10 .card-inner { padding-right: 44px; }
+
+        /* Themes 6 & 7: Left Vertical Sidebar Branding */
+        .theme-6 .card-top-branding, .theme-7 .card-top-branding { display: none; }
+        .theme-6 .card-bottom-branding, .theme-7 .card-bottom-branding { display: none; }
+        .theme-6 .card-side-branding, .theme-7 .card-side-branding { display: flex; left: 0; right: auto; background: rgba(0,0,0,0.28); color: #a7f3d0; }
+        .theme-7 .card-side-branding { color: #fde047; }
+        .theme-6 .card-inner, .theme-7 .card-inner { padding-left: 44px; }
+
+        /* Themes 4 & 9: Bottom Branding Footer */
+        .theme-4 .card-top-branding, .theme-9 .card-top-branding { display: none; }
+        .theme-4 .card-side-branding, .theme-9 .card-side-branding { display: none; }
+        .theme-4 .card-bottom-branding, .theme-9 .card-bottom-branding { display: block; }
+        .theme-4 .card-bottom-branding { color: #38bdf8; }
+        .theme-9 .card-bottom-branding { color: #2dd4bf; }
+
         /* Overlay Spinner */
         #dl-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -627,6 +680,11 @@
             <i class="fas fa-lightbulb"></i>
         </div>
 
+        <!-- Side Branding (Left / Right Vertical) -->
+        <div class="card-side-branding">
+            <span>{{ institution_name }} • {{ fest_name }}</span>
+        </div>
+
         <div class="card-inner">
             <!-- Top Branding -->
             <div class="card-top-branding">
@@ -662,6 +720,12 @@
                     {% endif %}
                 </div>
                 {% endfor %}
+            </div>
+
+            <!-- Bottom Branding -->
+            <div class="card-bottom-branding">
+                <div class="inst-title">{{ institution_name }}</div>
+                <div class="fest-badge">{{ fest_name }}</div>
             </div>
         </div>
 
